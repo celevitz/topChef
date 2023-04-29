@@ -89,10 +89,9 @@
 #'   \item{\code{sznnumber}}{Season number}
 #'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters (listed as US Masters); Top Chef Canada (listed as Canada)}
 #'   \item{\code{episode}}{Episode number}
-#'   \item{\code{challenge_type}}{Challenge type: qualifying challenge, elimination, quickfire, sudden death quickfire, quickfire elimination, battle of the sous chefs}
-#'   \item{\code{outcome_type}}{Is the challenge run as a team or as an individual?}
-#'   \item{\code{chef}}{Name of chef}
 #'   \item{\code{in.competition}}{True / false for whether the Chef was still in the competition at the time of the challenge}
+#'   \item{\code{chef}}{Name of chef}
+#'   \item{\code{challenge_type}}{Challenge type: qualifying challenge, elimination, quickfire, sudden death quickfire, quickfire elimination, battle of the sous chefs}
 #'   \item{\code{outcome}}{Result for each Chef in the competition for that challenge}
 #'   \item{\code{rating}}{Numeric rating provided to chefs in Top Chef US Masters Seasons 1 and 2. Will be blank for all other seasons.}
 #' }
