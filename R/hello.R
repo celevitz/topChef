@@ -21,6 +21,8 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 
 chefdetails <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=1)
 challengewins <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=2)
+  # drop the ones that haven't yet aired
+  challengewins <- challengewins %>% filter(!(szn == "World All Stars" & episode %in% c(9,10)))
 challengedescriptions <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3)
   # drop the ones that haven't yet aired
   challengedescriptions <- challengedescriptions %>% filter(!(is.na(outcome_type)))
