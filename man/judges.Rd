@@ -29,6 +29,9 @@ A dataset containing information about who were the guest judges for each challe
 }
 \examples{
 library(tidyverse)
-judges \%>\% filter(Guest.Judge == "Eric Ripert") \%>\% group_by(challenge_type) \%>\% summarise(n=n())
+judges \%>\%
+  filter(Guest.Judge == "Eric Ripert") \%>\%
+  group_by(challenge_type) \%>\%
+  summarise(n=n())
 }
 \keyword{datasets}

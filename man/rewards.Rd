@@ -29,6 +29,10 @@ A dataset containing information about rewards and prizes won by challenge
 }
 \examples{
 library(tidyverse)
-rewards \%>\% filter(reward_type == "Money") \%>\% mutate(reward=as.numeric(reward)) \%>\% group_by(szn) \%>\% summarise(total=sum(reward))
+rewards \%>\%
+  filter(reward_type == "Money") \%>\%
+  mutate(reward=as.numeric(reward)) \%>\%
+  group_by(szn) \%>\%
+  summarise(total=sum(reward))
 }
 \keyword{datasets}
