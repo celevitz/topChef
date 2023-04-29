@@ -104,3 +104,34 @@
 #' library(tidyverse)
 #' challengewins %>% group_by(outcome) %>% summarise(n=n())
 "Challenge Results"
+
+
+
+
+#' Episode information
+#'
+#' A dataset containing information about each episode
+#'
+#' @docType data
+#'
+#' @usage data(episodeinfo)
+#'
+#' @format This data frame contains the following columns:
+#' \describe{
+#'   \item{\code{szn}}{Name of season}
+#'   \item{\code{sznnumber}}{Season number}
+#'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters (listed as US Masters); Top Chef Canada (listed as Canada)}
+#'   \item{\code{overall.episode.number}}{Running number of episode within the series}
+#'   \item{\code{episode}}{Episode number}
+#'   \item{\code{episode_name}}{Name of episode}
+#'   \item{\code{air_date}}{Date the episode originally aired}
+#'   \item{\code{#.of.competitors}}{Number of Chefs still in the competition}
+#' }
+#'
+#' @import tidyverse
+#'
+#' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
+#' @examples
+#' library(tidyverse)
+#' episodeinfo %>% filter(szn=="World All Stars")
+"Episode Information"
