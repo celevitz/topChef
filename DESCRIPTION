@@ -9,7 +9,7 @@ Description: Several datasets which describe the chef contestants in Top Chef, t
 URL: https://github.com/celevitz/topChef
 BugReports: https://github.com/celevitz/topChef/issues
 Depends:
-    R (>= 4.2.3)
+    R (>= 4.2.0)
 Imports:
     tidyverse (>= 2.0.0)
 License: MIT + file LICENSE
