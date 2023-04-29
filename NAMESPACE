@@ -1,1 +1,7 @@
 exportPattern("^[[:alpha:]]+")
+export(challengedescriptions)
+export(challengewins)
+export(chefdetails)
+export(episodeinfo)
+export(judges)
+export(rewards)
