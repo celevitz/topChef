@@ -1,0 +1,39 @@
+
+rm(list=ls())
+
+#' Chef Details
+#'
+#' A dataset containing information on each Chef for each season. As of now, it has data for all Top Chef US seasons, Top Chef Masters (US), and one season of Top Chef Canada.
+#'
+#' @docType data
+#'
+#' @usage data(chefdetails)
+#'
+#' @format This data frame contains the following columns:
+#' \describe{
+#'   \item{\code{name}}{Chef name (full name)}
+#'   \item{\code{chef}}{Shorter version of the chef's name}
+#'   \item{\code{hometown}}{Chef's hometown, if known}
+#'   \item{\code{city}}{City in which the Chef lived at the time of show}
+#'   \item{\code{state}}{State in which the Chef lived at the time of the show}
+#'   \item{\code{age}}{Age of Chef at the time of the show}
+#'   \item{\code{szn}}{Name of season}
+#'   \item{\code{sznnumber}}{Season number}
+#'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters (listed as US Masters); Top Chef Canada (listed as Canada)}
+#'   \item{\code{placement}}{Final result of the Chef.}
+#'   \item{\code{poc}}{Flag for whether the Chef is a person of color. Will be blank if they are not}
+#'   \item{\code{occupation}}{Occupation of Chef at time of show, if known}
+#'   \item{\code{gender}}{Gender of Chef}
+#' }
+#'
+#' @details If the original \code{castaway_id} is desired simply extract the digits from the ID e.g.
+#' \code{castaway_id = as.numeric(str_extract(castaway_id, '[:digit:]+'))} in a mutate step.
+#'
+#' @import tidyverse
+#'
+#' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
+#' @examples
+#' library(tidyverse)
+#' chefdetails %>%
+#'   filter(szn == "World All Stars")
+"Chef Details"
