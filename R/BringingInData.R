@@ -12,6 +12,7 @@
 #   Install Package:           'Cmd + Shift + B'
 #   Check Package:             'Cmd + Shift + E'
 #   Test Package:              'Cmd + Shift + T'
+#   Knit                       'Cmd + Shift + K'
 
 # Check for things that don't yet have documentation library(tools); undoc(topChef)
 
