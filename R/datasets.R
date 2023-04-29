@@ -166,7 +166,7 @@
 #' @examples
 #' library(tidyverse)
 #' judges %>%
-#'   filter(Guest.Judge == "Eric Ripert") %>%
+#'   filter(guestjudge == "Eric Ripert") %>%
 #'   group_by(challenge_type) %>%
 #'   summarise(n=n())
 "judges"
