@@ -102,7 +102,9 @@
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(tidyverse)
-#' challengewins %>% group_by(outcome) %>% summarise(n=n())
+#' challengewins %>%
+#'   group_by(outcome) %>%
+#'   summarise(n=n())
 "challengewins"
 
 
@@ -164,7 +166,10 @@
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(tidyverse)
-#' judges %>% filter(Guest.Judge == "Eric Ripert") %>% group_by(challenge_type) %>% summarise(n=n())
+#' judges %>%
+#'   filter(Guest.Judge == "Eric Ripert") %>%
+#'   group_by(challenge_type) %>%
+#'   summarise(n=n())
 "judges"
 
 
@@ -195,5 +200,9 @@
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(tidyverse)
-#' rewards %>% filter(reward_type == "Money") %>% mutate(reward=as.numeric(reward)) %>% group_by(szn) %>% summarise(total=sum(reward))
+#' rewards %>%
+#'   filter(reward_type == "Money") %>%
+#'   mutate(reward=as.numeric(reward)) %>%
+#'   group_by(szn) %>%
+#'   summarise(total=sum(reward))
 "rewards"
