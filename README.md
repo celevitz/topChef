@@ -29,7 +29,7 @@ devtools::install.packages("topChef")
 # Dataset overview
 ## Chef details
 A table containing information about Chefs for each season they are in, including placement and gender. For some but not all seasons, there is also information on hometown, current city of residence, age, a flag for whether they are a person of color, and their occupation.
-```{r}
+```r
 print(chefdetails %>% filter(szn == "World All Stars"))
 ```
 
