@@ -1,6 +1,5 @@
 
 library(testthat)        # load testthat package
-context("topChef")
 
 # 1. Check that there aren't NAs where there shouldn't be
   ## A. Chef Details
