@@ -17,7 +17,7 @@
 
 rm(list=ls())
 
-library(tidyverse); library(openxlsx); library(usethis)
+library(tidyverse); library(openxlsx); library(usethis); library(rmarkdown)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
