@@ -13,6 +13,8 @@
 #   Check Package:             'Cmd + Shift + E'
 #   Test Package:              'Cmd + Shift + T'
 
+# Check for things that don't yet have documentation library(tools); undoc(topChef)
+
 rm(list=ls())
 
 library(tidyverse); library(openxlsx); library(usethis)
