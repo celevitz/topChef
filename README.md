@@ -1,9 +1,5 @@
 # topChef
+Top Chef is a collection of data sets detailing events across all seasons of Top Chef US and Top Chef Masters US and one season of Top Chef Canada. It includes Chef information, challenge descriptions, challenge winners, episode information, guest judge names, and reward/prize information. 
 
-# of seasons
-usseasons <- epiinfo %>% filter(series == "US") %>% select(szn) %>% distinct() %>% nrow()
-usmastersseasons <- epiinfo %>% filter(series == "US Masters") %>% select(szn) %>% distinct() %>% nrow()
-canadaseasons <- epiinfo %>% filter(series == "Canada") %>% select(szn) %>% distinct() %>% nrow()
-
-
-`r usseasons` seasons of Top Chef US. `r usmastersseasons` seasons of Top Chef Masters US. `r canadaseasons` season of Top Chef Canada. 
+# References
+Data were collected manually while watching each season of Top Chef. Additional data were collected from https://en.wikipedia.org/wiki/Top_Chef. My Top Chef data journey was inspired by https://topchefstats.com/. 
