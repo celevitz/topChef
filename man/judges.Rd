@@ -13,7 +13,7 @@ This data frame contains the following columns:
   \item{\code{episode}}{Episode number}
   \item{\code{challenge_type}}{Challenge type: qualifying challenge, elimination, quickfire, sudden death quickfire, quickfire elimination, battle of the sous chefs}
   \item{\code{outcome_type}}{Is the challenge run as a team or as an individual?}
-  \item{\code{Guest.Judge}}{Name of guest judge}
+  \item{\code{guestjudge}}{Name of guest judge}
   \item{\code{competed_on_TC}}{Will have a value of Yes if they competed on a season of Top Chef}
   \item{\code{other_shows}}{Information about other shows that this individual has appeared on}
 }
