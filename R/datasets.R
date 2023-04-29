@@ -1,4 +1,4 @@
-#' Chef Details
+#' chefdetails
 #'
 #' A dataset containing information on each Chef for each season. As of now, it has data for all Top Chef US seasons, Top Chef Masters (US), and one season of Top Chef Canada.
 #'
@@ -30,10 +30,10 @@
 #' library(tidyverse)
 #' chefdetails %>%
 #'   filter(szn == "World All Stars")
-"Chef Details"
+"chefdetails"
 
 
-#' Challenge Descriptions
+#' challengedescriptions
 #'
 #' A dataset containing information about each challenge that the Chefs compete in
 #'
@@ -71,11 +71,11 @@
 #'    group_by(series,szn,outcome_type) %>%
 #'    summarise(n=n()) %>%
 #'    pivot_wider(names_from=outcome_type,values_from=n)
-"Challenge Descriptions"
+"challengedescriptions"
 
 
 
-#' Challenge Results
+#' challengewins
 #'
 #' A dataset containing win and loss data for each chef in each episode
 #'
@@ -103,12 +103,12 @@
 #' @examples
 #' library(tidyverse)
 #' challengewins %>% group_by(outcome) %>% summarise(n=n())
-"Challenge Results"
+"challengewins"
 
 
 
 
-#' Episode information
+#' episodeinfo
 #'
 #' A dataset containing information about each episode
 #'
@@ -134,11 +134,11 @@
 #' @examples
 #' library(tidyverse)
 #' episodeinfo %>% filter(szn=="World All Stars")
-"Episode Information"
+"episodeinfo"
 
 
 
-#' Judges
+#' judges
 #'
 #' A dataset containing information about who were the guest judges for each challenge
 #'
@@ -165,17 +165,17 @@
 #' @examples
 #' library(tidyverse)
 #' judges %>% filter(Guest.Judge == "Eric Ripert") %>% group_by(challenge_type) %>% summarise(n=n())
-"Judges"
+"judges"
 
 
 
-#' Rewards
+#' rewards
 #'
 #' A dataset containing information about rewards and prizes won by challenge
 #'
 #' @docType data
 #'
-#' @usage data(judges)
+#' @usage data(rewards)
 #'
 #' @format This data frame contains the following columns:
 #' \describe{
@@ -196,4 +196,4 @@
 #' @examples
 #' library(tidyverse)
 #' rewards %>% filter(reward_type == "Money") %>% mutate(reward=as.numeric(reward)) %>% group_by(szn) %>% summarise(total=sum(reward))
-"Rewards"
+"rewards"
