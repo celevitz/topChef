@@ -11,6 +11,8 @@
 #
 #   Install Package:           'Cmd + Shift + B'
 #   Check Package:             'Cmd + Shift + E'
+#     Other checks:             rhub::check_for_cran()
+#                               devtools::check()
 #   Test Package:              'Cmd + Shift + T'
 #   Knit                       'Cmd + Shift + K'
 
