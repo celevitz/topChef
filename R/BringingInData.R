@@ -22,16 +22,16 @@ library(tidyverse); library(openxlsx); library(usethis); library(rmarkdown)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
-chefdetails <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=1)
-challengewins <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=2)
+chefdetails <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=1))
+challengewins <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=2))
   # drop the ones that haven't yet aired
   challengewins <- challengewins %>% filter(!(szn == "World All Stars" & episode %in% c(9,10)))
-challengedescriptions <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3)
+challengedescriptions <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3))
   # drop the ones that haven't yet aired
   challengedescriptions <- challengedescriptions %>% filter(!(is.na(outcome_type)))
-rewards <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4)
-judges <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5)
-episodeinfo <- read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6)
+rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4))
+judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
+episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
   # drop the ones that haven't yet aired
   episodeinfo <- episodeinfo %>% filter(!(is.na(air_date)))
   # fix the date
