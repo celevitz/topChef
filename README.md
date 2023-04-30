@@ -16,16 +16,6 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpRTEOOG/remotes17e0b5074dedd/celevitz-topChef-625204b/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpRTEOOG/remotes17e0b5074dedd/celevitz-topChef-625204b/DESCRIPTION’
-#>   ─  preparing ‘topChef’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘topChef_0.1.0.tar.gz’
-#>      
-#> 
 ```
 
 ## References & Acknowlegements
@@ -201,7 +191,7 @@ episodeinfo
 
 #### Visualization
 
-![](README_files/figure-gfm/Elimination%20wins%20for%20Top%20Chefs%20visualization-1.png)<!-- -->
+![](README_files/figure-gfm/EliminationWinsForTopChefsVisualization-1.png)<!-- -->
 
 #### Code
 

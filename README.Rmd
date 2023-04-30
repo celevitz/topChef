@@ -5,7 +5,7 @@ output: github_document
 
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, message=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -20,7 +20,7 @@ topChef is a collection of data sets detailing events across all seasons of Top 
 ## Installation
 
 Not yet on CRAN. So please use: *devtools::install.packages("celevitz/topChef")*
-```{r Install package,message=FALSE}
+```{r InstallPackage , message=FALSE,warning=FALSE}
 devtools::install_github("celevitz/topChef")
 ```
 
