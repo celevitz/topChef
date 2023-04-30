@@ -20,7 +20,9 @@ topChef is a collection of data sets detailing events across all seasons of Top 
 ## Installation
 
 Not yet on CRAN. So please use: *devtools::install.packages("celevitz/topChef")*
-
+```{r Install package,message=FALSE}
+devtools::install_github("celevitz/topChef")
+```
 
 ## References & Acknowlegements
 
@@ -47,36 +49,76 @@ Across datasets, key joining variables include:
 A tibble containing information about Chefs for each season they are in, including placement and gender. For some but not all seasons, there is also information on hometown, current city of residence, age, a flag for whether they are a person of color, and their occupation.
 
 ```{r Chef details table , eval=TRUE} 
-as_tibble(chefdetails )
+chefdetails 
 ```
 
 ### Challenge descriptions
 A tibble containing information about each challenge that the Chefs compete in.
 ```{r Challenge descriptions table , eval=TRUE} 
-as_tibble(challengedescriptions )
+challengedescriptions 
 ```
 
 ### Challenge wins
 A tibble containing win and loss data for each chef in each episode.
 ```{r Challenge results table , eval=TRUE} 
-as_tibble(challengewins) 
+challengewins
 ```
 
 ### Judges
 A tibble containing information about who were the guest judges for each challenge.
 ```{r Guest Judges table , eval=TRUE} 
-as_tibble(judges )
+judges 
 ```
 
 ### Rewards
 A tibble containing information about rewards and prizes won by challenge.
 ```{r Rewards table , eval=TRUE} 
-as_tibble(rewards) 
+rewards
 ```
 
 ### Episode info
 A tibble containing information about each episode.
 ```{r Episode information table , eval=TRUE} 
-as_tibble(episodeinfo )
+episodeinfo 
+```
+
+## Examples
+
+### How many elimination challenge wins did Top Chef winners have?
+```{r Elimination wins for Top Chefs , eval=TRUE,echo=TRUE} 
+library(ggplot2)
+
+chefdetails %>% 
+  # Keep just winners and relevant variables (just the winning chef's name)
+  filter(placement == 1) %>%
+  select(chef, gender,series,szn) %>%
+  # Bring on the challenge result data
+  left_join(challengewins) %>%
+  # Keep just elimination & sudden death quickfire challenges
+  filter(challenge_type %in% c("Elimination","Quickfire Elimination","Sudden Death Quickfire")) %>%
+  # Get the number of wins for each person
+  group_by(series,szn,sznnumber,chef,gender) %>%
+  filter(outcome %in% c("WIN","WINNER")) %>%
+  summarise(wins=n()) %>%
+  # Plot
+  ggplot(aes(x=wins,y=chef,color=gender,fill=gender,shape=series)) +
+    geom_point(size=4) +
+    theme_minimal() + 
+    # beautification
+    scale_color_manual(values=c("#1170AA", "#A3ACB9")) +
+    scale_shape_manual(values=c(0,17,1)) +
+    scale_x_continuous(name="Number of elimination wins", 
+                         breaks=seq(1,9,1),
+                         limits=c(.8,9.5),
+                         labels=seq(1,9,1)) +
+    theme(panel.grid = element_blank(),
+            title=element_text(size=12),
+            axis.line.x=element_line(color="black"),
+            axis.ticks.x=element_line(color="black"),
+            axis.text.x=element_text(size=12),
+            axis.title.x=element_text(size=12)) +
+  labs(title="Number of elimination wins of Top Chefs"
+       ,caption="I should have ordered by # of wins...")
+    
 ```
 
