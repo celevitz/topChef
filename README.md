@@ -16,6 +16,16 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpRTEOOG/remotes17e0b5074dedd/celevitz-topChef-625204b/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpRTEOOG/remotes17e0b5074dedd/celevitz-topChef-625204b/DESCRIPTION’
+#>   ─  preparing ‘topChef’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘topChef_0.1.0.tar.gz’
+#>      
+#> 
 ```
 
 ## References & Acknowlegements
@@ -189,6 +199,12 @@ episodeinfo
 
 ### How many elimination challenge wins did Top Chef winners have?
 
+#### Visualization
+
+![](README_files/figure-gfm/Elimination%20wins%20for%20Top%20Chefs%20visualization-1.png)<!-- -->
+
+#### Code
+
 ``` r
 library(ggplot2)
 
@@ -223,9 +239,5 @@ chefdetails %>%
             axis.title.x=element_text(size=12)) +
   labs(title="Number of elimination wins of Top Chefs"
        ,caption="I should have ordered by # of wins...")
-#> Joining with `by = join_by(chef, series, szn)`
-#> `summarise()` has grouped output by 'series', 'szn', 'sznnumber', 'chef'. You
-#> can override using the `.groups` argument.
+    
 ```
-
-![](README_files/figure-gfm/Elimination%20wins%20for%20Top%20Chefs%20-1.png)<!-- -->
