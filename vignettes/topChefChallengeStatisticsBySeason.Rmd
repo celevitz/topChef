@@ -21,7 +21,7 @@ topChef provides the information that you need to summarize challenge statistics
 
 ## Challenge statistic summary
 
-```{r challenge statistics do not show code but show result, eval=TRUE,echo=FALSE,message=FALSE} 
+```{r ChallengeStatisticsVisualization, eval=TRUE,echo=FALSE,message=FALSE} 
 library(gt); library(topChef); library(tidyverse)
 
     currentseason <- 20
@@ -145,7 +145,7 @@ library(gt); library(topChef); library(tidyverse)
 
 ## Code
 
-```{r challenge statistics show the code , eval=FALSE,echo=TRUE,message=FALSE} 
+```{r ChallengeStatisticsShowCode , eval=FALSE,echo=TRUE,message=FALSE} 
 library(gt); library(topChef); library(tidyverse)
 
     currentseason <- 20
