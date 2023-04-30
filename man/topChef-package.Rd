@@ -6,7 +6,7 @@
 \alias{topChef-package}
 \title{topChef: Top Chef Data}
 \description{
-Several datasets which describe the chef contestants in Top Chef, the challenges that they compete in, and the results of those challenges. This data is useful for practicing data wrangling, graph analytics and analysing how each season of Top Chef played out.
+Several datasets which describe the chef contestants in Top Chef, the challenges that they compete in, and the results of those challenges. This data is useful for practicing data wrangling, graphing, and analyzing how each season of Top Chef played out.
 }
 \seealso{
 Useful links:

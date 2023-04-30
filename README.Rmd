@@ -86,7 +86,7 @@ episodeinfo
 
 ### How many elimination challenge wins did Top Chef winners have?
 #### Visualization
-```{r Elimination wins for Top Chefs visualization, eval=TRUE,echo=FALSE,message=FALSE} 
+```{r EliminationWinsForTopChefsVisualization, eval=TRUE,echo=FALSE,message=FALSE} 
 library(ggplot2)
 
 chefdetails %>% 
@@ -125,7 +125,7 @@ chefdetails %>%
 
 
 #### Code
-```{r Elimination wins for Top Chefs code, eval=FALSE,echo=TRUE,message=FALSE} 
+```{r EliminationWinsForTopChefsCode, eval=FALSE,echo=TRUE,message=FALSE} 
 library(ggplot2)
 
 chefdetails %>% 
