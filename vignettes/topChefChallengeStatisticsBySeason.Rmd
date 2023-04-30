@@ -90,7 +90,7 @@ library(gt); library(topChef); library(tidyverse)
       rename(Chef = chef) %>%
       gt() %>%
           tab_spanner_delim(delim = "_") %>%
-          cols_hide(columns=in.competition) %>%
+          cols_hide(columns=c(in.competition,series)) %>%
           tab_source_note(source_note = "*Data notes: LOW also includes when the chefs were eliminated (e.g., Dale). Data and code available upon request /// Twitter @carlylevitz") %>%
           tab_row_group(label = "Eliminated",rows = in.competition==0) %>%
           tab_row_group(label = "In Last Chance Kitchen",rows = in.competition==1) %>%
@@ -214,7 +214,7 @@ library(gt); library(topChef); library(tidyverse)
       rename(Chef = chef) %>%
       gt() %>%
           tab_spanner_delim(delim = "_") %>%
-          cols_hide(columns=in.competition) %>%
+          cols_hide(columns=c(in.competition,series)) %>%
           tab_source_note(source_note = "*Data notes: LOW also includes when the chefs were eliminated (e.g., Dale). Data and code available upon request /// Twitter @carlylevitz") %>%
           tab_row_group(label = "Eliminated",rows = in.competition==0) %>%
           tab_row_group(label = "In Last Chance Kitchen",rows = in.competition==1) %>%
