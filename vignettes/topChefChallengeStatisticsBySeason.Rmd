@@ -2,7 +2,7 @@
 title: "topChef Challenge Statistics by Season"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{topChef}
+  %\VignetteIndexEntry{topChef Challenge Statistics by Season}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
