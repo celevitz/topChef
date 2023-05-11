@@ -5,3 +5,4 @@
 ^Meta$
 ^dev$
 README.Rmd
+^cran-comments\.md$
