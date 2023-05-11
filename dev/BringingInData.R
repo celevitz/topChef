@@ -48,4 +48,7 @@ save(rewards, file = "data/rewards.rda")
 save(judges, file = "data/judges.rda")
 save(episodeinfo, file = "data/episodeinfo.rda")
 
-
+# Check for CRAN specific requirements
+#results <- rhub::check_for_cran()
+#results$cran_summary()
+#usethis::use_cran_comments()
