@@ -5,4 +5,5 @@
 ^Meta$
 ^dev$
 ^README.Rmd
+^README_files$
 ^cran-comments\.md$
