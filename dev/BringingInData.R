@@ -26,11 +26,8 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 
 chefdetails <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=1))
 challengewins <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=2))
-  # drop the ones that haven't yet aired
-  challengewins <- challengewins %>% filter(!(szn == "World All Stars" & episode %in% c(10)))
+
 challengedescriptions <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3))
-  # drop the ones that haven't yet aired
-  challengedescriptions <- challengedescriptions %>% filter(!(is.na(outcome_type)))
 rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4))
 judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
 episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
