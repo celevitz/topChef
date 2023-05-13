@@ -4,7 +4,6 @@
 ^doc$
 ^Meta$
 ^dev$
-^NAMESPACE_archive
 ^README.Rmd
 ^README_files$
 ^cran-comments\.md$
