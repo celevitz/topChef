@@ -87,6 +87,8 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls,numberofqui
        # create summary stats by chef
        # get counts of wins, highs, and lows
        # don't combine outs & lows because we want to count those differently in the index
+       # for the currently airing season, they don't yet have a placement; they'll get dropped in this aggregate function if they are empty; fill them in for now
+       statsbynumberofchalls$placement[is.na(statsbynumberofchalls$placement)] <- 1.5
         statsbynumberofchalls$tempcount <- 1
         statsbynumberofchalls <- aggregate(statsbynumberofchalls$tempcount ,by=list(statsbynumberofchalls$chef,statsbynumberofchalls$szn,statsbynumberofchalls$sznnumber,statsbynumberofchalls$series,statsbynumberofchalls$challenge_type,statsbynumberofchalls$outcome,statsbynumberofchalls$placement) ,FUN=sum)
         names(statsbynumberofchalls) <- c("chef","szn","sznnumber","series","challenge_type","outcome","placement","count")
