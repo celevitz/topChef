@@ -31,10 +31,10 @@ challengedescriptions <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",
 rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4))
 judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
 episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
-  # drop the ones that haven't yet aired
-  episodeinfo <- episodeinfo %>% filter(!(is.na(air_date)))
   # fix the date
   episodeinfo$air_date <- as.Date(as.numeric(episodeinfo$air_date), origin = "1899-12-30")
+  # drop the ones that haven't yet aired
+  episodeinfo <- episodeinfo[!(is.na(episodeinfo$air_date)) & episodeinfo$air_date != "",]
 
 ## save things as RDA
 
