@@ -162,3 +162,77 @@ chefdetails %>%
     
 ```
 
+### How do past seasons compare to how Season 20 is currently going?
+#### Visualization
+```{r Viz_IndexAllSeasons_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
+library(topChef); library(ggplot2); library(tidyverse)
+ ## Get the index for all seasons
+    
+    allseasons <- weightedindex("US",1,10,7)
+    for (season in seq(1,20,1)) {
+      allseasons <- rbind(allseasons,weightedindex("US",season,10,7))
+      
+    }
+```
+
+```{r Viz_IndexAllSeasons, eval=TRUE,echo=FALSE,message=FALSE} 
+    # drop unneeded variables
+    allseasons <- allseasons[,c("chef","szn","sznnumber","placement","indexWeight")]
+    
+  ## Graph it
+    # Add remaining Season 20 chefs to placement of 1.5
+    # And, instead of showing that as placement, put it as current season
+    allseasons$placement[is.na(allseasons$placement)] <- 1.5
+    allseasons$label <- allseasons$placement
+    allseasons$label[allseasons$placement == 1.5] <- "Current\nseason"
+    
+    # for sorting reasons, have the placement as a character
+    allseasons$placementchar[allseasons$placement <= 9] <- 
+      paste0("0",as.character(allseasons$placement[allseasons$placement <= 9]))
+    allseasons$placementchar[allseasons$placement > 9] <- 
+      as.character(allseasons$placement[allseasons$placement > 9])
+    
+  # Distribution of scores at this stage of the competition
+    allseasons %>%
+      ggplot(aes(x=szn,y=indexWeight) ) +
+      geom_boxplot() +
+      # add horizontal line at 0
+      geom_rect(aes(xmin=0
+                    ,xmax=20
+                    ,ymin=-.5
+                    ,ymax=0.5)
+                ,fill="#ffbc69") +
+      theme_minimal() +
+      labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
+           ,subtitle="Comparing All Chefs Across All Seasons\n"
+           ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
+      theme_minimal() +
+      ylab("Index score") + xlab("") +
+      theme(panel.grid = element_blank() 
+            ,axis.text.x=element_text(angle=90)
+            )
+      
+   # Top Four: Distribution of scores at this stage of the competition
+    allseasons[allseasons$placement <= 4,]  %>%
+      
+      ggplot(aes(x=placement,y=indexWeight,group=label) ) +
+      geom_boxplot() +
+      # add horizontal line at 0
+      geom_rect(aes(xmin=0
+                    ,xmax=20
+                    ,ymin=-.5
+                    ,ymax=0.5)
+                ,fill="#ffbc69") +
+      theme_minimal() +
+      labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
+           ,subtitle="Comparing Top Four Chefs Across All Seasons\n"
+           ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
+      theme_minimal() +
+      ylab("Index score") + xlab("") +
+      theme(panel.grid = element_blank() 
+            ,axis.text.x=element_text(angle=90)
+            )
+      
+    
+
+```

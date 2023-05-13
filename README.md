@@ -70,7 +70,7 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 631 × 17
+#> # A tibble: 634 × 17
 #>    szn      sznnumber series episode challenge_type outcome_type
 #>    <chr>        <dbl> <chr>    <dbl> <chr>          <chr>       
 #>  1 Kentucky        16 US           1 Quickfire      Team        
@@ -83,7 +83,7 @@ challengedescriptions
 #>  8 Kentucky        16 US           4 Elimination    Team        
 #>  9 Kentucky        16 US           5 Elimination    Team        
 #> 10 Kentucky        16 US           6 Elimination    Individual  
-#> # ℹ 621 more rows
+#> # ℹ 624 more rows
 #> # ℹ 11 more variables: challenge.description <chr>, shop.time <chr>,
 #> #   shop.budget <chr>, prep_time <dbl>, cook_time <dbl>,
 #> #   product.placement <chr>, advantage <chr>,
@@ -97,7 +97,7 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,512 × 9
+#> # A tibble: 9,544 × 9
 #>    szn      sznnumber series episode in.competition chef  challenge_type outcome
 #>    <chr>        <dbl> <chr>    <dbl> <lgl>          <chr> <chr>          <chr>  
 #>  1 All Sta…         8 US           1 TRUE           Ange… Quickfire      LOW    
@@ -110,7 +110,7 @@ challengewins
 #>  8 All Sta…         8 US           1 TRUE           Fabi… Quickfire      LOW    
 #>  9 All Sta…         8 US           1 TRUE           Jami… Quickfire      LOW    
 #> 10 All Sta…         8 US           1 TRUE           Jenn… Quickfire      HIGH   
-#> # ℹ 9,502 more rows
+#> # ℹ 9,534 more rows
 #> # ℹ 1 more variable: rating <dbl>
 ```
 
@@ -121,7 +121,7 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 744 × 9
+#> # A tibble: 748 × 9
 #>    szn           sznnumber series episode challenge_type outcome_type guestjudge
 #>    <chr>             <dbl> <chr>    <dbl> <chr>          <chr>        <chr>     
 #>  1 All Stars: N…         8 US           1 Quickfire      Team         Tom Colic…
@@ -134,7 +134,7 @@ judges
 #>  8 All Stars: N…         8 US           4 Quickfire      Individual   Tony Mant…
 #>  9 All Stars: N…         8 US           4 Elimination    Team         Tony Mant…
 #> 10 All Stars: N…         8 US           5 Quickfire      Individual   Tom Colic…
-#> # ℹ 734 more rows
+#> # ℹ 738 more rows
 #> # ℹ 2 more variables: competed_on_TC <chr>, other_shows <chr>
 ```
 
@@ -145,7 +145,7 @@ challenge.
 
 ``` r
 rewards
-#> # A tibble: 322 × 9
+#> # A tibble: 326 × 9
 #>    szn   sznnumber series episode challenge_type outcome_type reward_type reward
 #>    <chr>     <dbl> <chr>    <dbl> <chr>          <chr>        <chr>       <chr> 
 #>  1 All …         8 US           1 Elimination    Individual   Money       10000…
@@ -158,7 +158,7 @@ rewards
 #>  8 All …         8 US           4 Elimination    Team         Prize       Trip …
 #>  9 All …         8 US           5 Quickfire      Individual   Prize       Toyot…
 #> 10 All …         8 US           6 Elimination    Team         Prize       Trip …
-#> # ℹ 312 more rows
+#> # ℹ 316 more rows
 #> # ℹ 1 more variable: chef <chr>
 ```
 
@@ -168,21 +168,10 @@ A tibble containing information about each episode.
 
 ``` r
 episodeinfo 
-#> # A tibble: 352 × 8
-#>    szn   sznnumber series overall.episode.number episode episode_name air_date  
-#>    <chr>     <dbl> <chr>                   <dbl>   <dbl> <chr>        <date>    
-#>  1 Kent…        16 US                        232       1 "\"The Fast… 2018-12-06
-#>  2 Kent…        16 US                        233       2 "\"Bourbon,… 2018-12-13
-#>  3 Kent…        16 US                        234       3 "\"Naughty … 2018-12-20
-#>  4 Kent…        16 US                        235       4 "\"Surprise… 2018-12-27
-#>  5 Kent…        16 US                        236       5 "\"Restaura… 2019-01-03
-#>  6 Kent…        16 US                        237       6 "\"Roaring … 2019-01-10
-#>  7 Kent…        16 US                        238       7 "\"Carne!\"" 2019-01-17
-#>  8 Kent…        16 US                        239       8 "\"Whatever… 2019-01-24
-#>  9 Kent…        16 US                        240       9 "\"Music Ci… 2019-01-31
-#> 10 Kent…        16 US                        241      10 "\"Hoop Dre… 2019-02-07
-#> # ℹ 342 more rows
-#> # ℹ 1 more variable: `#.of.competitors` <dbl>
+#> # A tibble: 0 × 8
+#> # ℹ 8 variables: szn <chr>, sznnumber <dbl>, series <chr>,
+#> #   overall.episode.number <dbl>, episode <dbl>, episode_name <chr>,
+#> #   air_date <date>, #.of.competitors <dbl>
 ```
 
 ## Examples
@@ -231,3 +220,9 @@ chefdetails %>%
        ,caption="I should have ordered by # of wins...")
     
 ```
+
+### How do past seasons compare to how Season 20 is currently going?
+
+#### Visualization
+
+![](README_files/figure-gfm/Viz_IndexAllSeasons-1.png)<!-- -->![](README_files/figure-gfm/Viz_IndexAllSeasons-2.png)<!-- -->
