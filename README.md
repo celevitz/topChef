@@ -174,7 +174,7 @@ episodeinfo
 #> #   air_date <date>, #.of.competitors <dbl>
 ```
 
-## Examples
+## Example: Using multiple datasets
 
 ### How many elimination challenge wins did Top Chef winners have?
 
@@ -221,8 +221,103 @@ chefdetails %>%
     
 ```
 
-### How do past seasons compare to how Season 20 is currently going?
+## Examples: Using the `weightedindex` function
 
-#### Visualization
+### 
 
-![](README_files/figure-gfm/Viz_IndexAllSeasons-1.png)<!-- -->![](README_files/figure-gfm/Viz_IndexAllSeasons-2.png)<!-- -->
+The `weightedindex` function takes the following parameters:
+
+- `series`: US, US Masters, or Canada
+- `seasonnumber`: Values between 1 and 20 for Top Chef US; 1 through 5
+  for US Masters; and 6 for Canada
+- `numberofelimchalls`: Number of elimination challenges through which
+  you want to calculate the index
+- `numberofquickfires`: Number of quickfire challenges through which you
+  want to calculate the index
+
+The following examples are looking across all seasons through the point
+in the season where there were 10 elimination challenges or 7 quickfire
+challenges.
+
+#### Visualizations
+
+The circles represent outliers: Michael in Las Vegas, Richard in All
+Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar
+within the rectangles are the averages of chefs scores in that season.
+
+![](README_files/figure-gfm/Viz_IndexAllSeasons-1.png)<!-- -->
+
+This example shows the index scores for the Top Four chefs in all
+seasons with the remaining six chefs from Top Chef World All Stars. Ali,
+Buddha, and Amar thus far have the highest index scores.
+
+![](README_files/figure-gfm/Viz_IndexTopFour-1.png)<!-- -->
+
+#### Code
+
+``` r
+library(topChef); library(ggplot2); library(tidyverse)
+ ## Get the index for all seasons
+    
+    allseasons <- weightedindex("US",1,10,7)
+    for (season in seq(1,20,1)) {
+      allseasons <- rbind(allseasons,weightedindex("US",season,10,7))
+      
+    }
+
+    # drop unneeded variables
+    allseasons <- allseasons[,c("chef","szn","sznnumber","placement","indexWeight")]
+    
+  ## Graph it
+    # for sorting reasons, have the season be a character
+    allseasons$seasonnumchar[allseasons$sznnumber <= 9] <- 
+      paste0("0",as.character(allseasons$sznnumber[allseasons$sznnumber <= 9]))
+    allseasons$seasonnumchar[allseasons$sznnumber > 9] <- 
+      as.character(allseasons$sznnumber[allseasons$sznnumber > 9])
+    
+    # for sorting reasons, have the placement as a character
+    allseasons$placementchar[allseasons$placement <= 9] <- 
+      paste0("0",as.character(allseasons$placement[allseasons$placement <= 9]))
+    allseasons$placementchar[allseasons$placement > 9] <- 
+      as.character(allseasons$placement[allseasons$placement > 9])
+    
+  # Distribution of scores at this stage of the competition
+    allseasons %>%
+      ggplot(aes(x=seasonnumchar,y=indexWeight) ) +
+      geom_boxplot() +
+      # add horizontal line at 0
+      geom_rect(aes(xmin=0
+                    ,xmax=20
+                    ,ymin=-.5
+                    ,ymax=0.5)
+                ,fill="#ffbc69") +
+      theme_minimal() +
+      labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
+           ,subtitle="Comparing All Chefs Across All Seasons\n"
+           ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
+      scale_x_discrete(labels=unique(allseasons$szn[order(allseasons$sznnumber)])) +
+      theme_minimal() +
+      ylab("Index score") + xlab("") +
+      theme(panel.grid = element_blank() 
+            ,axis.text.x=element_text(angle=90)
+            )
+  
+   # Top Four: Distribution of scores at this stage of the competition
+    allseasons[allseasons$placement <= 4,]  %>%
+      ggplot(aes(x=placement,y=indexWeight,label=chef) ) +
+      # add horizontal line at 0
+      geom_rect(aes(xmin=.5 ,xmax=4.5 ,ymin=-.2 ,ymax=0.2) ,fill="#ffbc69") +
+      geom_text(size=2) +
+      theme_minimal() +
+      labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
+           ,subtitle="Comparing Top Four Chefs Across All Seasons\n"
+           ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
+      scale_x_continuous(lim=c(.5,4.5),breaks=c(1,1.5,2,3,4),labels=c("1","Current\nseason","2","3","4")) +
+      theme_minimal() +
+      ylab("Index score") + xlab("Placement") +
+      theme(panel.grid = element_blank() 
+            
+            )
+      
+    
+```
