@@ -16,6 +16,16 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpNQRHUZ/remotesba774a652eb5/celevitz-topChef-4986636/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpNQRHUZ/remotesba774a652eb5/celevitz-topChef-4986636/DESCRIPTION’
+#>   ─  preparing ‘topChef’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘topChef_0.1.0.tar.gz’
+#>      
+#> 
 ```
 
 ## References & Acknowlegements
@@ -168,10 +178,21 @@ A tibble containing information about each episode.
 
 ``` r
 episodeinfo 
-#> # A tibble: 0 × 8
-#> # ℹ 8 variables: szn <chr>, sznnumber <dbl>, series <chr>,
-#> #   overall.episode.number <dbl>, episode <dbl>, episode_name <chr>,
-#> #   air_date <date>, #.of.competitors <dbl>
+#> # A tibble: 356 × 8
+#>    szn   sznnumber series overall.episode.number episode episode_name air_date  
+#>    <chr>     <dbl> <chr>                   <dbl>   <dbl> <chr>        <date>    
+#>  1 Kent…        16 US                        232       1 "\"The Fast… 2018-12-06
+#>  2 Kent…        16 US                        233       2 "\"Bourbon,… 2018-12-13
+#>  3 Kent…        16 US                        234       3 "\"Naughty … 2018-12-20
+#>  4 Kent…        16 US                        235       4 "\"Surprise… 2018-12-27
+#>  5 Kent…        16 US                        236       5 "\"Restaura… 2019-01-03
+#>  6 Kent…        16 US                        237       6 "\"Roaring … 2019-01-10
+#>  7 Kent…        16 US                        238       7 "\"Carne!\"" 2019-01-17
+#>  8 Kent…        16 US                        239       8 "\"Whatever… 2019-01-24
+#>  9 Kent…        16 US                        240       9 "\"Music Ci… 2019-01-31
+#> 10 Kent…        16 US                        241      10 "\"Hoop Dre… 2019-02-07
+#> # ℹ 346 more rows
+#> # ℹ 1 more variable: `#.of.competitors` <dbl>
 ```
 
 ## Example: Using multiple datasets
