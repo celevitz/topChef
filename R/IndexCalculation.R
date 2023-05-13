@@ -20,12 +20,22 @@
 #' @return Tibble of index score for each contestant in that season and their placement
 #'
 #' @import tidyverse
+#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_longer
+#' @importFrom magrittr %>%
+#' @importFrom stats filter
+
+#' @importFrom dplyr case_when
+#' @importFrom dplyr distinct
+#' @importFrom dplyr group_by
+#' @importFrom dplyr left_join
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
+#' @importFrom dplyr ungroup
 #'
 #' @export
 #'
 #'
-
-
 
 weightedindex <- function(seriesname,seasonnumber,numberofelimchalls,numberofquickfires) {
   # Set up the data

@@ -1,0 +1,8 @@
+exportPattern("^[[:alpha:]]+")
+
+import(tidyverse)
+import(dplyr)
+import(gt)
+importFrom(magrittr,"%>%")
+importFrom("stats", "filter")
+export(weightedindex)

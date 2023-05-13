@@ -52,3 +52,4 @@ save(episodeinfo, file = "data/episodeinfo.rda")
 #results <- rhub::check_for_cran()
 #results$cran_summary()
 #usethis::use_cran_comments()
+
