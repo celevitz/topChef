@@ -16,16 +16,6 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpabtDLR/remotese0af27c7582e/celevitz-topChef-d3a4af3/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpabtDLR/remotese0af27c7582e/celevitz-topChef-d3a4af3/DESCRIPTION’
-#>   ─  preparing ‘topChef’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘topChef_0.1.0.tar.gz’
-#>      
-#> 
 ```
 
 ## 3. References & Acknowlegements
@@ -240,6 +230,77 @@ chefdetails %>%
   labs(title="Number of elimination wins of Top Chefs"
        ,caption="I should have ordered by # of wins...")
     
+```
+
+### 4.c. Example using multiple datasets: winning an episode
+
+#### 4.c.i. Visualization
+
+![](README_files/figure-gfm/WonEpisodesViz-1.png)<!-- -->
+
+#### 4.c.ii. Code
+
+``` r
+library(ggplot2); library(topChef)
+## Won the episode
+    # Data set up
+        # how many episodes each chef won in each season
+          wonepi <- challengewins %>% select(!rating) %>%
+                mutate(challenge_type=case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Elimination"
+                                                ,TRUE ~ challenge_type)) %>%
+                filter(outcome %in% c("WIN","WINNER") & challenge_type %in% c("Elimination","Quickfire")) %>%
+                distinct() %>%
+                pivot_wider(names_from=challenge_type,values_from=outcome) %>%
+                filter(Quickfire == "WIN" & (Elimination %in% c("WIN","WINNER"))) %>%
+                group_by(series,szn,sznnumber,chef) %>%
+                summarise(n=n()) %>%
+                select(series,szn,sznnumber,chef,n) %>%
+                distinct() %>%
+                mutate(sznnumberchar=case_when(sznnumber <= 9 ~paste0("0",as.character(sznnumber))
+                                               ,TRUE ~as.character(sznnumber)) ) %>%
+                filter(series == "US") 
+          
+          # visualize
+          wonepivizdata <- wonepi %>%
+            # add on placement of chefs, just for those who have won an episode
+            left_join(topChef::chefdetails %>% select(szn,sznnumber,chef,placement)) %>%
+            mutate(placement=as.character(case_when(placement > 5 ~ 5
+                                                    ,TRUE ~ placement)) 
+                   ,placement = case_when(placement == "5" ~ "5th or lower"
+                                          ,placement == "1" ~ "1st"
+                                          ,placement == "2" ~ "2nd"
+                                          ,placement == "3" ~ "3rd"
+                                          ,placement == "4" ~ "4th"
+                                          ,TRUE ~ placement))
+          
+          wonepivizdata <- wonepivizdata[order(wonepivizdata$sznnumberchar,wonepivizdata$n,wonepivizdata$chef),]
+
+    ## Visualization
+          wonepivizdata %>%
+            ggplot(aes(x=sznnumberchar,y=n,label=chef,fill=factor(placement))) +
+            scale_fill_manual(values=c("#141B41","#1170AA","#5fa2ce","#a3cce9","#ababab")) +
+            geom_col(position="stack",color="white") +
+            geom_text(size = 1, position = position_stack(vjust=.5),angle=15
+                      ,color=case_when(wonepivizdata$placement == "1st"~ "white"
+                                       ,wonepivizdata$placement != "1st" ~ "black"
+                                       ,is.na(wonepivizdata$placement) ~ "black")) +
+            labs(title="A Chef has won an episode in all but Seasons 1, 13, and 16"
+                 ,subtitle="Winning an episode means that one chef won both the Quickfire and Elimination Challenges.\n32 individual chefs have achieved this, including seven winners.\n
+           Brooke is the only one to do it in two different seasons. In all but three seasons, only 
+           one or two chefs won an episode. In seasons four and seven, three chefs won an 
+           episode. In season 11, six chefs won an episode. Stefan is the only chef to have 
+           ever won three episodes in one season. Five chefs have won two episodes in one 
+           season: Angelo S., Ed C., Tiffany D., Brooke W., and Gregory G."
+                 ,caption= "Data: github.com/celevitz/topChef /// Twitter@carlylevitz") +
+            ylab("\n# of times a chef won an episode this season\n") +
+            xlab("Season") +
+            theme_minimal() +
+            theme(panel.grid = element_blank()
+                  ,axis.line.x=element_line(color="black")
+                  ,axis.ticks.x=element_line(color="black")
+                  ,axis.line.y=element_line(color="black")
+                  ,axis.ticks.y=element_line(color="black")  ) +
+            guides(fill = guide_legend(title = "Placement"))
 ```
 
 ## 5. Weighted Index Function
