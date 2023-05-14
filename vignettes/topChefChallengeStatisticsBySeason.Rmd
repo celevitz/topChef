@@ -21,248 +21,80 @@ topChef provides the information that you need to summarize challenge statistics
 
 ## Challenge statistic summary
 
-```{r ChallengeStatisticsVisualization, eval=TRUE,echo=FALSE,message=FALSE} 
-library(gt); library(topChef); library(tidyverse)
+### Visualization
+```{r ChallengeStatisticsVisualization, eval=TRUE,echo=FALSE,message=FALSE } 
+library(topChef); library(tidyverse)
 
-    currentseason <- 20
-    chefdetails <- topChef::chefdetails
-    challengewins <- topChef::challengewins
+    chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
+    challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
     
-    ## Manually list the chefs who are still in Last Chance Kitchen (LCK) at this point
-    ## These are the chefs that have been eliminated. I am not sharing which ones have also 
-    ## now been eliminated in LCK
-    stillinlck <- c("Sylwia Stachyra","Dale MacKay","Charbel Hayek")
-    
-    ## Manually list through what episode has been aired
-    ## and a summary of the episode
-    airedepisode <- 8
-    episodedescription <- "Street food from around the world. Mise en place relay - 
-    and the shortest Elimination Challenge ever! Product placement from Fast X. 
-    Buddha gets his second Quickfire win, and Tom gets his first Elimination win.
-    Sara is in the bottom for the first time."
-
     ##############################################################################
     ## Set up data
     ##############################################################################
-          currentstats <- 
-            ## Who is still in the competition?
-              chefdetails %>% filter(sznnumber == currentseason) %>%
-                mutate(in.competition=ifelse(is.na(placement),2,0)
-                       # call out LCK people
-                       ,in.competition=ifelse(chef %in% stillinlck,1,in.competition)
-                       ) %>%
-                select(chef,in.competition) %>%
-            ## merge on the challenge wins
-              left_join(challengewins %>% 
-                          filter(sznnumber == currentseason) %>%
-                          select(!c(in.competition,rating,episode))) %>%
-            ## get counts of wins, highs, and lows
-            ## and, if they were out, include that as being on the bottom
-              mutate(outcome=ifelse(outcome == "OUT","LOW",outcome)) %>%
-              group_by(chef,challenge_type,outcome,in.competition) %>%
-              mutate(tempcount=1,count=sum(tempcount)) %>%
-              select(!c(tempcount,szn,sznnumber)) %>%
-              distinct() %>%
-            ## reshape the data
-              mutate(outcome=ifelse(is.na(outcome),"IN",outcome)) %>%
-              filter(outcome != "IN") %>%
-              pivot_wider(names_from=challenge_type,values_from=count) %>%
-              ungroup() %>%
-              pivot_wider(names_from=outcome,values_from=c(Elimination,Quickfire)) %>%
-            ## format things for gt()
-              mutate(Elimination_WIN=ifelse(is.na(Elimination_WIN),0,Elimination_WIN),
-                     Elimination_HIGH=ifelse(is.na(Elimination_HIGH),0,Elimination_HIGH),
-                     Elimination_LOW=ifelse(is.na(Elimination_LOW),0,Elimination_LOW),
-                     Quickfire_WIN=ifelse(is.na(Quickfire_WIN),0,Quickfire_WIN),
-                     Quickfire_HIGH=ifelse(is.na(Quickfire_HIGH),0,Quickfire_HIGH),
-                     Quickfire_LOW=ifelse(is.na(Quickfire_LOW),0,Quickfire_LOW)) %>%
-              arrange(desc(in.competition),desc(Elimination_WIN),desc(Elimination_HIGH)
-                      ,desc(Quickfire_WIN),desc(Quickfire_HIGH),Quickfire_LOW) %>%
-              relocate(Elimination_WIN,Elimination_HIGH,Elimination_LOW
-                       ,Quickfire_WIN,Quickfire_HIGH,Quickfire_LOW
-                       ,.after = last_col()) %>%
-              rename(`Elimination_LOW*`=Elimination_LOW)
-
-    ##############################################################################
-    ## Visualize the results
-    ##############################################################################
-     currentstats %>% 
-      rename(Chef = chef) %>%
-      gt() %>%
-          tab_spanner_delim(delim = "_") %>%
-          cols_hide(columns=c(in.competition,series)) %>%
-          tab_source_note(source_note = "*Data notes: LOW also includes when the chefs were eliminated (e.g., Dale). Data and code available upon request /// Twitter @carlylevitz") %>%
-          tab_row_group(label = "Eliminated",rows = in.competition==0) %>%
-          tab_row_group(label = "In Last Chance Kitchen",rows = in.competition==1) %>%
-          tab_row_group(label = "In the competition",rows = in.competition==2) %>%
-          tab_options(data_row.padding = px(1),
-                      column_labels.padding = px(1),
-                      row_group.padding = px(1))  %>%
-          tab_style(style = cell_text(align = "right"),locations = cells_source_notes()) %>%
-          tab_style(style = cell_text(align = "left",weight="bold")
-                                      ,locations = cells_title(groups="title")) %>%
-          tab_style(style = cell_text(align = "left",weight="bold")
-                                      ,locations = cells_row_groups() ) %>%
-          tab_style(style = cell_text(align = "left")
-                                      ,locations = cells_title(groups="subtitle")) %>%
-          tab_style(style = cell_text(align = "center")
-                                      ,locations = cells_body(columns=!Chef)) %>%
-          tab_style(style = cell_text(align = "center",weight="bold")
-                                      ,locations = cells_column_labels(columns=!Chef)) %>%
-          tab_style(style = cell_text(align = "left",weight="bold")
-                                      ,locations = cells_column_labels(columns=Chef)) %>%
-          tab_style(style = cell_text(align = "center",weight="bold")
-                                      ,locations = cells_column_spanners()) %>%
-          tab_options(
-            row_group.background.color = "gray95",
-            table.font.color = "#323232",
-            table_body.hlines.color = "#323232",
-            table_body.border.top.color = "#323232",
-            heading.border.bottom.color = "#323232",
-            row_group.border.top.color = "#323232",
-            column_labels.border.bottom.color = "#323232",
-            row_group.border.bottom.color = "transparent"
-            ,table.border.top.style = "transparent"
-            ,table.border.bottom.style = "transparent"
-          ) %>%
-          opt_all_caps() %>%
-      cols_width(Chef ~ px(150), everything() ~ px(50) )  %>%
-          tab_header(
-            title = paste0("Top Chef World All Stars Episode ",airedepisode)
-            ,subtitle = episodedescription
-          ) %>%
-          data_color(method="numeric",
-                     columns=c(Quickfire_WIN,Elimination_WIN,Quickfire_HIGH,Elimination_HIGH),
-                     palette=c("transparent", "#a3cce9","#5fa2ce","#1170AA"),
-                     domain=c(0,3)) %>%
-          data_color(method="numeric",
-                     columns=c(Quickfire_LOW,`Elimination_LOW*`),
-                     palette=c("transparent","#ffbc69","#fc7d0b","#c85200","#c85200"),
-                     domain=c(0,4))
-
+    currentstats <- challengewins %>%
+      select(!rating) %>% 
+      full_join(chefdetails %>% 
+                  select(series,szn,sznnumber,chef,placement,gender)) 
+    
+      ## number of each type (combination of challenge + outcome)
+        nums <- currentstats %>%
+          group_by(chef,challenge_type,outcome,placement,gender) %>%
+          summarise(n=n()) %>%
+          # remove groups we don't want to visualize
+          filter(!(is.na(outcome)))
+        
+        nums$outcome <- factor(nums$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"))
+      
+        ## Create bar charts for #s of each combo of challenge type-outcome
+          nums %>%
+            filter(!(outcome %in% c("IN","OUT"))) %>%
+            ggplot(aes(x=n,y=chef,color=outcome,fill=outcome)) +
+            geom_bar(stat="identity" ,alpha=.8 ) +
+            facet_wrap(challenge_type ~ outcome) +
+            scale_fill_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
+            scale_color_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
+            theme_minimal() +
+            theme(legend.position="none") +
+            labs(title="Challenge summary for Season 20")
+    
 
 ```
 
-## Code
+### Code
 
-```{r ChallengeStatisticsShowCode , eval=FALSE,echo=TRUE,message=FALSE} 
-library(gt); library(topChef); library(tidyverse)
+```{r ChallengeStatisticsVisualization_code, eval=FALSE,echo=TRUE,message=FALSE} 
+library(topChef); library(tidyverse)
 
-    currentseason <- 20
-    chefdetails <- topChef::chefdetails
-    challengewins <- topChef::challengewins
+    chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
+    challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
     
-    ## Manually list the chefs who are still in Last Chance Kitchen (LCK) at this point
-    ## These are the chefs that have been eliminated. I am not sharing which ones have also 
-    ## now been eliminated in LCK
-    stillinlck <- c("Sylwia Stachyra","Dale MacKay","Charbel Hayek")
-    
-    ## Manually list through what episode has been aired
-    ## and a summary of the episode
-    airedepisode <- 8
-    episodedescription <- "Street food from around the world. Mise en place relay - and 
-    the shortest Elimination Challenge ever! Product placement from Fast X. Buddha gets 
-    his second Quickfire win, and Tom gets his first Elimination win. Sara is in the 
-    bottom for the first time."
-
     ##############################################################################
     ## Set up data
     ##############################################################################
-          currentstats <- 
-            ## Who is still in the competition?
-              chefdetails %>% filter(sznnumber == currentseason) %>%
-                mutate(in.competition=ifelse(is.na(placement),2,0)
-                       # call out LCK people
-                       ,in.competition=ifelse(chef %in% stillinlck,1,in.competition)
-                       ) %>%
-                select(chef,in.competition) %>%
-            ## merge on the challenge wins
-              left_join(challengewins %>% 
-                          filter(sznnumber == currentseason) %>%
-                          select(!c(in.competition,rating,episode))) %>%
-            ## get counts of wins, highs, and lows
-            ## and, if they were out, include that as being on the bottom
-              mutate(outcome=ifelse(outcome == "OUT","LOW",outcome)) %>%
-              group_by(chef,challenge_type,outcome,in.competition) %>%
-              mutate(tempcount=1,count=sum(tempcount)) %>%
-              select(!c(tempcount,szn,sznnumber)) %>%
-              distinct() %>%
-            ## reshape the data
-              mutate(outcome=ifelse(is.na(outcome),"IN",outcome)) %>%
-              filter(outcome != "IN") %>%
-              pivot_wider(names_from=challenge_type,values_from=count) %>%
-              ungroup() %>%
-              pivot_wider(names_from=outcome,values_from=c(Elimination,Quickfire)) %>%
-            ## format things for gt()
-              mutate(Elimination_WIN=ifelse(is.na(Elimination_WIN),0,Elimination_WIN),
-                     Elimination_HIGH=ifelse(is.na(Elimination_HIGH),0,Elimination_HIGH),
-                     Elimination_LOW=ifelse(is.na(Elimination_LOW),0,Elimination_LOW),
-                     Quickfire_WIN=ifelse(is.na(Quickfire_WIN),0,Quickfire_WIN),
-                     Quickfire_HIGH=ifelse(is.na(Quickfire_HIGH),0,Quickfire_HIGH),
-                     Quickfire_LOW=ifelse(is.na(Quickfire_LOW),0,Quickfire_LOW)) %>%
-              arrange(desc(in.competition),desc(Elimination_WIN),desc(Elimination_HIGH)
-                      ,desc(Quickfire_WIN),desc(Quickfire_HIGH),Quickfire_LOW) %>%
-              relocate(Elimination_WIN,Elimination_HIGH,Elimination_LOW
-                       ,Quickfire_WIN,Quickfire_HIGH,Quickfire_LOW
-                       ,.after = last_col()) %>%
-              rename(`Elimination_LOW*`=Elimination_LOW)
-
-    ##############################################################################
-    ## Visualize the results
-    ##############################################################################
-     currentstats %>% 
-      rename(Chef = chef) %>%
-      gt() %>%
-          tab_spanner_delim(delim = "_") %>%
-          cols_hide(columns=c(in.competition,series)) %>%
-          tab_source_note(source_note = "*Data notes: LOW also includes when the chefs were eliminated (e.g., Dale). Data and code available upon request /// Twitter @carlylevitz") %>%
-          tab_row_group(label = "Eliminated",rows = in.competition==0) %>%
-          tab_row_group(label = "In Last Chance Kitchen",rows = in.competition==1) %>%
-          tab_row_group(label = "In the competition",rows = in.competition==2) %>%
-          tab_options(data_row.padding = px(1),
-                      column_labels.padding = px(1),
-                      row_group.padding = px(1))  %>%
-          tab_style(style = cell_text(align = "right"),locations = cells_source_notes()) %>%
-          tab_style(style = cell_text(align = "left",weight="bold")
-                                      ,locations = cells_title(groups="title")) %>%
-          tab_style(style = cell_text(align = "left",weight="bold")
-                                      ,locations = cells_row_groups() ) %>%
-          tab_style(style = cell_text(align = "left")
-                                      ,locations = cells_title(groups="subtitle")) %>%
-          tab_style(style = cell_text(align = "center")
-                                      ,locations = cells_body(columns=!Chef)) %>%
-          tab_style(style = cell_text(align = "center",weight="bold")
-                                      ,locations = cells_column_labels(columns=!Chef)) %>%
-          tab_style(style = cell_text(align = "left",weight="bold")
-                                      ,locations = cells_column_labels(columns=Chef)) %>%
-          tab_style(style = cell_text(align = "center",weight="bold")
-                                      ,locations = cells_column_spanners()) %>%
-          tab_options(
-            row_group.background.color = "gray95",
-            table.font.color = "#323232",
-            table_body.hlines.color = "#323232",
-            table_body.border.top.color = "#323232",
-            heading.border.bottom.color = "#323232",
-            row_group.border.top.color = "#323232",
-            column_labels.border.bottom.color = "#323232",
-            row_group.border.bottom.color = "transparent"
-            ,table.border.top.style = "transparent"
-            ,table.border.bottom.style = "transparent"
-          ) %>%
-          opt_all_caps() %>%
-      cols_width(Chef ~ px(150), everything() ~ px(50) )  %>%
-          tab_header(
-            title = paste0("Top Chef World All Stars Episode ",airedepisode)
-            ,subtitle = episodedescription
-          ) %>%
-          data_color(method="numeric",
-                     columns=c(Quickfire_WIN,Elimination_WIN,Quickfire_HIGH,Elimination_HIGH),
-                     palette=c("transparent", "#a3cce9","#5fa2ce","#1170AA"),
-                     domain=c(0,3)) %>%
-          data_color(method="numeric",
-                     columns=c(Quickfire_LOW,`Elimination_LOW*`),
-                     palette=c("transparent","#ffbc69","#fc7d0b","#c85200","#c85200"),
-                     domain=c(0,4))
-
-
+    currentstats <- challengewins %>%
+      select(!rating) %>% 
+      full_join(chefdetails %>% 
+                  select(series,szn,sznnumber,chef,placement,gender)) 
+    
+      ## number of each type (combination of challenge + outcome)
+        nums <- currentstats %>%
+          group_by(chef,challenge_type,outcome,placement,gender) %>%
+          summarise(n=n()) %>%
+          # remove groups we don't want to visualize
+          filter(!(is.na(outcome)))
+        
+        nums$outcome <- factor(nums$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"))
+      
+        ## Create bar charts for #s of each combo of challenge type-outcome
+          nums %>%
+            filter(!(outcome %in% c("IN","OUT"))) %>%
+            ggplot(aes(x=n,y=chef,color=outcome,fill=outcome)) +
+            geom_bar(stat="identity" ,alpha=.8 ) +
+            facet_wrap(challenge_type ~ outcome) +
+            scale_fill_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
+            scale_color_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
+            theme_minimal() +
+            theme(legend.position="none") +
+            labs(title="Challenge summary for Season 20")
+   
 ```
