@@ -16,16 +16,6 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/Rtmpps2fxE/remotesbb455bfc1b36/celevitz-topChef-2af35f8/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/Rtmpps2fxE/remotesbb455bfc1b36/celevitz-topChef-2af35f8/DESCRIPTION’
-#>   ─  preparing ‘topChef’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘topChef_0.1.0.tar.gz’
-#>      
-#> 
 ```
 
 ## References & Acknowlegements
@@ -37,7 +27,7 @@ inspired by <https://topchefstats.com/>.
 
 Huge thanks to <https://github.com/doehm> for all his support!
 
-## Dataset overview
+## Overview of datasets
 
 Across datasets, key joining variables include:
 
@@ -47,7 +37,9 @@ Across datasets, key joining variables include:
 - `series`
 - `episode`
 
-### Chef details
+### Datasets
+
+#### Chef details
 
 A tibble containing information about Chefs for each season they are in,
 including placement and gender. For some but not all seasons, there is
@@ -73,7 +65,7 @@ chefdetails
 #> # ℹ 2 more variables: occupation <chr>, gender <chr>
 ```
 
-### Challenge descriptions
+#### Challenge descriptions
 
 A tibble containing information about each challenge that the Chefs
 compete in.
@@ -101,7 +93,7 @@ challengedescriptions
 #> #   Restaurant.War.eliminated <chr>, Did.judges.visit.winning.team.first <chr>
 ```
 
-### Challenge wins
+#### Challenge wins
 
 A tibble containing win and loss data for each chef in each episode.
 
@@ -124,7 +116,7 @@ challengewins
 #> # ℹ 1 more variable: rating <dbl>
 ```
 
-### Judges
+#### Judges
 
 A tibble containing information about who were the guest judges for each
 challenge.
@@ -148,7 +140,7 @@ judges
 #> # ℹ 2 more variables: competed_on_TC <chr>, other_shows <chr>
 ```
 
-### Rewards
+#### Rewards
 
 A tibble containing information about rewards and prizes won by
 challenge.
@@ -172,7 +164,7 @@ rewards
 #> # ℹ 1 more variable: chef <chr>
 ```
 
-### Episode info
+#### Episode info
 
 A tibble containing information about each episode.
 
@@ -195,15 +187,15 @@ episodeinfo
 #> # ℹ 1 more variable: `#.of.competitors` <dbl>
 ```
 
-## Example: Using multiple datasets
+### Example using multiple datasets
 
-### How many elimination challenge wins did Top Chef winners have?
+#### How many elimination challenge wins did Top Chef winners have?
 
-#### Visualization
+##### Visualization
 
 ![](README_files/figure-gfm/EliminationWinsForTopChefsVisualization-1.png)<!-- -->
 
-#### Code
+##### Code
 
 ``` r
 library(ggplot2)
@@ -242,9 +234,22 @@ chefdetails %>%
     
 ```
 
-## Examples: Using the `weightedindex` function
+## Weighted Index Function
 
-### 
+I created a weighted index to compare chefs within and across seasons. I
+am still working on it, but this is how things currently stand: The
+weighted index is calculated by assigning a certain number of points to
+different outcomes. For the sake of simplicity, Sudden Death Quickfires
+and Quickfire Elimination Challenges are counted as Elimination
+Challenges. The scoring is as follows:
+
+- Elimination win = 7 points
+- Elimination high = 3 points
+- Elimination low = -3 points
+- Eliminated = -7 points
+- Quickfire win = 4 points
+- Quickfire high = 2 points
+- Quickfire low = -2 points
 
 The `weightedindex` function takes the following parameters:
 
@@ -252,15 +257,36 @@ The `weightedindex` function takes the following parameters:
 - `seasonnumber`: Values between 1 and 20 for Top Chef US; 1 through 5
   for US Masters; and 6 for Canada
 - `numberofelimchalls`: Number of elimination challenges through which
-  you want to calculate the index
+  you want to calculate the index. Values between 1 and 20.
 - `numberofquickfires`: Number of quickfire challenges through which you
-  want to calculate the index
+  want to calculate the index. Values between 1 and 20.
+
+Currently, the function will include more Quickfire challenges than you
+have specified in the function. It will keep the episodes in each season
+through the episode with the Nth Elimination Challenge or the Nth
+Quickfire, whichever is the higher episode. This was a way to hold
+constant the number of challenges that have occurred so that chefs could
+be more comparable across seasons.
+
+The `weightedindex` function exports a tibble with the variables of:
+series, season name, season number, chef, chef’s placement, number of
+elimination challenges wins/highs/lows/outs, number of quickfire
+challenge wins/highs/lows, and the weighted index score.
+
+### Distribution of Weighted Index Scores
+
+For all Top Chef US seasons, there is a similar distribution of the
+weighted index scores.
+
+![](README_files/figure-gfm/Viz_DensityPlot-1.png)<!-- -->
+
+### Examples that use the `weightedindex` function
 
 The following examples are looking across all seasons through the point
 in the season where there were 10 elimination challenges or 7 quickfire
 challenges.
 
-#### Visualizations
+##### Visualizations
 
 The circles represent outliers: Michael in Las Vegas, Richard in All
 Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar
@@ -274,14 +300,14 @@ Buddha, and Amar thus far have the highest index scores.
 
 ![](README_files/figure-gfm/Viz_IndexTopFour-1.png)<!-- -->
 
-#### Code
+##### Code
 
 ``` r
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,10,7)
-    for (season in seq(1,20,1)) {
+    for (season in seq(2,20,1)) {
       allseasons <- rbind(allseasons,weightedindex("US",season,10,7))
       
     }
