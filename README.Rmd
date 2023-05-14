@@ -84,11 +84,9 @@ A tibble containing information about each episode.
 episodeinfo 
 ```
 
-### 5. Example using multiple datasets
+### 4.b. Example using multiple datasets: How many elimination challenge wins did Top Chef winners have?
 
-#### 5.a. How many elimination challenge wins did Top Chef winners have?
-
-##### 5.a.i. Visualization
+##### 4.b.i. Visualization
 ```{r EliminationWinsForTopChefsVisualization, eval=TRUE,echo=FALSE,message=FALSE} 
 library(ggplot2)
 
@@ -127,7 +125,7 @@ chefdetails %>%
 ```
 
 
-##### 5.a.ii. Code
+##### 4.b.ii. Code
 ```{r EliminationWinsForTopChefsCode, eval=FALSE,echo=TRUE,message=FALSE} 
 library(ggplot2)
 
@@ -165,7 +163,7 @@ chefdetails %>%
     
 ```
 
-## 6. Weighted Index Function
+## 5. Weighted Index Function
 
 I created a weighted index to compare chefs within and across seasons. I am still working on it, but this is how things currently stand: The weighted index is calculated by assigning a certain number of points to different outcomes. For the sake of simplicity, Sudden Death Quickfires and Quickfire Elimination Challenges are counted as Elimination Challenges. The scoring is as follows:
 
@@ -188,7 +186,7 @@ Currently, the function will include more Quickfire challenges than you have spe
 
 The `weightedindex` function exports a tibble with the variables of: series, season name, season number, chef, chef's placement, number of elimination challenges wins/highs/lows/outs, number of quickfire challenge wins/highs/lows, and the weighted index score.
 
-### 6.a. Distribution of Weighted Index Scores at the Completion of All Seasons
+### 5.a. Distribution of Weighted Index Scores at the Completion of All Seasons
 
 ```{r Viz_DensityPlot_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
 library(topChef); library(tidyverse); library(RColorBrewer)
@@ -281,9 +279,9 @@ library(topChef); library(tidyverse); library(RColorBrewer)
 
 ```
 
-### 6.b. Examples that use the `weightedindex` function
+### 5.b. Examples that use the `weightedindex` function
 
-##### 6.b.i. Visualizations
+##### 5.b.i. Visualizations
 ```{r Viz_IndexAllSeasons_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
@@ -355,7 +353,7 @@ This example shows the index scores for the Top Four chefs in all seasons with t
 
 ```
 
-##### 6.b.ii. Code
+##### 5.b.ii. Code
 ```{r Code_IndexAllSeasons, eval=FALSE,echo=TRUE,message=FALSE} 
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
