@@ -188,11 +188,10 @@ Currently, the function will include more Quickfire challenges than you have spe
 
 The `weightedindex` function exports a tibble with the variables of: series, season name, season number, chef, chef's placement, number of elimination challenges wins/highs/lows/outs, number of quickfire challenge wins/highs/lows, and the weighted index score.
 
-### 6.a. Distribution of Weighted Index Scores
-For all Top Chef US seasons, there is a similar distribution of the weighted index scores.
+### 6.a. Distribution of Weighted Index Scores at the Completion of All Seasons
 
 ```{r Viz_DensityPlot_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
-library(topChef); library(tidyverse)
+library(topChef); library(tidyverse); library(RColorBrewer)
  ## Get the index for all seasons, all episodes
     
     allseasons <- weightedindex("US",1,20,20)
@@ -200,22 +199,89 @@ library(topChef); library(tidyverse)
       allseasons <- rbind(allseasons,weightedindex("US",season,20,20))
       
     }
+    
+ # for sorting reasons, have the season be a character
+    allseasons$seasonnumchar[allseasons$sznnumber <= 9] <- 
+      paste0("0",as.character(allseasons$sznnumber[allseasons$sznnumber <= 9]))
+    allseasons$seasonnumchar[allseasons$sznnumber > 9] <- 
+      as.character(allseasons$sznnumber[allseasons$sznnumber > 9])
+    
+  # Standard deviations
+    standarddevs <- 
+      aggregate(allseasons$indexWeight,by=list(allseasons$szn,allseasons$sznnumber),FUN=sd) 
+    names(standarddevs) <- c("szn","sznnumber","sd")
+    standarddevs <- standarddevs[order(standarddevs$sd),]  %>% 
+      left_join(topChef::chefdetails %>% 
+                  filter(placement == 1) %>% 
+                  select(szn,sznnumber,chef)) %>%
+      mutate(y=0
+             ,labeljust=case_when(szn %in% c("Chicago","Los Angeles","Portland","Seattle") ~ 1
+                                  ,TRUE ~ 0))
+    
 ```
 
 ```{r Viz_DensityPlot, eval=TRUE,echo=FALSE,message=FALSE} 
-    
+  
   allseasons %>%
-    ggplot(aes(x=indexWeight,color=szn)) + 
-      geom_density() + 
-      #geom_vline(data=sznmean,aes(xintercept=grp.mean,color=szn) ) 
+    ggplot(aes(x=indexWeight,color=szn,fill=szn)) + 
+      geom_density(alpha=.01) + 
       labs(title="Density Plot of Weighted Index Score for Every Top Chef US Season") +
-      theme(legend.position="none") +
+      scale_color_manual(values=c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C" 
+                                  ,"#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00" 
+                                  ,"#CAB2D6", "#6A3D9A","#FFFF99","#B15928"
+                                  ,"#1B9E77", "#D95F02" ,"#7570B3" ,"#E7298A" 
+                                  ,"#66A61E", "#E6AB02", "#A6761D", "#666666")) +
+      scale_fill_manual(values=c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C" 
+                                ,"#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00" 
+                                ,"#CAB2D6", "#6A3D9A","#FFFF99","#B15928"
+                                ,"#1B9E77", "#D95F02" ,"#7570B3" ,"#E7298A" 
+                                ,"#66A61E", "#E6AB02", "#A6761D", "#666666")) +
+      theme_minimal()+    
+      theme(legend.position="right"
+            ,legend.key.size = unit(.5, 'cm')) +
+      guides(color=guide_legend(title="Season name")
+             ,fill=guide_legend(title="Season name")) +
       ylab("Density") + xlab("Weighted Index Score")
+
+  allseasons %>%
+      ggplot(aes(x=seasonnumchar,y=indexWeight) ) +
+      geom_boxplot() +
+      # add horizontal line at 0
+      geom_rect(aes(xmin=0
+                    ,xmax=20
+                    ,ymin=-.5
+                    ,ymax=0.5)
+                ,fill="#ffbc69") +
+      theme_minimal() +
+      labs(title=paste0("Top Chef Weighted Index: Comparing All Completed Seasons")
+           ,subtitle="Box plots show the minimum, first quartile, median, third quartile, and 
+           maximum weighted index scores for each season. Circles indicate outliers.")+
+      scale_x_discrete(labels=unique(allseasons$szn[order(allseasons$sznnumber)])) +
+      theme_minimal() +
+      ylab("Index score") + xlab("") +
+      theme(panel.grid = element_blank() 
+            ,axis.text.x=element_text(angle=90)
+            )
+
+  standarddevs %>%
+    ggplot(aes(x=sd,y=y,label=szn)) +
+    geom_hline(yintercept=0, color="darkcyan")  +
+    geom_point(alpha=.3,size=4) +
+    theme_minimal() +
+    ylab("") + xlab("Standard deviation of weighted index scores of each season") +
+    theme(panel.grid = element_blank()
+          ,axis.line.x=element_line(color="black")
+          ,axis.ticks.x=element_line(color="black")
+          ,axis.line.y=element_blank()
+          ,axis.text.y=element_blank()) +
+    labs(title="Standard deviation of each Top Chef season's weighted index scores"
+         ,subtitle="Lower standard deviations indicate more even distribution of scores in that season") +
+    geom_text(angle=45,hjust=standarddevs$labeljust) +
+    scale_x_continuous(lim=c(7.5,23),breaks=seq(8,22,2),labels=seq(8,22,2))
+
 ```
 
 ### 6.b. Examples that use the `weightedindex` function
-
-The following examples are looking across all seasons through the point in the season where there were 10 elimination challenges or 7 quickfire challenges.
 
 ##### 6.b.i. Visualizations
 ```{r Viz_IndexAllSeasons_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
@@ -228,7 +294,7 @@ library(topChef); library(ggplot2); library(tidyverse)
       
     }
 ```
-The circles represent outliers: Michael in Las Vegas, Richard in All Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar within the rectangles are the averages of chefs scores in that season. 
+The circles represent outliers: Michael in Las Vegas, Richard in All Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar within the rectangles are the median scores of chefs scores in that season. 
 
 ```{r Viz_IndexAllSeasons, eval=TRUE,echo=FALSE,message=FALSE} 
     # drop unneeded variables
@@ -252,11 +318,7 @@ The circles represent outliers: Michael in Las Vegas, Richard in All Stars: New 
       ggplot(aes(x=seasonnumchar,y=indexWeight) ) +
       geom_boxplot() +
       # add horizontal line at 0
-      geom_rect(aes(xmin=0
-                    ,xmax=20
-                    ,ymin=-.5
-                    ,ymax=0.5)
-                ,fill="#ffbc69") +
+      geom_hline(yintercept=0, color="#ffbc69")  +
       theme_minimal() +
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
            ,subtitle="Comparing All Chefs Across All Seasons\n"
@@ -276,7 +338,7 @@ This example shows the index scores for the Top Four chefs in all seasons with t
     allseasons[allseasons$placement <= 4,]  %>%
       ggplot(aes(x=placement,y=indexWeight,label=chef) ) +
       # add horizontal line at 0
-      geom_rect(aes(xmin=.5 ,xmax=4.5 ,ymin=-.2 ,ymax=0.2) ,fill="#ffbc69") +
+      geom_hline(yintercept=0, color="#ffbc69")  +
       geom_text(size=2) +
       theme_minimal() +
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
@@ -325,11 +387,7 @@ library(topChef); library(ggplot2); library(tidyverse)
       ggplot(aes(x=seasonnumchar,y=indexWeight) ) +
       geom_boxplot() +
       # add horizontal line at 0
-      geom_rect(aes(xmin=0
-                    ,xmax=20
-                    ,ymin=-.5
-                    ,ymax=0.5)
-                ,fill="#ffbc69") +
+      geom_hline(yintercept=0, color="#ffbc69")  +
       theme_minimal() +
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
            ,subtitle="Comparing All Chefs Across All Seasons\n"
@@ -345,7 +403,7 @@ library(topChef); library(ggplot2); library(tidyverse)
     allseasons[allseasons$placement <= 4,]  %>%
       ggplot(aes(x=placement,y=indexWeight,label=chef) ) +
       # add horizontal line at 0
-      geom_rect(aes(xmin=.5 ,xmax=4.5 ,ymin=-.2 ,ymax=0.2) ,fill="#ffbc69") +
+      geom_hline(yintercept=0, color="#ffbc69")  +
       geom_text(size=2) +
       theme_minimal() +
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")

@@ -1,7 +1,7 @@
 topChef
 ================
 
-## Introduction to topChef
+## 1. Introduction to topChef
 
 topChef is a collection of data sets detailing events across all seasons
 of Top Chef US and Top Chef Masters US and one season of Top Chef
@@ -9,7 +9,7 @@ Canada. It includes Chef information, challenge descriptions, challenge
 winners, episode information, guest judge names, and reward/prize
 information.
 
-## Installation
+## 2. Installation
 
 Not yet on CRAN. So please use:
 *devtools::install.packages(“celevitz/topChef”)*
@@ -18,7 +18,7 @@ Not yet on CRAN. So please use:
 devtools::install_github("celevitz/topChef")
 ```
 
-## References & Acknowlegements
+## 3. References & Acknowlegements
 
 Data were collected manually while watching each season of Top Chef.
 Additional data were collected from
@@ -27,7 +27,7 @@ inspired by <https://topchefstats.com/>.
 
 Huge thanks to <https://github.com/doehm> for all his support!
 
-## Overview of datasets
+## 4. Overview of datasets
 
 Across datasets, key joining variables include:
 
@@ -37,9 +37,9 @@ Across datasets, key joining variables include:
 - `series`
 - `episode`
 
-### Datasets
+### 4.a. Datasets
 
-#### Chef details
+#### 4.a.i. Chef details
 
 A tibble containing information about Chefs for each season they are in,
 including placement and gender. For some but not all seasons, there is
@@ -65,7 +65,7 @@ chefdetails
 #> # ℹ 2 more variables: occupation <chr>, gender <chr>
 ```
 
-#### Challenge descriptions
+#### 4.a.ii. Challenge descriptions
 
 A tibble containing information about each challenge that the Chefs
 compete in.
@@ -93,7 +93,7 @@ challengedescriptions
 #> #   Restaurant.War.eliminated <chr>, Did.judges.visit.winning.team.first <chr>
 ```
 
-#### Challenge wins
+#### 4.a.iii. Challenge wins
 
 A tibble containing win and loss data for each chef in each episode.
 
@@ -116,7 +116,7 @@ challengewins
 #> # ℹ 1 more variable: rating <dbl>
 ```
 
-#### Judges
+#### 4.a.iv. Judges
 
 A tibble containing information about who were the guest judges for each
 challenge.
@@ -140,7 +140,7 @@ judges
 #> # ℹ 2 more variables: competed_on_TC <chr>, other_shows <chr>
 ```
 
-#### Rewards
+#### 4.a.v. Rewards
 
 A tibble containing information about rewards and prizes won by
 challenge.
@@ -164,7 +164,7 @@ rewards
 #> # ℹ 1 more variable: chef <chr>
 ```
 
-#### Episode info
+#### 4.a.vi. Episode info
 
 A tibble containing information about each episode.
 
@@ -187,15 +187,15 @@ episodeinfo
 #> # ℹ 1 more variable: `#.of.competitors` <dbl>
 ```
 
-### Example using multiple datasets
+### 5. Example using multiple datasets
 
-#### How many elimination challenge wins did Top Chef winners have?
+#### 5.a. How many elimination challenge wins did Top Chef winners have?
 
-##### Visualization
+##### 5.a.i. Visualization
 
 ![](README_files/figure-gfm/EliminationWinsForTopChefsVisualization-1.png)<!-- -->
 
-##### Code
+##### 5.a.ii. Code
 
 ``` r
 library(ggplot2)
@@ -234,7 +234,7 @@ chefdetails %>%
     
 ```
 
-## Weighted Index Function
+## 6. Weighted Index Function
 
 I created a weighted index to compare chefs within and across seasons. I
 am still working on it, but this is how things currently stand: The
@@ -273,24 +273,18 @@ series, season name, season number, chef, chef’s placement, number of
 elimination challenges wins/highs/lows/outs, number of quickfire
 challenge wins/highs/lows, and the weighted index score.
 
-### Distribution of Weighted Index Scores
+### 6.a. Distribution of Weighted Index Scores at the Completion of All Seasons
 
-For all Top Chef US seasons, there is a similar distribution of the
-weighted index scores.
+![](README_files/figure-gfm/Viz_DensityPlot-1.png)<!-- -->![](README_files/figure-gfm/Viz_DensityPlot-2.png)<!-- -->![](README_files/figure-gfm/Viz_DensityPlot-3.png)<!-- -->
 
-![](README_files/figure-gfm/Viz_DensityPlot-1.png)<!-- -->
+### 6.b. Examples that use the `weightedindex` function
 
-### Examples that use the `weightedindex` function
-
-The following examples are looking across all seasons through the point
-in the season where there were 10 elimination challenges or 7 quickfire
-challenges.
-
-##### Visualizations
+##### 6.b.i. Visualizations
 
 The circles represent outliers: Michael in Las Vegas, Richard in All
 Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar
-within the rectangles are the averages of chefs scores in that season.
+within the rectangles are the median scores of chefs scores in that
+season.
 
 ![](README_files/figure-gfm/Viz_IndexAllSeasons-1.png)<!-- -->
 
@@ -300,7 +294,7 @@ Buddha, and Amar thus far have the highest index scores.
 
 ![](README_files/figure-gfm/Viz_IndexTopFour-1.png)<!-- -->
 
-##### Code
+##### 6.b.ii. Code
 
 ``` r
 library(topChef); library(ggplot2); library(tidyverse)
@@ -333,11 +327,7 @@ library(topChef); library(ggplot2); library(tidyverse)
       ggplot(aes(x=seasonnumchar,y=indexWeight) ) +
       geom_boxplot() +
       # add horizontal line at 0
-      geom_rect(aes(xmin=0
-                    ,xmax=20
-                    ,ymin=-.5
-                    ,ymax=0.5)
-                ,fill="#ffbc69") +
+      geom_hline(yintercept=0, color="#ffbc69")  +
       theme_minimal() +
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
            ,subtitle="Comparing All Chefs Across All Seasons\n"
@@ -353,7 +343,7 @@ library(topChef); library(ggplot2); library(tidyverse)
     allseasons[allseasons$placement <= 4,]  %>%
       ggplot(aes(x=placement,y=indexWeight,label=chef) ) +
       # add horizontal line at 0
-      geom_rect(aes(xmin=.5 ,xmax=4.5 ,ymin=-.2 ,ymax=0.2) ,fill="#ffbc69") +
+      geom_hline(yintercept=0, color="#ffbc69")  +
       geom_text(size=2) +
       theme_minimal() +
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
