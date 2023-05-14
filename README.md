@@ -16,6 +16,16 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpabtDLR/remotese0af27c7582e/celevitz-topChef-d3a4af3/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpabtDLR/remotese0af27c7582e/celevitz-topChef-d3a4af3/DESCRIPTION’
+#>   ─  preparing ‘topChef’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘topChef_0.1.0.tar.gz’
+#>      
+#> 
 ```
 
 ## 3. References & Acknowlegements
@@ -187,15 +197,13 @@ episodeinfo
 #> # ℹ 1 more variable: `#.of.competitors` <dbl>
 ```
 
-### 5. Example using multiple datasets
+### 4.b. Example using multiple datasets: How many elimination challenge wins did Top Chef winners have?
 
-#### 5.a. How many elimination challenge wins did Top Chef winners have?
-
-##### 5.a.i. Visualization
+##### 4.b.i. Visualization
 
 ![](README_files/figure-gfm/EliminationWinsForTopChefsVisualization-1.png)<!-- -->
 
-##### 5.a.ii. Code
+##### 4.b.ii. Code
 
 ``` r
 library(ggplot2)
@@ -234,7 +242,7 @@ chefdetails %>%
     
 ```
 
-## 6. Weighted Index Function
+## 5. Weighted Index Function
 
 I created a weighted index to compare chefs within and across seasons. I
 am still working on it, but this is how things currently stand: The
@@ -273,13 +281,13 @@ series, season name, season number, chef, chef’s placement, number of
 elimination challenges wins/highs/lows/outs, number of quickfire
 challenge wins/highs/lows, and the weighted index score.
 
-### 6.a. Distribution of Weighted Index Scores at the Completion of All Seasons
+### 5.a. Distribution of Weighted Index Scores at the Completion of All Seasons
 
 ![](README_files/figure-gfm/Viz_DensityPlot-1.png)<!-- -->![](README_files/figure-gfm/Viz_DensityPlot-2.png)<!-- -->![](README_files/figure-gfm/Viz_DensityPlot-3.png)<!-- -->
 
-### 6.b. Examples that use the `weightedindex` function
+### 5.b. Examples that use the `weightedindex` function
 
-##### 6.b.i. Visualizations
+##### 5.b.i. Visualizations
 
 The circles represent outliers: Michael in Las Vegas, Richard in All
 Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar
@@ -294,7 +302,7 @@ Buddha, and Amar thus far have the highest index scores.
 
 ![](README_files/figure-gfm/Viz_IndexTopFour-1.png)<!-- -->
 
-##### 6.b.ii. Code
+##### 5.b.ii. Code
 
 ``` r
 library(topChef); library(ggplot2); library(tidyverse)
