@@ -346,9 +346,110 @@ challenge wins/highs/lows, and the weighted index score.
 
 ![](README_files/figure-gfm/Viz_DensityPlot-1.png)<!-- -->![](README_files/figure-gfm/Viz_DensityPlot-2.png)<!-- -->![](README_files/figure-gfm/Viz_DensityPlot-3.png)<!-- -->
 
-### 5.b. Examples that use the `weightedindex` function
+### 5.b. Examples that use the `weightedindex` function: full seasons
 
 ##### 5.b.i. Visualizations
+
+![](README_files/figure-gfm/Viz_FinalIndex_Names-1.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-2.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-3.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-4.png)<!-- -->
+
+##### 5.b.ii. Code
+
+``` r
+
+library(topChef); library(ggplot2); library(tidyverse)
+ ## Get the index for all seasons
+    
+    allseasons <- weightedindex("US",1,20,20)
+    for (season in seq(2,20,1)) {
+      allseasons <- rbind(allseasons,weightedindex("US",season,20,20))
+      
+    }
+    
+  ## Graph it
+    # for sorting reasons, have the season be a character
+    allseasons$seasonnumchar[allseasons$sznnumber <= 9] <- 
+      paste0("0",as.character(allseasons$sznnumber[allseasons$sznnumber <= 9]))
+    allseasons$seasonnumchar[allseasons$sznnumber > 9] <- 
+      as.character(allseasons$sznnumber[allseasons$sznnumber > 9])
+    
+    # for sorting reasons, have the placement as a character
+    allseasons$placementchar[allseasons$placement <= 9] <- 
+      paste0("0",as.character(allseasons$placement[allseasons$placement <= 9]))
+    allseasons$placementchar[allseasons$placement > 9] <- 
+      as.character(allseasons$placement[allseasons$placement > 9])
+    
+  # Distribution of scores at the end of the competition/seasons
+    graphalltitles <- function(dataset) {
+      dataset %>%
+      ggplot(aes(x=placement,y=indexWeight,label=chef)) +
+        facet_wrap(~paste0("Season ",seasonnumchar)) +
+        geom_hline(yintercept=0,color="#ffbc69")+
+        geom_text(hjust=0.5,size=2) +
+      theme_minimal() +
+      labs(title=paste0("Top Chef Weighted Index Scores at the End of Seasons")
+           ,subtitle="Comparing All Chefs Across All Seasons\n")+
+      ylab("Index Score") + xlab("Placement") +
+      scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
+      theme(panel.grid = element_blank() 
+            ,axis.text.x=element_text(size=6,color="black")
+            ,axis.text.y=element_text(size=6,color="black")
+            ,axis.ticks=element_line(color="gray15") 
+            ,axis.line=element_line(color="gray15") 
+            ,strip.background=element_rect(fill="darkcyan")
+            ,strip.text=element_text(color="black"))
+    }
+    
+    graphnotitlenocaption <- function(dataset) {
+      dataset %>%
+      ggplot(aes(x=placement,y=indexWeight,label=chef)) +
+        facet_wrap(~paste0("Season ",seasonnumchar)) +
+        geom_hline(yintercept=0,color="#ffbc69")+
+        geom_text(hjust=0.5,size=2) +
+      theme_minimal() +
+      ylab("Index score") + xlab("Placement") +
+      scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
+      theme(panel.grid = element_blank() 
+            ,axis.text.x=element_text(size=6,color="black")
+            ,axis.text.y=element_text(size=6,color="black")
+            ,axis.ticks=element_line(color="gray15") 
+            ,axis.line=element_line(color="gray15")
+            ,strip.background=element_rect(fill="darkcyan")
+            ,strip.text=element_text(color="black"))
+    }
+    graphonlycaption <- function(dataset) {
+      dataset %>%
+      ggplot(aes(x=placement,y=indexWeight,label=chef)) +
+        facet_wrap(~paste0("Season ",seasonnumchar)) +
+        geom_hline(yintercept=0,color="#ffbc69")+
+        geom_text(hjust=0.5,size=2) +
+        theme_minimal() +
+        ylab("Index Score") + xlab("Placement") +
+        scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
+        theme(panel.grid = element_blank() 
+              ,axis.text.x=element_text(size=6,color="black")
+              ,axis.text.y=element_text(size=6,color="black")
+              ,axis.ticks=element_line(color="gray15") 
+              ,axis.line=element_line(color="gray15")
+              ,strip.background=element_rect(fill="darkcyan")
+              ,strip.text=element_text(color="black")) +
+        labs(caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")
+    }
+    
+    graphalltitles(allseasons %>%
+      filter(sznnumber %in% c(1,2,3,4,5,6)) ) 
+    graphnotitlenocaption(allseasons %>%
+      filter(sznnumber %in% c(7,8,9,10,11,12)) ) 
+    graphnotitlenocaption(allseasons %>%
+      filter(sznnumber %in% c(13,14,15,16,17,18)) )      
+    graphonlycaption(allseasons %>%
+      filter(sznnumber %in% c(19,20)) ) 
+    
+    
+```
+
+### 5.c. Examples that use the `weightedindex` function 10 Elimination Challenges or 7 Quickfires into the season
+
+##### 5.c.i. Visualizations
 
 The circles represent outliers: Michael in Las Vegas, Richard in All
 Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar
@@ -363,7 +464,7 @@ Buddha, and Amar thus far have the highest index scores.
 
 ![](README_files/figure-gfm/Viz_IndexTopFour-1.png)<!-- -->
 
-##### 5.b.ii. Code
+##### 5.c.ii. Code
 
 ``` r
 library(topChef); library(ggplot2); library(tidyverse)
