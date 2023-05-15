@@ -16,16 +16,6 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/Rtmp3YibEr/remotesf57039870d00/celevitz-topChef-c00afee/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/Rtmp3YibEr/remotesf57039870d00/celevitz-topChef-c00afee/DESCRIPTION’
-#>   ─  preparing ‘topChef’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘topChef_0.1.0.tar.gz’
-#>      
-#> 
 ```
 
 ## 3. References & Acknowlegements
@@ -109,7 +99,7 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,544 × 9
+#> # A tibble: 9,555 × 9
 #>    szn      sznnumber series episode in.competition chef  challenge_type outcome
 #>    <chr>        <dbl> <chr>    <dbl> <lgl>          <chr> <chr>          <chr>  
 #>  1 All Sta…         8 US           1 TRUE           Ange… Quickfire      LOW    
@@ -122,7 +112,7 @@ challengewins
 #>  8 All Sta…         8 US           1 TRUE           Fabi… Quickfire      LOW    
 #>  9 All Sta…         8 US           1 TRUE           Jami… Quickfire      LOW    
 #> 10 All Sta…         8 US           1 TRUE           Jenn… Quickfire      HIGH   
-#> # ℹ 9,534 more rows
+#> # ℹ 9,545 more rows
 #> # ℹ 1 more variable: rating <dbl>
 ```
 
@@ -254,23 +244,28 @@ chefdetails %>%
 library(ggplot2); library(topChef)
 ## Won the episode
     # Data set up
-        # how many episodes each chef won in each season
+      # how many episodes each chef won in each season
           wonepi <- challengewins %>% select(!rating) %>%
-                mutate(challenge_type=case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Elimination"
-                                                ,TRUE ~ challenge_type)) %>%
-                filter(outcome %in% c("WIN","WINNER") & challenge_type %in% c("Elimination","Quickfire")) %>%
-                distinct() %>%
-                pivot_wider(names_from=challenge_type,values_from=outcome) %>%
-                filter(Quickfire == "WIN" & (Elimination %in% c("WIN","WINNER"))) %>%
-                group_by(series,szn,sznnumber,chef) %>%
-                summarise(n=n()) %>%
-                select(series,szn,sznnumber,chef,n) %>%
-                distinct() %>%
-                mutate(sznnumberchar=case_when(sznnumber <= 9 ~paste0("0",as.character(sznnumber))
-                                               ,TRUE ~as.character(sznnumber)) ) %>%
-                filter(series == "US") 
+                    mutate(challenge_type=case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Quickfire"
+                                                    ,TRUE ~ challenge_type)) %>%
+                    filter(outcome %in% c("WIN","WINNER") & challenge_type %in% c("Elimination","Quickfire")) %>%
+                    distinct() %>%
+                    pivot_wider(names_from=challenge_type,values_from=outcome) %>%
+                    filter(Quickfire == "WIN" & (Elimination %in% c("WIN","WINNER"))) %>%
+                    # were there multiple winners
+                      group_by(series,szn,sznnumber, episode) %>%
+                      mutate(nchefs=n()
+                             ,chef=ifelse(nchefs > 1,paste0(chef,"*"),chef)) %>%
+                    # how many times did each chef win an episode?
+                    ungroup() %>% group_by(series,szn,sznnumber,chef) %>%
+                    summarise(n=n()) %>%
+                    select(series,szn,sznnumber,chef,n) %>%
+                    distinct() %>%
+                    mutate(sznnumberchar=case_when(sznnumber <= 9 ~paste0("0",as.character(sznnumber))
+                                                   ,TRUE ~as.character(sznnumber)) ) %>%
+                    filter(series == "US") 
           
-          # visualize
+    # visualize
           wonepivizdata <- wonepi %>%
             # add on placement of chefs, just for those who have won an episode
             left_join(topChef::chefdetails %>% select(szn,sznnumber,chef,placement)) %>%
@@ -292,15 +287,17 @@ library(ggplot2); library(topChef)
             geom_col(position="stack",color="white") +
             geom_text(size = 1, position = position_stack(vjust=.5),angle=15
                       ,color=case_when(wonepivizdata$placement == "1st"~ "white"
-                                       ,wonepivizdata$placement != "1st" ~ "black"
+                                       ,wonepivizdata$placement == "2nd" ~ "white"
+                                       ,TRUE ~ "black"
                                        ,is.na(wonepivizdata$placement) ~ "black")) +
-            labs(title="A Chef has won an episode in all but Seasons 1, 13, and 16"
-                 ,subtitle="Winning an episode means that one chef won both the Quickfire and Elimination Challenges.\n32 individual chefs have achieved this, including seven winners.\n
+            labs(title="A Chef has won an episode in all but Seasons 1 and 16"
+                 ,subtitle="Winning an episode means that one chef won both the Quickfire and Elimination Challenges.\nThis has happened 35 times. Eight Top Chefs won an episode in their season.\n
            Brooke is the only one to do it in two different seasons. In all but three seasons, only 
            one or two chefs won an episode. In seasons four and seven, three chefs won an 
-           episode. In season 11, six chefs won an episode. Stefan is the only chef to have 
-           ever won three episodes in one season. Five chefs have won two episodes in one 
-           season: Angelo S., Ed C., Tiffany D., Brooke W., and Gregory G."
+           episode. In season 11, six chefs won an episode. Stefan and Gregory G. are the only 
+           chefs to have ever won three episodes in one season. Four chefs have won two 
+           episodes in one season: Angelo S., Ed C., Tiffany D., and Brooke W. 
+           * Travis and Carlos won the team quickfire and the paired elimination challenge."
                  ,caption= "Data: github.com/celevitz/topChef /// Twitter@carlylevitz") +
             ylab("\n# of times a chef won an episode this season\n") +
             xlab("Season") +
@@ -309,8 +306,13 @@ library(ggplot2); library(topChef)
                   ,axis.line.x=element_line(color="black")
                   ,axis.ticks.x=element_line(color="black")
                   ,axis.line.y=element_line(color="black")
-                  ,axis.ticks.y=element_line(color="black")  ) +
+                  ,axis.ticks.y=element_line(color="black")
+                  ,axis.text.x=element_text(color="black")
+                  ,axis.text.y=element_text(color="black")
+                  ,axis.title.x = element_text(color="black")
+                  ,axis.title.y = element_text(color="black") ) +
             guides(fill = guide_legend(title = "Placement"))
+          
 ```
 
 ## 5. Weighted Index Function
