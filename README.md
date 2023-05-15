@@ -16,6 +16,16 @@ Not yet on CRAN. So please use:
 
 ``` r
 devtools::install_github("celevitz/topChef")
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/Rtmp3YibEr/remotesf57039870d00/celevitz-topChef-c00afee/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/Rtmp3YibEr/remotesf57039870d00/celevitz-topChef-c00afee/DESCRIPTION’
+#>   ─  preparing ‘topChef’:
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘topChef_0.1.0.tar.gz’
+#>      
+#> 
 ```
 
 ## 3. References & Acknowlegements
@@ -350,17 +360,7 @@ challenge wins/highs/lows, and the weighted index score.
 
 ##### 5.b.i. Visualizations
 
-    #> Warning: Removed 2 rows containing missing values (`geom_text()`).
-
-![](README_files/figure-gfm/Viz_FinalIndex_Names-1.png)<!-- -->
-
-    #> Warning: Removed 2 rows containing missing values (`geom_text()`).
-
-![](README_files/figure-gfm/Viz_FinalIndex_Names-2.png)<!-- -->
-
-    #> Warning: Removed 1 rows containing missing values (`geom_text()`).
-
-![](README_files/figure-gfm/Viz_FinalIndex_Names-3.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-4.png)<!-- -->
+![](README_files/figure-gfm/Viz_FinalIndex_Names-1.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-2.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-3.png)<!-- -->![](README_files/figure-gfm/Viz_FinalIndex_Names-4.png)<!-- -->
 
 ##### 5.b.ii. Code
 

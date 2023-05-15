@@ -8,7 +8,8 @@ output: github_document
 ```{r, include = FALSE, message=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning=FALSE
 )
 ```
 
@@ -414,7 +415,7 @@ library(topChef); library(tidyverse); library(RColorBrewer)
 ### 5.b. Examples that use the `weightedindex` function: full seasons
 
 ##### 5.b.i. Visualizations
-```{r Viz_FinalIndex_Names_Setup, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
+```{r Viz_FinalIndex_Names_Setup, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE,warning=FALSE} 
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
     
@@ -426,7 +427,7 @@ library(topChef); library(ggplot2); library(tidyverse)
     
 ```
 
-```{r Viz_FinalIndex_Names, eval=TRUE,echo=FALSE,message=FALSE} 
+```{r Viz_FinalIndex_Names, eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE} 
     
   ## Graph it
     # for sorting reasons, have the season be a character
@@ -517,7 +518,7 @@ library(topChef); library(ggplot2); library(tidyverse)
 ```
 
 ##### 5.b.ii. Code
-```{r Viz_FinalIndex_Names_Code, eval=FALSE,echo=TRUE,message=FALSE} 
+```{r Viz_FinalIndex_Names_Code, eval=FALSE,echo=TRUE,message=FALSE,warning=FALSE} 
 
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
@@ -618,7 +619,7 @@ library(topChef); library(ggplot2); library(tidyverse)
 ### 5.c. Examples that use the `weightedindex` function 10 Elimination Challenges or 7 Quickfires into the season
 
 ##### 5.c.i. Visualizations
-```{r Viz_IndexAllSeasons_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
+```{r Viz_IndexAllSeasons_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE,warning=FALSE} 
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
     
@@ -630,7 +631,7 @@ library(topChef); library(ggplot2); library(tidyverse)
 ```
 The circles represent outliers: Michael in Las Vegas, Richard in All Stars: New York, Paul in Texas, and Kristen in Seattle. The thick bar within the rectangles are the median scores of chefs scores in that season. 
 
-```{r Viz_IndexAllSeasons, eval=TRUE,echo=FALSE,message=FALSE} 
+```{r Viz_IndexAllSeasons, eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE} 
     # drop unneeded variables
     allseasons <- allseasons[,c("chef","szn","sznnumber","placement","indexWeight")]
     
@@ -667,7 +668,7 @@ The circles represent outliers: Michael in Las Vegas, Richard in All Stars: New 
 
 This example shows the index scores for the Top Four chefs in all seasons with the remaining six chefs from Top Chef World All Stars. Ali, Buddha, and Amar thus far have the highest index scores.
 
-```{r Viz_IndexTopFour, eval=TRUE,echo=FALSE,message=FALSE}       
+```{r Viz_IndexTopFour, eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}       
    # Top Four: Distribution of scores at this stage of the competition
     allseasons[allseasons$placement <= 4,]  %>%
       ggplot(aes(x=placement,y=indexWeight,label=chef) ) +
@@ -690,7 +691,7 @@ This example shows the index scores for the Top Four chefs in all seasons with t
 ```
 
 ##### 5.c.ii. Code
-```{r Code_IndexAllSeasons, eval=FALSE,echo=TRUE,message=FALSE} 
+```{r Code_IndexAllSeasons, eval=FALSE,echo=TRUE,message=FALSE,warning=FALSE} 
 library(topChef); library(ggplot2); library(tidyverse)
  ## Get the index for all seasons
     
