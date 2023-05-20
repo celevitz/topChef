@@ -8,9 +8,8 @@
 ## Set up
 rm(list=ls())
 devtools::install_github("celevitz/topChef")
-library(tidyverse); library(openxlsx); library(gt); library(topChef)
+library(tidyverse); library(gt); library(topChef)
 
-directory <- "/Users/carlylevitz/Documents/Data/"
 savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/"
 
 chefdetails <- topChef::chefdetails
