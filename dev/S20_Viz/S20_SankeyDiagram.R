@@ -14,7 +14,9 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
 
 #############################################################################
 # Alluvial plot
-  # dataset
+  ##################
+  # data set-up
+  #################
     alluvialdata <- topChef::challengewins %>%
       filter(series=="US" & szn == "World All Stars") %>%
       # for sorting purposes, make the episode a two-digit character
@@ -37,83 +39,16 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
       alluvialdata <- alluvialdata[order(alluvialdata$episodechar,alluvialdata$challenge_type,alluvialdata$outcome,alluvialdata$chef),]
       alluvialdata$challenge_type <- NULL
 
-  # Viz draft 1
-      alluvialdata %>%
-        ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef,
-                   fill = outcome, label = chef)) +
-        geom_flow(stat = "alluvium", lode.guidance = "frontback") +
-        geom_stratum()
+    # Add names so that it's easier to read
+    # combine with full dataset
+    alluvialdataEp00 <- alluvialdata %>% filter(episodechar == "01") %>%
+          mutate(episodechar = "00"
+                 ,epichallenge = "Ep. 00"
+                 ,outcome=chef) %>%
+          distinct() %>%
+          bind_rows(alluvialdata)
 
-  # Viz draft 2
-      alluvialdata %>%
-          ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef,
-                     fill = outcome, label = chef)) +
-          geom_flow(stat = "alluvium", lode.guidance = "frontback") +
-          geom_stratum(aes(fill=outcome))+
-          ggtitle("Top Chef Season 20: World All Stars") +
-          theme_minimal() +
-          xlab("") +
-          theme(panel.grid=element_blank()
-                ,axis.text.y=element_blank()
-                ,legend.position="bottom") +
-          guides(fill=guide_legend(title="Outcome")) +
-          scale_fill_manual(values=c("OUT" = "#fc7d0b"
-                                     ,"LOW" = "#ffbc69"
-                                     ,"IN" = "gray90"
-                                     ,"HIGH" = "#a3cce9"
-                                     ,"WIN" = "#1170AA"))
-
-
-    # Viz draft 3
-      alluvialdata %>%
-        ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef,
-                   fill = outcome, label = chef)) +
-        geom_flow(aes(color=chef,fill=chef),stat = "alluvium", lode.guidance = "frontback") +
-        geom_stratum(aes(fill=outcome),color="white" )+
-        ggtitle("Top Chef Season 20: World All Stars") +
-        theme_minimal() +
-        xlab("") +
-        theme(panel.grid=element_blank()
-              ,axis.text.y=element_blank()
-              ,legend.position="bottom")  +
-        guides(fill=guide_legend(title="Outcome")) +
-        scale_fill_manual(values=c("OUT" = "#fc7d0b"
-                                   ,"LOW" = "#ffbc69"
-                                   ,"IN" = "gray90"
-                                   ,"HIGH" = "#a3cce9"
-                                   ,"WIN" = "#1170AA"))
-    # Viz draft 4
-      alluvialdata %>%
-        ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef)) +
-        geom_flow(aes(fill=chef)) +
-        geom_stratum(aes(fill=outcome),width=.3) +
-        #geom_lode()+
-        ggtitle("Top Chef Season 20: World All Stars") +
-        theme_minimal() +
-        xlab("") +
-        scale_x_discrete(breaks = unique(alluvialdata$epichallenge),labels=gsub("AQuickfire","Quickfire",unique(alluvialdata$epichallenge))) +
-        theme(panel.grid=element_blank()
-              ,axis.text.y=element_blank()
-              ,legend.position="bottom")  +
-        guides(fill=guide_legend(title="Outcome")) +
-        scale_fill_manual(values=c("OUT" = "gray95"
-                                   ,"LOW" = "#ffbc69"
-                                   ,"IN" = "#a3cce9"
-                                   ,"HIGH" = "#5fa2ce"
-                                   ,"WIN" = "#1170AA"))
-
-
-###########################################
-## Try a different format of the data to see if we can get the flow to be colored by chef
-
-  alluvialdataEp00 <- alluvialdata %>% filter(episodechar == "01") %>%
-        mutate(episodechar = "00"
-               ,epichallenge = "Ep. 00"
-               ,outcome=chef) %>%
-        distinct() %>%
-        bind_rows(alluvialdata)
-
-
+    # Order the data in a way that makes sense
       alluvialdataEp00$outcome <- factor(alluvialdataEp00$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"
                                                                            ,"Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
                                                                            ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
@@ -127,6 +62,12 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
                                                                      ,"Gabriel Rodriguez" ,"Tom Goetter","Ali Ghzawi","Buddha"   ))
       alluvialdataEp00 <- alluvialdataEp00[order(alluvialdataEp00$episodechar,alluvialdataEp00$epichallenge,alluvialdataEp00$outcome,alluvialdataEp00$chef),]
 
+
+
+
+  ##################
+  ## viz
+  ##################
       alluvialdataEp00 %>%
         ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef)) +
         geom_flow(aes(fill=chef),alpha=.7) +
