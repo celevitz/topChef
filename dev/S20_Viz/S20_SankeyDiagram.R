@@ -30,7 +30,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
              # want everyone to be listed as out after they are eliminated
              ,outcome=ifelse(in.competition == "FALSE","OUT",outcome)
              # but if they're OUT, put them as low in the episode that they were eliminated
-             ,outcome=ifelse(in.competition == "TRUE" & outcome == "OUT","LOW",outcome)
+             #,outcome=ifelse(in.competition == "TRUE" & outcome == "OUT","LOW",outcome)
              ,freq=1 ) %>%
       select(!(c(szn,sznnumber,series,in.competition,rating,episode)))
 
@@ -100,10 +100,11 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
               ,legend.position="none")
 
       dev.print(png, file = paste(savedirectory,"S20SankeyDiagram.png",sep=""), width = 2000, height = 900)
-
+      dev.off()
 
       # do a sankey for each chef
-      for (c in unique(alluvialdata$chef)) {
+      for (c in unique(alluvialdataEp00$chef)) {
+        print(c)
         alluvialdataEp00 %>%
           ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef)) +
           geom_flow(aes(fill=chef),alpha=.7) +
@@ -111,7 +112,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
           )) +
           geom_stratum()  +
           geom_text(stat = "stratum", size=3,aes(label= paste(after_stat(stratum)))) +
-          ggtitle("Top Chef Season 20: World All Stars") +
+          ggtitle(paste("Top Chef Season 20 World All Stars: ",c,"'s Journey",sep="") )+
           theme_minimal() +
           xlab("") +
           scale_x_discrete(breaks = unique(alluvialdataEp00$epichallenge)
@@ -121,7 +122,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
                 ,legend.position="none")
 
         dev.print(png, file = paste(savedirectory,"S20SankeyDiagram_",c,".png",sep=""), width = 2000, height = 900)
-
+        dev.off()
 
       }
 
@@ -132,8 +133,6 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
       #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "WIN" ~ "#1170AA"
       #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == c ~ "gray75"
       #                                      ,TRUE ~ "gray75")  )) +
-
-
 
 
 
