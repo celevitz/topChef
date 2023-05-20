@@ -8,8 +8,7 @@
 ## Set up
 rm(list=ls())
 devtools::install_github("celevitz/topChef")
-devtools::install_github("davidsjoberg/ggsankey")
-library(tidyverse); library(topChef); library(ggsankey); library(ggalluvial)
+library(tidyverse); library(topChef); library(ggalluvial)
 
 savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/"
 
