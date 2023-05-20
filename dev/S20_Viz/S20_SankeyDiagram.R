@@ -119,7 +119,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
             geom_stratum()  +
             geom_text(stat = "stratum", size=5,aes(label= paste(after_stat(stratum))),color="black") +
             labs(title="\n    Top Chef World All Stars: Each Chef's Quickfire Challenge Journey"
-                 ,caption="Data from github.com/celevitz/topChef") +
+                 ,caption="Twitter @carlylevitz        Data from github.com/celevitz/topChef") +
             theme_minimal() +
             xlab("") +
             scale_x_discrete(breaks = unique(alluvialdataEp00$epichallenge)
