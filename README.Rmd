@@ -20,7 +20,8 @@ topChef is a collection of data sets detailing events across all seasons of Top 
 
 ## 2. Installation
 
-Not yet on CRAN. So please use: *devtools::install.packages("celevitz/topChef")*
+Not yet on CRAN. So please use: *devtools::install.packages("celevitz/topChef")*.
+If it's not appearing to be updated, restart your R sessions, install it again, and call it into your library. 
 ```{r InstallPackage , message=FALSE,warning=FALSE}
 devtools::install_github("celevitz/topChef")
 ```
