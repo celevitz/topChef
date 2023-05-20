@@ -35,6 +35,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
       alluvialdata$outcome <- factor(alluvialdata$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"))
 
       alluvialdata <- alluvialdata[order(alluvialdata$episodechar,alluvialdata$challenge_type,alluvialdata$outcome,alluvialdata$chef),]
+      alluvialdata$challenge_type <- NULL
 
   # Viz draft 1
       alluvialdata %>%
@@ -100,6 +101,64 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
                                    ,"IN" = "#a3cce9"
                                    ,"HIGH" = "#5fa2ce"
                                    ,"WIN" = "#1170AA"))
+
+
+###########################################
+## Try a different format of the data to see if we can get the flow to be colored by chef
+
+  alluvialdataEp00 <- alluvialdata %>% filter(episodechar == "01") %>%
+        mutate(episodechar = "00"
+               ,epichallenge = "Ep. 00"
+               ,outcome=chef) %>%
+        distinct() %>%
+        bind_rows(alluvialdata)
+
+
+      alluvialdataEp00$outcome <- factor(alluvialdataEp00$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"
+                                                                           ,"Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
+                                                                           ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
+                                                                           ,"Dale MacKay" ,"Charbel Hayek" ,"Nicole Gomes","Victoire Gouloubi"
+                                                                           ,"Amar S."  ,"Sara B."
+                                                                           ,"Gabriel Rodriguez" ,"Tom Goetter","Ali Ghzawi","Buddha"   ))
+      alluvialdataEp00$chef <- factor(alluvialdataEp00$chef,levels=c("Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
+                                                                     ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
+                                                                     ,"Dale MacKay" ,"Charbel Hayek" ,"Nicole Gomes","Victoire Gouloubi"
+                                                                     ,"Amar S."  ,"Sara B."
+                                                                     ,"Gabriel Rodriguez" ,"Tom Goetter","Ali Ghzawi","Buddha"   ))
+      alluvialdataEp00 <- alluvialdataEp00[order(alluvialdataEp00$episodechar,alluvialdataEp00$epichallenge,alluvialdataEp00$outcome,alluvialdataEp00$chef),]
+
+      alluvialdataEp00 %>%
+        ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef)) +
+        geom_flow(aes(fill=chef),alpha=.7) +
+        scale_fill_manual(values=c("Samuel Albert" = "#ffff6d"
+                                   ,"Dawn B." = "#b6dbff"
+                                   ,"May Phattanant Thongthong" = "#006edb"
+                                   ,"Luciana Berry" = "#009292"
+                                   ,"Begoña Rodrigo" = "#ffb6db"
+                                   ,"Sylwia Stachyra" = "#b66dff"
+                                   ,"Dale MacKay" = "#490092"
+                                   ,"Charbel Hayek" = "#db6d00"
+                                   ,"Nicole Gomes" = "#920000"
+                                   ,"Victoire Gouloubi" = "gray75"
+                                   ,"Amar S." = "#004949"
+                                   ,"Sara B." = "#ff6db6"
+                                   ,"Ali Ghzawi" = "gray10"
+                                   ,"Buddha" = "#6db6ff"
+                                   ,"Gabriel Rodriguez" = "#24ff24"
+                                   ,"Tom Goetter" = "#924900"
+                                   )) +
+        geom_stratum()  +
+        geom_text(stat = "stratum", size=3,aes(label= paste(after_stat(stratum)))) +
+        ggtitle("Top Chef Season 20: World All Stars") +
+        theme_minimal() +
+        xlab("") +
+        scale_x_discrete(breaks = unique(alluvialdataEp00$epichallenge)
+                         ,labels=gsub("AQuickfire","Quickfire",unique(alluvialdataEp00$epichallenge))) +
+        theme(panel.grid=element_blank()
+              ,axis.text.y=element_blank()
+              ,legend.position="none")
+
+      dev.print(png, file = paste(savedirectory,"S20SankeyDiagram.png",sep=""), width = 2000, height = 900)
 
 
 
