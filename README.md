@@ -12,10 +12,22 @@ information.
 ## 2. Installation
 
 Not yet on CRAN. So please use:
-*devtools::install.packages(“celevitz/topChef”)*
+*devtools::install.packages(“celevitz/topChef”)*. If it’s not appearing
+to be updated, restart your R sessions, install it again, and call it
+into your library.
 
 ``` r
 devtools::install_github("celevitz/topChef")
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpSJzuIa/remotes1366a32cdc80b/celevitz-topChef-ac4ff22/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpSJzuIa/remotes1366a32cdc80b/celevitz-topChef-ac4ff22/DESCRIPTION’
+#>   ─  preparing ‘topChef’:
+#>    checking      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>   ─  checking for LF line-endings in source and make files and shell scripts
+#>   ─  checking for empty or unneeded directories
+#>   ─  building ‘topChef_0.1.0.tar.gz’
+#>      
+#> 
 ```
 
 ## 3. References & Acknowlegements
@@ -72,7 +84,7 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 634 × 17
+#> # A tibble: 636 × 17
 #>    szn      sznnumber series episode challenge_type outcome_type
 #>    <chr>        <dbl> <chr>    <dbl> <chr>          <chr>       
 #>  1 Kentucky        16 US           1 Quickfire      Team        
@@ -85,7 +97,7 @@ challengedescriptions
 #>  8 Kentucky        16 US           4 Elimination    Team        
 #>  9 Kentucky        16 US           5 Elimination    Team        
 #> 10 Kentucky        16 US           6 Elimination    Individual  
-#> # ℹ 624 more rows
+#> # ℹ 626 more rows
 #> # ℹ 11 more variables: challenge.description <chr>, shop.time <chr>,
 #> #   shop.budget <chr>, prep_time <dbl>, cook_time <dbl>,
 #> #   product.placement <chr>, advantage <chr>,
@@ -99,7 +111,7 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,555 × 9
+#> # A tibble: 9,587 × 9
 #>    szn      sznnumber series episode in.competition chef  challenge_type outcome
 #>    <chr>        <dbl> <chr>    <dbl> <lgl>          <chr> <chr>          <chr>  
 #>  1 All Sta…         8 US           1 TRUE           Ange… Quickfire      LOW    
@@ -112,7 +124,7 @@ challengewins
 #>  8 All Sta…         8 US           1 TRUE           Fabi… Quickfire      LOW    
 #>  9 All Sta…         8 US           1 TRUE           Jami… Quickfire      LOW    
 #> 10 All Sta…         8 US           1 TRUE           Jenn… Quickfire      HIGH   
-#> # ℹ 9,545 more rows
+#> # ℹ 9,577 more rows
 #> # ℹ 1 more variable: rating <dbl>
 ```
 
@@ -123,7 +135,7 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 748 × 9
+#> # A tibble: 750 × 9
 #>    szn           sznnumber series episode challenge_type outcome_type guestjudge
 #>    <chr>             <dbl> <chr>    <dbl> <chr>          <chr>        <chr>     
 #>  1 All Stars: N…         8 US           1 Quickfire      Team         Tom Colic…
@@ -136,7 +148,7 @@ judges
 #>  8 All Stars: N…         8 US           4 Quickfire      Individual   Tony Mant…
 #>  9 All Stars: N…         8 US           4 Elimination    Team         Tony Mant…
 #> 10 All Stars: N…         8 US           5 Quickfire      Individual   Tom Colic…
-#> # ℹ 738 more rows
+#> # ℹ 740 more rows
 #> # ℹ 2 more variables: competed_on_TC <chr>, other_shows <chr>
 ```
 
@@ -147,7 +159,7 @@ challenge.
 
 ``` r
 rewards
-#> # A tibble: 326 × 9
+#> # A tibble: 327 × 9
 #>    szn   sznnumber series episode challenge_type outcome_type reward_type reward
 #>    <chr>     <dbl> <chr>    <dbl> <chr>          <chr>        <chr>       <chr> 
 #>  1 All …         8 US           1 Elimination    Individual   Money       10000…
@@ -160,7 +172,7 @@ rewards
 #>  8 All …         8 US           4 Elimination    Team         Prize       Trip …
 #>  9 All …         8 US           5 Quickfire      Individual   Prize       Toyot…
 #> 10 All …         8 US           6 Elimination    Team         Prize       Trip …
-#> # ℹ 316 more rows
+#> # ℹ 317 more rows
 #> # ℹ 1 more variable: chef <chr>
 ```
 
