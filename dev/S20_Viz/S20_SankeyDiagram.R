@@ -160,16 +160,6 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
 
       }
 
-      # scale_fill_manual(values=c(case_when(alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "OUT" ~ "#fc7d0b"
-      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "LOW" ~ "#ffbc69"
-      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "IN" ~ "#a3cce9"
-      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "HIGH" ~ "#5fa2ce"
-      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "WIN" ~ "#1170AA"
-      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == c ~ "gray75"
-      #                                      ,TRUE ~ "gray75")  )) +
-
-
-
 
 
 
