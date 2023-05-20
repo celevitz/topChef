@@ -102,6 +102,42 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
       dev.print(png, file = paste(savedirectory,"S20SankeyDiagram.png",sep=""), width = 2000, height = 900)
 
 
+      # do a sankey for each chef
+      for (c in unique(alluvialdata$chef)) {
+        alluvialdataEp00 %>%
+          ggplot(aes(x = epichallenge, stratum = outcome, alluvium = chef)) +
+          geom_flow(aes(fill=chef),alpha=.7) +
+          scale_fill_manual(values=c(ifelse(alluvialdataEp00$chef==c,"#db6d00","gray75")
+          )) +
+          geom_stratum()  +
+          geom_text(stat = "stratum", size=3,aes(label= paste(after_stat(stratum)))) +
+          ggtitle("Top Chef Season 20: World All Stars") +
+          theme_minimal() +
+          xlab("") +
+          scale_x_discrete(breaks = unique(alluvialdataEp00$epichallenge)
+                           ,labels=gsub("AQuickfire","Quickfire",unique(alluvialdataEp00$epichallenge))) +
+          theme(panel.grid=element_blank()
+                ,axis.text.y=element_blank()
+                ,legend.position="none")
+
+        dev.print(png, file = paste(savedirectory,"S20SankeyDiagram_",c,".png",sep=""), width = 2000, height = 900)
+
+
+      }
+
+      # scale_fill_manual(values=c(case_when(alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "OUT" ~ "#fc7d0b"
+      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "LOW" ~ "#ffbc69"
+      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "IN" ~ "#a3cce9"
+      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "HIGH" ~ "#5fa2ce"
+      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == "WIN" ~ "#1170AA"
+      #                                      ,alluvialdataEp00$chef == c & alluvialdataEp00$outcome == c ~ "gray75"
+      #                                      ,TRUE ~ "gray75")  )) +
+
+
+
+
+
+
 
 
 
