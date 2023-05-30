@@ -22,12 +22,17 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
       #keep just the episodes with four or more chefs;
       # we want to keep those episodes to see how well they've done up until that point
       filter(`#.of.competitors` >= 4) %>%
+        # since there are some seasons where there are multiple episodes with four contestants,
+        # choose the episode that is the latest in the season
+        group_by(szn,sznnumber,series) %>%
+        mutate(highestepisode = max(episode)) %>%
+        filter(episode == highestepisode) %>%
       select(szn,sznnumber,series,episode,`#.of.competitors`) %>%
       # merge on the challenge wins
       left_join(topChef::challengewins %>% select(!rating)) %>%
       # keep just the final four
         mutate(f4 = ifelse(`#.of.competitors` == 4 & in.competition == "TRUE",1,0)) %>%
-        group_by(szn,sznnumber,series,chef) %>%
+        ungroup() %>% group_by(szn,sznnumber,series,chef) %>%
         mutate(f4=max(f4)) %>%
         filter(f4 == 1) %>%
       # get challenge statistics
@@ -51,7 +56,9 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
                              ,challenge_type == "Quickfire" & outcome == "WIN" ~ 2
                              ,challenge_type == "Elimination" & outcome == "HIGH" ~ 3
                              ,challenge_type == "Quickfire" & outcome == "HIGH" ~ 4
-                             ,challenge_type == "Elimination" & outcome == "LOW" ~ 5))
+                             ,challenge_type == "Elimination" & outcome == "LOW" ~ 5)) %>%
+      # merge on placement information
+        left_join(topChef::chefdetails %>% select(szn,sznnumber,series,chef,gender,placement))
 
 
 
@@ -82,10 +89,36 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
     labs(title="Top Four Chefs Across 20 Seasons")
 
 
-##
+## Graphing function
+challengevar <- "Elimination"
+outcomevar <- "LOW"
+
+topfourgraphs <- function(challengevar,outcomevar) {
+  graphdata <- topfourepisode %>% filter(challenge_type == challengevar & outcome == outcomevar)
+
+  # Graph one: boxplot
+  graphdata %>%
+    ggplot(aes(x=n)) +
+    geom_boxplot() +
+    xlab(paste0("Number of ",challengevar," ",outcomevar,"S",sep="")) +
+    scale_x_continuous(lim=c(0,max(graphdata$n,na.rm=T)+2)
+                       , breaks = seq(0,max(graphdata$n,na.rm=T)+2,2)
+                       ,labels =seq(0,max(graphdata$n,na.rm=T)+2,2)) +
+    labs(title = paste0("Distribution of number of ",challengevar," ",outcomevar,"S of all Final Fours",sep="")) +
+    theme_minimal() +
+    theme(axis.text.y=element_blank()
+          ,panel.grid=element_blank()
+          ,axis.ticks.x = element_line(color="black")
+          ,axis.line.x = element_line(color="black"))
+
+  # Graph two: average by placement
+    graphdata %>%
+      group_by(placement) %>%
+      summarise(mean=mean(n))
+  # Graph 3: people with the most
 
 
-
+}
 
 
 
