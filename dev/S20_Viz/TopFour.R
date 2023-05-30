@@ -151,7 +151,25 @@ topfourgraphs <- function(challengevar,outcomevar) {
           ,axis.line.x = element_line(color="black")) +
     geom_text(hjust=0,nudge_x = .1)
 
-  # Graph 3: people with the most
+  # Graph 3: average by gender
+  genderdata <-  graphdata %>%
+    group_by(gender) %>%
+    summarise(mean=mean(n),N=n()) %>%
+    mutate(gender=paste0(gender," (N = ",N,")"))
+
+  graphthree <-   genderdata %>%
+    ggplot(aes(x=mean,y=gender,label = round(mean,1))) +
+    geom_bar(stat="identity") +
+    xlab(paste0("Average number of ",challengevar," ",outcomevar,"S",sep="")) +
+    labs(title = paste0("Average number of ",challengevar," ",outcomevar,"S by gender for those in\nepisodes with the final four chefs",sep="")) +
+    theme_minimal() +
+    theme(panel.grid=element_blank()
+          ,axis.ticks.x = element_line(color="black")
+          ,axis.line.x = element_line(color="black")) +
+    geom_text(hjust=0,nudge_x = .1)
+
+
+  # Graph 4: people with the most
   # threshold for this changes by variable
   if (challengevar == "Elimination" & outcomevar == "LOW") {
     threshold <- 6
@@ -165,7 +183,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     arrange(desc(n)) %>%
     mutate(chefinseason = paste0(chef," (",szn,")"))
 
-  graphthree <-
+  graphfour <-
     chefswithmost %>%
     ggplot(aes(x=n,y=reorder(chefinseason,n),label=n)) +
     geom_bar(stat="identity") +
