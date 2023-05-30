@@ -164,7 +164,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     filter(n >= threshold) %>%
     arrange(desc(n)) %>%
     mutate(chefinseason = paste0(chef," (",szn,")"))
-
+## Still need to get this ordered by #
   graphthree <-
     chefswithmost %>%
     ggplot(aes(x=n,y=chefinseason,label=n)) +
