@@ -26,19 +26,28 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
         filter(!(grepl("Reunion",episode_name)) & episode_name != "Top Chef Holiday Special") %>%
         # since there are some seasons where there are multiple episodes with four contestants,
         # choose the episode that is the latest in the season
-        # group_by(szn,sznnumber,series) %>%
-        # mutate(highestepisode = max(episode)) %>%
-        # filter(episode == highestepisode) %>%
-      select(szn,sznnumber,series,episode,`#.of.competitors`) %>%
-      # merge on the challenge wins
-      left_join(topChef::challengewins %>% select(!rating)) %>%
-      # keep just the final four
-        mutate(f4 = ifelse(`#.of.competitors` == 4 & in.competition == "TRUE",1,0)) %>%
-        ungroup() %>% group_by(szn,sznnumber,series,chef) %>%
-        mutate(f4=max(f4)) %>%
-        filter(f4 == 1) %>%
+        group_by(szn,sznnumber,series) %>%
+        mutate(highestepisode = max(episode)) %>%
+        filter(episode == highestepisode) %>%
+      select(szn,sznnumber,series,episode) %>%
+      rename(episodeflag = episode)
+
+  # Which Chefs are in the final four?
+    finalfourchefs <- topfourepisode %>%
+      left_join(topChef::challengewins) %>%
+      filter(in.competition == "TRUE" & episode == episodeflag) %>%
+      select(series,szn,sznnumber,chef) %>%
+      distinct()
+
+  # Get the challenge wins for all episodes leading up to the Final Four
+  # But exclude the wins of the episode in which there was the final four
+    topfourdata <-
+    topChef::challengewins %>% select(!rating) %>%
+      left_join(topfourepisode) %>%
+      filter(episode < episodeflag) %>%
+      # Merge on the top four chef names -- and keep only those
+      right_join(finalfourchefs) %>%
       # get challenge statistics
-        # don't include the wins of the final four episode
         # combine low & out because want to consider them both as low; otherwise, only just a few chefs will have "out" as a separate category
         # and do some edits to issues of
         mutate(outcome = case_when(outcome %in% c("WITHDREW","OUT","RUNNER-UP") ~ "LOW"
@@ -65,7 +74,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
 
 
 ## Visualize all top fours
-  topfourepisodeSorted <- topfourepisode[order(topfourepisode$x,desc(topfourepisode$n),topfourepisode$chef,topfourepisode$sznnumber),]
+  topfourepisodeSorted <- topfourdata[order(topfourepisode$x,desc(topfourepisode$n),topfourepisode$chef,topfourepisode$sznnumber),]
   topfourepisodeSorted$chefseason <- paste0(topfourepisodeSorted$chef," (",topfourepisodeSorted$szn,")")
   topfourepisodeSorted$Y <- NA
   #if people were in final four more than once, they only get plotted once
@@ -96,7 +105,7 @@ challengevar <- "Elimination"
 outcomevar <- "HIGH"
 
 topfourgraphs <- function(challengevar,outcomevar) {
-  graphdata <- topfourepisode %>%
+  graphdata <- topfourdata %>%
     filter(challenge_type == challengevar & outcome == outcomevar)
 
   # Graph one: boxplot
