@@ -55,23 +55,34 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
 
 
 
-## Visualize
-  topfourepisodeSorted <- topfourepisode[order(topfourepisode$x,desc(topfourepisode$n),topfourepisode$chef),]
+## Visualize all top fours
+  topfourepisodeSorted <- topfourepisode[order(topfourepisode$x,desc(topfourepisode$n),topfourepisode$chef,topfourepisode$sznnumber),]
+  topfourepisodeSorted$chefseason <- paste0(topfourepisodeSorted$chef," (",topfourepisodeSorted$szn,")")
   topfourepisodeSorted$Y <- NA
-  tempcount <- length(unique(topfourepisodeSorted$chef))
-  for (chefname in unique(topfourepisodeSorted$chef)) {
-    topfourepisodeSorted$Y[topfourepisodeSorted$chef == chefname] <- tempcount
+  #if people were in final four more than once, they only get plotted once
+  # so take into account the season number
+  tempcount <- length(unique(topfourepisodeSorted$chefseason))
+  for (chefname in unique(topfourepisodeSorted$chefseason)) {
+    topfourepisodeSorted$Y[topfourepisodeSorted$chefseason == chefname] <- tempcount
     tempcount <- tempcount -1
   }
-
-
 
   topfourepisodeSorted %>%
     ggplot(aes(x=x,y=Y,fill=n)) +
     geom_tile() +
-    scale_fill_gradient(low="white", high="blue")  +
-    geom_text(stat="identity",label=topfourepisodeSorted$chef,size=3)
+    scale_fill_gradient(low="gray95", high="blue")  +
+    geom_text(stat="identity",label=topfourepisodeSorted$n,size=2) +
+    xlab("") + ylab("") +
+    scale_x_continuous(breaks=seq(1,5,1),labels=c("Elimination\nwin","Quickfire\nwin","Elimination\nhigh","Quickfire\nhigh","Elimination\nlow")) +
+    scale_y_continuous(breaks=seq(1,max(topfourepisodeSorted$Y),1)
+                       ,labels=rev(unique(topfourepisodeSorted$chefseason))) +
+    theme_minimal() +
+    theme(panel.grid=element_blank()
+          ,axis.text.y=element_text(size=5)) +
+    labs(title="Top Four Chefs Across 20 Seasons")
 
+
+##
 
 
 
