@@ -9,7 +9,7 @@
 rm(list=ls())
 devtools::install_github("celevitz/topChef")
 
-library(tidyverse); library(topChef); library(dplyr); library(ggplot2); library(ggbump)
+library(tidyverse); library(topChef); library(dplyr); library(ggplot2); library(ggpubr)
 
 savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/"
 
@@ -195,6 +195,10 @@ topfourgraphs <- function(challengevar,outcomevar) {
           ,axis.line.x = element_line(color="black")
           ,axis.title.y = element_blank()) +
     geom_text(hjust=0,nudge_x = .1)
+
+  # bring all graphs together
+  ggarrange(graphone,ggarrange(graphtwo,graphthree),graphfour,
+            ncol=1,nrow=3,heights = c(1,1,2))
 
 
 }
