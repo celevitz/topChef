@@ -22,11 +22,13 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
       #keep just the episodes with four or more chefs;
       # we want to keep those episodes to see how well they've done up until that point
       filter(`#.of.competitors` >= 4) %>%
+        # drop reunions
+        filter(!(grepl("Reunion",episode_name)) & episode_name != "Top Chef Holiday Special") %>%
         # since there are some seasons where there are multiple episodes with four contestants,
         # choose the episode that is the latest in the season
-        group_by(szn,sznnumber,series) %>%
-        mutate(highestepisode = max(episode)) %>%
-        filter(episode == highestepisode) %>%
+        # group_by(szn,sznnumber,series) %>%
+        # mutate(highestepisode = max(episode)) %>%
+        # filter(episode == highestepisode) %>%
       select(szn,sznnumber,series,episode,`#.of.competitors`) %>%
       # merge on the challenge wins
       left_join(topChef::challengewins %>% select(!rating)) %>%
@@ -91,20 +93,22 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
 
 ## Graphing function
 challengevar <- "Elimination"
-outcomevar <- "LOW"
+outcomevar <- "HIGH"
 
 topfourgraphs <- function(challengevar,outcomevar) {
-  graphdata <- topfourepisode %>% filter(challenge_type == challengevar & outcome == outcomevar)
+  graphdata <- topfourepisode %>%
+    filter(challenge_type == challengevar & outcome == outcomevar)
 
   # Graph one: boxplot
-  graphdata %>%
+  graphone <-  graphdata %>%
     ggplot(aes(x=n)) +
     geom_boxplot() +
     xlab(paste0("Number of ",challengevar," ",outcomevar,"S",sep="")) +
     scale_x_continuous(lim=c(0,max(graphdata$n,na.rm=T)+2)
                        , breaks = seq(0,max(graphdata$n,na.rm=T)+2,2)
                        ,labels =seq(0,max(graphdata$n,na.rm=T)+2,2)) +
-    labs(title = paste0("Distribution of number of ",challengevar," ",outcomevar,"S of all Final Fours",sep="")) +
+    labs(title = paste0("Distribution of number of ",challengevar," ",outcomevar,"S of those in episodes with the final four chefs",sep="")
+         ,subtitle="If chef was in Last Chance Kitchen at the Final Four, they are not included here") +
     theme_minimal() +
     theme(axis.text.y=element_blank()
           ,panel.grid=element_blank()
@@ -112,10 +116,52 @@ topfourgraphs <- function(challengevar,outcomevar) {
           ,axis.line.x = element_line(color="black"))
 
   # Graph two: average by placement
-    graphdata %>%
+  placementdata <-  graphdata %>%
       group_by(placement) %>%
-      summarise(mean=mean(n))
+      summarise(mean=mean(n),N=n()) %>%
+      mutate(placement=as.character(placement)
+             ,placement=case_when(placement == "1" ~ "1st"
+                                  ,placement == "2" ~ "2nd"
+                                  ,placement == "3" ~ "3rd"
+                                  ,placement == "4" ~ "4th"
+                                  ,placement == "5" ~ "5th"
+                                  ,is.na(placement) ~ "Current season")
+           ,placement=paste0(placement," (N = ",N,")"))
+
+  placementdata$placement <- factor(placementdata$placement
+                                    ,levels = rev(sort(placementdata$placement)))
+
+  graphtwo <-   placementdata %>%
+    ggplot(aes(x=mean,y=placement,label = round(mean,1))) +
+    geom_bar(stat="identity") +
+    xlab(paste0("Average number of ",challengevar," ",outcomevar,"S",sep="")) +
+    labs(title = paste0("Average number of ",challengevar," ",outcomevar,"S by placement for those in\nepisodes with the final four chefs",sep="")) +
+    theme_minimal() +
+    theme(panel.grid=element_blank()
+          ,axis.ticks.x = element_line(color="black")
+          ,axis.line.x = element_line(color="black")) +
+    geom_text(hjust=0,nudge_x = .1)
+
   # Graph 3: people with the most
+  # threshold for this changes by variable
+  if (challengevar == "Elimination" & outcomevar == "LOW") { threshold <- 6 } else { threshold <- 4}
+  chefswithmost <-  graphdata %>%
+    arrange(desc(n)) %>%
+    filter(n >= threshold) %>%
+    mutate(chefinseason = paste0(chef," (",szn,")"))
+
+  graphthree <-
+    chefswithmost %>%
+    ggplot(aes(x=n,y=chefinseason,label=n)) +
+    geom_bar(stat="identity") +
+    xlab(paste0("Number of ",challengevar," ",outcomevar,"S",sep="")) +
+    labs(title = paste0("Chefs with the most ",challengevar," ",outcomevar,"S",sep="")) +
+    theme_minimal() +
+    theme(panel.grid=element_blank()
+          ,axis.ticks.x = element_line(color="black")
+          ,axis.line.x = element_line(color="black")
+          ,axis.title.y = element_blank()) +
+    geom_text(hjust=0,nudge_x = .1)
 
 
 }
@@ -124,7 +170,8 @@ topfourgraphs <- function(challengevar,outcomevar) {
 
 
 
-
+## Notes
+## If people came back from LCK after F4, then they may not be included here, e.g., Kristen in Seattle
 
 
 
