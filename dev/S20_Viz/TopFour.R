@@ -153,10 +153,16 @@ topfourgraphs <- function(challengevar,outcomevar) {
 
   # Graph 3: people with the most
   # threshold for this changes by variable
-  if (challengevar == "Elimination" & outcomevar == "LOW") { threshold <- 6 } else { threshold <- 4}
+  if (challengevar == "Elimination" & outcomevar == "LOW") {
+    threshold <- 6
+  }  else if (challengevar == "Elimination" & outcomevar == "HIGH") {
+      threshold <- 5
+  }  else { threshold <- 4}
+
+
   chefswithmost <-  graphdata %>%
-    arrange(desc(n)) %>%
     filter(n >= threshold) %>%
+    arrange(desc(n)) %>%
     mutate(chefinseason = paste0(chef," (",szn,")"))
 
   graphthree <-
