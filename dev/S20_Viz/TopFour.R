@@ -74,7 +74,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
 
 
 ## Visualize all top fours
-  topfourepisodeSorted <- topfourdata[order(topfourepisode$x,desc(topfourepisode$n),topfourepisode$chef,topfourepisode$sznnumber),]
+  topfourepisodeSorted <- topfourdata[order(topfourdata$x,desc(topfourdata$n),topfourdata$chef,topfourdata$sznnumber),]
   topfourepisodeSorted$chefseason <- paste0(topfourepisodeSorted$chef," (",topfourepisodeSorted$szn,")")
   topfourepisodeSorted$Y <- NA
   #if people were in final four more than once, they only get plotted once
@@ -164,10 +164,10 @@ topfourgraphs <- function(challengevar,outcomevar) {
     filter(n >= threshold) %>%
     arrange(desc(n)) %>%
     mutate(chefinseason = paste0(chef," (",szn,")"))
-## Still need to get this ordered by #
+
   graphthree <-
     chefswithmost %>%
-    ggplot(aes(x=n,y=chefinseason,label=n)) +
+    ggplot(aes(x=n,y=reorder(chefinseason,n),label=n)) +
     geom_bar(stat="identity") +
     xlab(paste0("Number of ",challengevar," ",outcomevar,"S",sep="")) +
     labs(title = paste0("Chefs with the most ",challengevar," ",outcomevar,"S",sep="")) +
