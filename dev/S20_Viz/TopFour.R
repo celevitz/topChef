@@ -62,8 +62,9 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
                                    ,outcome %in% c("Didn't compete","Qualified") ~ "IN"
                                    ,outcome %in% c("WINNER") ~ "WIN"
                                    ,TRUE ~ outcome)
-        # combine different types of challenges: Eliminations or not
-               #,challenge_type = case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire"))
+        #combine different types of challenges: Eliminations or not
+        ,challenge_type = case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Elimination"
+                                    ,TRUE ~ challenge_type)
         ) %>%
       # Keep just US (not Masters or Canada)
         filter(series == "US") %>%
@@ -132,7 +133,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     ggplot(aes(x=n)) +
     theme_void() +
     labs(title = str_wrap(paste0("    Top Four Chefs: Number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=65)
-         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, but later came back into the competition, they are included here. If there were multiple episodes with four chefs, the later episode of the season was chosen. The one chef that was in the Final Four but due to Last Chance Kitchen came in fifth is excluded. The statistics are only calculated up until the episode of the Final Four.",width = 85)) +
+         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, but later came back into the competition, they are included here. If there were multiple episodes with four chefs, the later episode of the season was chosen. The one chef that was in the Final Four but due to Last Chance Kitchen came in fifth is excluded. The statistics are only calculated up until the episode of the Final Four. Sudden Death Quickfires are considered Elimination Challenges.",width = 85)) +
     theme(plot.title=element_text(size=28,face="bold",color="black")
           ,plot.subtitle = element_text(size=22,color="black"))
 
