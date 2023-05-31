@@ -9,7 +9,7 @@
 rm(list=ls())
 devtools::install_github("celevitz/topChef")
 
-library(tidyverse); library(topChef); library(dplyr); library(ggplot2); library(ggpubr)
+library(tidyverse); library(topChef); library(dplyr); library(ggplot2); library(ggpubr);library(stringr)
 
 savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/"
 
@@ -104,25 +104,42 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
 challengevar <- "Elimination"
 outcomevar <- "HIGH"
 
+# set up ggplot stuff
+    themestuff <- theme_minimal() +
+      theme(panel.grid=element_blank()
+            ,axis.ticks.x = element_line(color="black")
+            ,axis.line.x = element_line(color="black")
+            ,axis.text.x = element_text(size=18,color="black")
+            ,axis.text.y = element_text(size=18,color="black")
+            ,axis.title.x = element_text(size=18,color="black")
+            ,axis.title.y = element_blank()
+            ,plot.title=element_text(size=20,face="bold",color="black")
+            ,plot.subtitle = element_text(size=18,color="black"))
+
 topfourgraphs <- function(challengevar,outcomevar) {
   graphdata <- topfourdata %>%
     filter(challenge_type == challengevar & outcome == outcomevar)
+
+  # Notes
+  graphzero <- graphdata %>%
+    ggplot(aes(x=n)) +
+    theme_void() +
+    labs(title = str_wrap(paste0("Top Four Chefs: Number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=65)
+         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, they are not included here. If there were multiple episodes with four chefs, the later episode of the season was chosen.",width = 85)) +
+    theme(plot.title=element_text(size=28,face="bold",color="black")
+          ,plot.subtitle = element_text(size=24,color="black"))
 
   # Graph one: boxplot
   graphone <-  graphdata %>%
     ggplot(aes(x=n)) +
     geom_boxplot() +
-    xlab(paste0("Number of ",challengevar," ",outcomevar,"S",sep="")) +
+    xlab(paste0("Number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
     scale_x_continuous(lim=c(0,max(graphdata$n,na.rm=T)+2)
                        , breaks = seq(0,max(graphdata$n,na.rm=T)+2,2)
                        ,labels =seq(0,max(graphdata$n,na.rm=T)+2,2)) +
-    labs(title = paste0("Distribution of number of ",challengevar," ",outcomevar,"S of those in episodes with the final four chefs",sep="")
-         ,subtitle="If chef was in Last Chance Kitchen at the Final Four, they are not included here") +
-    theme_minimal() +
-    theme(axis.text.y=element_blank()
-          ,panel.grid=element_blank()
-          ,axis.ticks.x = element_line(color="black")
-          ,axis.line.x = element_line(color="black"))
+    labs(title = str_wrap(paste0("\n\nDistribution of number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=100) ) +
+    themestuff +
+    theme(axis.text.y=element_blank())
 
   # Graph two: average by placement
   placementdata <-  graphdata %>%
@@ -143,13 +160,11 @@ topfourgraphs <- function(challengevar,outcomevar) {
   graphtwo <-   placementdata %>%
     ggplot(aes(x=mean,y=placement,label = round(mean,1))) +
     geom_bar(stat="identity") +
-    xlab(paste0("Average number of ",challengevar," ",outcomevar,"S",sep="")) +
-    labs(title = paste0("Average number of ",challengevar," ",outcomevar,"S by placement for those in\nepisodes with the final four chefs",sep="")) +
-    theme_minimal() +
-    theme(panel.grid=element_blank()
-          ,axis.ticks.x = element_line(color="black")
-          ,axis.line.x = element_line(color="black")) +
-    geom_text(hjust=0,nudge_x = .1)
+    xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    scale_x_continuous(lim=c(0,max(placementdata$mean)+2),breaks=seq(0,max(placementdata$mean)+2,1),labels=seq(0,max(placementdata$mean)+2,1)) +
+    labs(title = "\n\nAverage by placement") +
+    themestuff +
+    geom_text(hjust=0,nudge_x = .1,size=6)
 
   # Graph 3: average by gender
   genderdata <-  graphdata %>%
@@ -157,16 +172,15 @@ topfourgraphs <- function(challengevar,outcomevar) {
     summarise(mean=mean(n),N=n()) %>%
     mutate(gender=paste0(gender," (N = ",N,")"))
 
+
   graphthree <-   genderdata %>%
     ggplot(aes(x=mean,y=gender,label = round(mean,1))) +
     geom_bar(stat="identity") +
-    xlab(paste0("Average number of ",challengevar," ",outcomevar,"S",sep="")) +
-    labs(title = paste0("Average number of ",challengevar," ",outcomevar,"S by gender for those in\nepisodes with the final four chefs",sep="")) +
-    theme_minimal() +
-    theme(panel.grid=element_blank()
-          ,axis.ticks.x = element_line(color="black")
-          ,axis.line.x = element_line(color="black")) +
-    geom_text(hjust=0,nudge_x = .1)
+    xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    scale_x_continuous(lim=c(0,max(genderdata$mean)+2),breaks=seq(0,max(genderdata$mean)+2,1),labels=seq(0,max(genderdata$mean)+2,1)) +
+    labs(title = "\n\nAverage by gender") +
+    themestuff +
+    geom_text(hjust=0,nudge_x = .1,size=6)
 
 
   # Graph 4: people with the most
@@ -187,18 +201,17 @@ topfourgraphs <- function(challengevar,outcomevar) {
     chefswithmost %>%
     ggplot(aes(x=n,y=reorder(chefinseason,n),label=n)) +
     geom_bar(stat="identity") +
-    xlab(paste0("Number of ",challengevar," ",outcomevar,"S",sep="")) +
-    labs(title = paste0("Chefs with the most ",challengevar," ",outcomevar,"S",sep="")) +
-    theme_minimal() +
-    theme(panel.grid=element_blank()
-          ,axis.ticks.x = element_line(color="black")
-          ,axis.line.x = element_line(color="black")
-          ,axis.title.y = element_blank()) +
-    geom_text(hjust=0,nudge_x = .1)
+    xlab(paste0("\nNumber of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    labs(title = paste0("\n\nChefs with the most ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    geom_text(hjust=0,nudge_x = .1,size=6) +
+    themestuff
 
   # bring all graphs together
-  ggarrange(graphone,ggarrange(graphtwo,graphthree),graphfour,
+  ggarrange(ggarrange(graphzero,graphone,ncol=1,nrow=2),ggarrange(graphtwo,graphthree),graphfour,
             ncol=1,nrow=3,heights = c(1,1,2))
+
+  dev.print(png, file = paste(savedirectory,"TopFour_",challengevar,"_",outcomevar,".png",sep=""), width = 900, height = 1200)
+  dev.off()
 
 
 }
