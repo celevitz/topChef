@@ -130,10 +130,10 @@ topfourgraphs <- function(challengevar,outcomevar) {
   graphzero <- graphdata %>%
     ggplot(aes(x=n)) +
     theme_void() +
-    labs(title = str_wrap(paste0("Top Four Chefs: Number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=65)
-         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, they are not included here. If there were multiple episodes with four chefs, the later episode of the season was chosen.",width = 85)) +
+    labs(title = str_wrap(paste0("    Top Four Chefs: Number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=65)
+         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, but later came back into the competition, they are included here. If there were multiple episodes with four chefs, the later episode of the season was chosen. The one chef that was in the Final Four but due to Last Chance Kitchen came in fifth is excluded. The statistics are only calculated up until the episode of the Final Four.",width = 85)) +
     theme(plot.title=element_text(size=28,face="bold",color="black")
-          ,plot.subtitle = element_text(size=24,color="black"))
+          ,plot.subtitle = element_text(size=22,color="black"))
 
   # Graph one: boxplot
   graphone <-  graphdata %>%
@@ -143,7 +143,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     scale_x_continuous(lim=c(0,max(graphdata$n,na.rm=T)+2)
                        , breaks = seq(0,max(graphdata$n,na.rm=T)+2,2)
                        ,labels =seq(0,max(graphdata$n,na.rm=T)+2,2)) +
-    labs(title = str_wrap(paste0("\n\nDistribution of number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=100) ) +
+    labs(title = str_wrap(paste0("\nDistribution of number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=100) ) +
     themestuff +
     theme(axis.text.y=element_blank())
 
@@ -168,7 +168,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     geom_bar(stat="identity") +
     xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
     scale_x_continuous(lim=c(0,max(placementdata$mean)+2),breaks=seq(0,max(placementdata$mean)+2,1),labels=seq(0,max(placementdata$mean)+2,1)) +
-    labs(title = "\n\nAverage by placement") +
+    labs(title = "\nAverage by placement") +
     themestuff +
     geom_text(hjust=0,nudge_x = .1,size=6)
 
@@ -184,7 +184,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     geom_bar(stat="identity") +
     xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
     scale_x_continuous(lim=c(0,max(genderdata$mean)+2),breaks=seq(0,max(genderdata$mean)+2,1),labels=seq(0,max(genderdata$mean)+2,1)) +
-    labs(title = "\n\nAverage by gender") +
+    labs(title = "\nAverage by gender") +
     themestuff +
     geom_text(hjust=0,nudge_x = .1,size=6)
 
@@ -213,7 +213,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     themestuff
 
   # bring all graphs together
-  ggarrange(ggarrange(graphzero,graphone,ncol=1,nrow=2),ggarrange(graphtwo,graphthree),graphfour,
+  ggarrange(ggarrange(graphzero,graphone,heights=c(2,1),nrow=2),ggarrange(graphtwo,graphthree),graphfour,
             ncol=1,nrow=3,heights = c(1,1,2))
 
   dev.print(png, file = paste(savedirectory,"TopFour_",challengevar,"_",outcomevar,".png",sep=""), width = 900, height = 1200)
