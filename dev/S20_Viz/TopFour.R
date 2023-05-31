@@ -71,12 +71,29 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
       # count number of wins and stuff
         group_by(szn,sznnumber,series,chef,challenge_type,outcome,placement,gender) %>%
         summarise(n=n()) %>%
+      # Because we need to have 0s when appropriate - and right now, if someone didn't e.g., win a quickfire they don't have a row for that
+      #   I need to transpose the data, add in zeros for the NAs, and then re-transpose the data back to long
+        pivot_wider(names_from = challenge_type,values_from = n) %>%
+        select(!`Qualifying challenge`) %>%
+        filter(!(is.na(outcome))) %>%
+        pivot_wider(names_from = outcome,values_from = c("Quickfire","Elimination")) %>%
+        mutate(Quickfire_HIGH = ifelse(is.na(Quickfire_HIGH),0,Quickfire_HIGH)
+               ,Quickfire_WIN = ifelse(is.na(Quickfire_WIN),0,Quickfire_WIN)
+               ,Quickfire_LOW = ifelse(is.na(Quickfire_LOW),0,Quickfire_LOW)
+               ,Quickfire_IN = ifelse(is.na(Quickfire_IN),0,Quickfire_IN)
+               ,Elimination_HIGH = ifelse(is.na(Elimination_HIGH),0,Elimination_HIGH)
+               ,Elimination_WIN = ifelse(is.na(Elimination_WIN),0,Elimination_WIN)
+               ,Elimination_LOW = ifelse(is.na(Elimination_LOW),0,Elimination_LOW)
+               ,Elimination_IN = ifelse(is.na(Elimination_IN),0,Elimination_IN)) %>%
+        pivot_longer(!(c(szn,sznnumber,series,chef,placement,gender)),names_to = "temp", values_to = "n") %>%
+        separate(temp,c("challenge_type","outcome"),"_") %>%
       # set up for graphing
-        mutate(x = case_when(challenge_type == "Elimination" & outcome == "WIN" ~ 1
-                             ,challenge_type == "Quickfire" & outcome == "WIN" ~ 2
-                             ,challenge_type == "Elimination" & outcome == "HIGH" ~ 3
-                             ,challenge_type == "Quickfire" & outcome == "HIGH" ~ 4
-                             ,challenge_type == "Elimination" & outcome == "LOW" ~ 5))
+      mutate(x = case_when(challenge_type == "Elimination" & outcome == "WIN" ~ 1
+                           ,challenge_type == "Quickfire" & outcome == "WIN" ~ 2
+                           ,challenge_type == "Elimination" & outcome == "HIGH" ~ 3
+                           ,challenge_type == "Quickfire" & outcome == "HIGH" ~ 4
+                           ,challenge_type == "Elimination" & outcome == "LOW" ~ 5))
+
 
 
 
@@ -133,7 +150,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     ggplot(aes(x=n)) +
     theme_void() +
     labs(title = str_wrap(paste0("    Top Four Chefs: Number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=65)
-         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, but later came back into the competition, they are included here. If there were multiple episodes with four chefs, the later episode of the season was chosen. The one chef that was in the Final Four but due to Last Chance Kitchen came in fifth is excluded. The statistics are only calculated up until the episode of the Final Four. Sudden Death Quickfires are considered Elimination Challenges.",width = 85)) +
+         ,subtitle=str_wrap("If a chef was in Last Chance Kitchen at the Final Four, but later came back into the competition, they are included here. If there were multiple episodes with four chefs, the later episode of the season was chosen. The one chef that was in the Final Four but due to Last Chance Kitchen came in fifth is excluded. The statistics are only calculated up until the episode of the Final Four. Sudden Death Quickfires are considered Elimination Challenges. Qualifying challenges are not included.",width = 85)) +
     theme(plot.title=element_text(size=28,face="bold",color="black")
           ,plot.subtitle = element_text(size=22,color="black"))
 
