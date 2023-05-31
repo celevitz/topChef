@@ -120,7 +120,8 @@ outcomevar <- "HIGH"
             ,axis.title.x = element_text(size=18,color="black")
             ,axis.title.y = element_blank()
             ,plot.title=element_text(size=20,face="bold",color="black")
-            ,plot.subtitle = element_text(size=18,color="black"))
+            ,plot.subtitle = element_text(size=18,color="black")
+            ,plot.caption = element_text(size=15,hjust=0))
 
 topfourgraphs <- function(challengevar,outcomevar) {
   graphdata <- topfourdata %>%
@@ -208,7 +209,8 @@ topfourgraphs <- function(challengevar,outcomevar) {
     ggplot(aes(x=n,y=reorder(chefinseason,n),label=n)) +
     geom_bar(stat="identity") +
     xlab(paste0("\nNumber of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
-    labs(title = paste0("\n\nChefs with the most ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    labs(title = paste0("\n\nChefs with the most ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")
+         ,caption="Data and code at github.com/celevitz/topChef    Twitter @carlylevitz") +
     themestuff
 
   # bring all graphs together
