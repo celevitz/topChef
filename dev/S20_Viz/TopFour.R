@@ -144,7 +144,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
     scale_x_continuous(lim=c(0,max(graphdata$n,na.rm=T)+2)
                        , breaks = seq(0,max(graphdata$n,na.rm=T)+2,2)
                        ,labels =seq(0,max(graphdata$n,na.rm=T)+2,2)) +
-    labs(title = str_wrap(paste0("\nDistribution of number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep=""),width=100) ) +
+    labs(title = str_wrap(paste0("\nDistribution of number of ",tolower(challengevar)," ",tolower(outcomevar),"s at time of Final Four",sep=""),width=100) ) +
     themestuff +
     theme(axis.text.y=element_blank())
 
@@ -167,7 +167,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
   graphtwo <-   placementdata %>%
     ggplot(aes(x=mean,y=placement,label = round(mean,1))) +
     geom_bar(stat="identity") +
-    xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s\nat time of Final Four",sep="")) +
     scale_x_continuous(lim=c(0,max(placementdata$mean)+2),breaks=seq(0,max(placementdata$mean)+2,1),labels=seq(0,max(placementdata$mean)+2,1)) +
     labs(title = "\nAverage by placement") +
     themestuff +
@@ -183,7 +183,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
   graphthree <-   genderdata %>%
     ggplot(aes(x=mean,y=gender,label = round(mean,1))) +
     geom_bar(stat="identity") +
-    xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
+    xlab(paste0("Average number of ",tolower(challengevar)," ",tolower(outcomevar),"s\nat time of Final Four",sep="")) +
     scale_x_continuous(lim=c(0,max(genderdata$mean)+2),breaks=seq(0,max(genderdata$mean)+2,1),labels=seq(0,max(genderdata$mean)+2,1)) +
     labs(title = "\nAverage by gender") +
     themestuff +
@@ -208,8 +208,8 @@ topfourgraphs <- function(challengevar,outcomevar) {
     chefswithmost %>%
     ggplot(aes(x=n,y=reorder(chefinseason,n),label=n)) +
     geom_bar(stat="identity") +
-    xlab(paste0("\nNumber of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
-    labs(title = paste0("\n\nChefs with the most ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")
+    xlab(paste0("\nNumber of ",tolower(challengevar)," ",tolower(outcomevar),"s at time of Final Four",sep="")) +
+    labs(title = paste0("\n\nChefs with the most ",tolower(challengevar)," ",tolower(outcomevar),"s at time of the Final Four",sep="")
          ,caption="Data and code at github.com/celevitz/topChef    Twitter @carlylevitz") +
     themestuff
 
