@@ -192,7 +192,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
   # Graph 4: people with the most
   # threshold for this changes by variable
   if (challengevar == "Elimination" & outcomevar == "LOW") {
-    threshold <- 6
+    threshold <- 5
   }  else if (challengevar == "Elimination" & outcomevar == "HIGH") {
       threshold <- 5
   }  else { threshold <- 4}
@@ -213,8 +213,8 @@ topfourgraphs <- function(challengevar,outcomevar) {
     themestuff
 
   # bring all graphs together
-  ggarrange(ggarrange(graphzero,graphone,heights=c(2,1),nrow=2),ggarrange(graphtwo,graphthree),graphfour,
-            ncol=1,nrow=3,heights = c(1,1,2))
+  print(ggarrange(ggarrange(graphzero,graphone,heights=c(2,1),nrow=2),ggarrange(graphtwo,graphthree),graphfour,
+            ncol=1,nrow=3,heights = c(1,1,2)))
 
   dev.print(png, file = paste(savedirectory,"TopFour_",challengevar,"_",outcomevar,".png",sep=""), width = 900, height = 1200)
   dev.off()
@@ -224,8 +224,12 @@ topfourgraphs <- function(challengevar,outcomevar) {
 
 
 
-
-
+## Save all the graphs
+topfourgraphs(challengevar="Elimination",outcomevar="HIGH")
+topfourgraphs(challengevar="Elimination",outcomevar="WIN")
+topfourgraphs(challengevar="Elimination",outcomevar="LOW")
+topfourgraphs(challengevar="Quickfire",outcomevar="HIGH")
+topfourgraphs(challengevar="Quickfire",outcomevar="WIN")
 
 
 
