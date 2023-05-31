@@ -44,7 +44,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
       # merge on placement information
       full_join(topChef::chefdetails %>% select(szn,sznnumber,series,chef,gender,placement)) %>%
       # need to do <=4 twice
-      filter((keep == "keep" | placement <= 4) & placement <= 4) %>%
+      filter((keep == "keep" | placement <= 4) & (placement <= 4 | is.na(placement))) %>%
       select(!keep)
 
   # Get the challenge wins for all episodes leading up to the Final Four
@@ -68,7 +68,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
       # Keep just US (not Masters or Canada)
         filter(series == "US") %>%
       # count number of wins and stuff
-        group_by(szn,sznnumber,series,chef,challenge_type,outcome) %>%
+        group_by(szn,sznnumber,series,chef,challenge_type,outcome,placement,gender) %>%
         summarise(n=n()) %>%
       # set up for graphing
         mutate(x = case_when(challenge_type == "Elimination" & outcome == "WIN" ~ 1
@@ -209,11 +209,10 @@ topfourgraphs <- function(challengevar,outcomevar) {
     geom_bar(stat="identity") +
     xlab(paste0("\nNumber of ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
     labs(title = paste0("\n\nChefs with the most ",tolower(challengevar)," ",tolower(outcomevar),"s",sep="")) +
-    geom_text(hjust=0,nudge_x = .1,size=6) +
     themestuff
 
   # bring all graphs together
-  print(ggarrange(ggarrange(graphzero,graphone,heights=c(2,1),nrow=2),ggarrange(graphtwo,graphthree),graphfour,
+  print(ggarrange(ggarrange(graphzero,graphone,heights=c(1.5,1),nrow=2),ggarrange(graphtwo,graphthree),graphfour,
             ncol=1,nrow=3,heights = c(1,1,2)))
 
   dev.print(png, file = paste(savedirectory,"TopFour_",challengevar,"_",outcomevar,".png",sep=""), width = 900, height = 1200)
