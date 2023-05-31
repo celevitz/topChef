@@ -33,11 +33,19 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
       rename(episodeflag = episode)
 
   # Which Chefs are in the final four?
+  # Exclude the people who made it to F4 but because of LCK ended up 5th
+  # and INCLUDE those who weren't in F4 but came in after and did 4th or better (e.g., Kristen in Seattle)
     finalfourchefs <- topfourepisode %>%
       left_join(topChef::challengewins) %>%
       filter(in.competition == "TRUE" & episode == episodeflag) %>%
       select(series,szn,sznnumber,chef) %>%
-      distinct()
+      distinct() %>%
+      mutate(keep="keep") %>%
+      # merge on placement information
+      full_join(topChef::chefdetails %>% select(szn,sznnumber,series,chef,gender,placement)) %>%
+      # need to do <=4 twice
+      filter((keep == "keep" | placement <= 4) & placement <= 4) %>%
+      select(!keep)
 
   # Get the challenge wins for all episodes leading up to the Final Four
   # But exclude the wins of the episode in which there was the final four
@@ -67,9 +75,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
                              ,challenge_type == "Quickfire" & outcome == "WIN" ~ 2
                              ,challenge_type == "Elimination" & outcome == "HIGH" ~ 3
                              ,challenge_type == "Quickfire" & outcome == "HIGH" ~ 4
-                             ,challenge_type == "Elimination" & outcome == "LOW" ~ 5)) %>%
-      # merge on placement information
-        left_join(topChef::chefdetails %>% select(szn,sznnumber,series,chef,gender,placement))
+                             ,challenge_type == "Elimination" & outcome == "LOW" ~ 5))
 
 
 
@@ -220,8 +226,6 @@ topfourgraphs <- function(challengevar,outcomevar) {
 
 
 
-## Notes
-## If people came back from LCK after F4, then they may not be included here, e.g., Kristen in Seattle
 
 
 
