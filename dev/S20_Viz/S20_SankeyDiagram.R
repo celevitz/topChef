@@ -1,6 +1,6 @@
 ## Carly Levitz
 ## Date written: 2023-05-20
-## Date updated: 2023-05-20
+## Date updated: 2023-06-03
 ## Purpose: Create a sankey diagram for this season of top chef
 
 
@@ -27,14 +27,12 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
                                        ,TRUE ~ challenge_type)
              # make the x label a combination of episode number & challenge type
              ,epichallenge=paste("Ep. ",episodechar,":\n",challenge_type,sep="")
-             # want everyone to be listed as out after they are eliminated
-             ,outcome=ifelse(in.competition == "FALSE","OUT",outcome)
-             # but if they're OUT, put them as low in the episode that they were eliminated
-             #,outcome=ifelse(in.competition == "TRUE" & outcome == "OUT","LOW",outcome)
              ,freq=1 ) %>%
-      select(!(c(szn,sznnumber,series,in.competition,rating,episode)))
+      select(!(c(szn,sznnumber,series,in.competition,rating,episode))) %>%
+      # drop those after they are out
+      filter(!(is.na(outcome)))
 
-      alluvialdata$outcome <- factor(alluvialdata$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"))
+      alluvialdata$outcome <- factor(alluvialdata$outcome,levels=c("WIN","HIGH","IN","LOW","OUT"))
 
       alluvialdata <- alluvialdata[order(alluvialdata$episodechar,alluvialdata$challenge_type,alluvialdata$outcome,alluvialdata$chef),]
       alluvialdata$challenge_type <- NULL
@@ -50,16 +48,16 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
 
     # Order the data in a way that makes sense
       alluvialdataEp00$outcome <- factor(alluvialdataEp00$outcome
-                                         ,levels=c("OUT","LOW","IN","HIGH","WIN"
+                                         ,levels=c("WIN","HIGH","IN","LOW","OUT"
                                                    ,"Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
                                                    ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
                                                    ,"Dale MacKay" ,"Charbel Hayek" ,"Nicole Gomes","Victoire Gouloubi"
-                                                   ,"Amar S."  ,"Sara B.","Gabriel Rodriguez" ,"Tom Goetter","Ali Ghzawi","Buddha"   ))
+                                                   ,"Amar S."  ,"Tom Goetter","Ali Ghzawi","Sara B.","Gabriel Rodriguez" ,"Buddha"   ))
       alluvialdataEp00$chef <- factor(alluvialdataEp00$chef
                                       ,levels=c("Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
                                                ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
                                                ,"Dale MacKay" ,"Charbel Hayek" ,"Nicole Gomes","Victoire Gouloubi"
-                                               ,"Amar S."  ,"Sara B." ,"Gabriel Rodriguez" ,"Tom Goetter","Ali Ghzawi","Buddha"   ))
+                                               ,"Amar S."  ,"Tom Goetter","Ali Ghzawi","Sara B.","Gabriel Rodriguez" ,"Buddha"   ))
       alluvialdataEp00 <- alluvialdataEp00[order(alluvialdataEp00$episodechar,alluvialdataEp00$epichallenge,alluvialdataEp00$outcome,alluvialdataEp00$chef),]
 
 
