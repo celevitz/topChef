@@ -49,15 +49,15 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
     # Order the data in a way that makes sense
       alluvialdataEp00$outcome <- factor(alluvialdataEp00$outcome
                                          ,levels=c("WIN","HIGH","IN","LOW","OUT"
-                                                   ,"Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
+                                                   ,rev(c("Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
                                                    ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
                                                    ,"Dale MacKay" ,"Charbel Hayek" ,"Nicole Gomes","Victoire Gouloubi"
-                                                   ,"Amar S."  ,"Tom Goetter","Ali Ghzawi","Sara B.","Gabriel Rodriguez" ,"Buddha"   ))
+                                                   ,"Amar S.","Tom Goetter","Ali Ghzawi","Sara B.","Gabriel Rodriguez","Buddha"))))
       alluvialdataEp00$chef <- factor(alluvialdataEp00$chef
-                                      ,levels=c("Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
+                                      ,levels=rev(c("Samuel Albert" ,"Dawn B.","May Phattanant Thongthong"
                                                ,"Luciana Berry" ,"Begoña Rodrigo" ,"Sylwia Stachyra"
                                                ,"Dale MacKay" ,"Charbel Hayek" ,"Nicole Gomes","Victoire Gouloubi"
-                                               ,"Amar S."  ,"Tom Goetter","Ali Ghzawi","Sara B.","Gabriel Rodriguez" ,"Buddha"   ))
+                                               ,"Amar S."  ,"Tom Goetter","Ali Ghzawi","Sara B.","Gabriel Rodriguez" ,"Buddha")))
       alluvialdataEp00 <- alluvialdataEp00[order(alluvialdataEp00$episodechar,alluvialdataEp00$epichallenge,alluvialdataEp00$outcome,alluvialdataEp00$chef),]
 
 
@@ -95,7 +95,8 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
             scale_color_manual(values=c(chefcolors ,outcomecolors)) +
             geom_stratum()  +
             geom_text(stat = "stratum", size=5,aes(label= paste(after_stat(stratum))),color="black") +
-            labs(title="\n    Top Chef World All Stars: Each Chef's Elimination Challenge Journey") +
+            labs(title="\n    Top Chef World All Stars: Each Chef's Elimination Challenge Journey"
+                 ,caption="Twitter @carlylevitz        Data from github.com/celevitz/topChef") +
             theme_minimal() +
             xlab("") +
             scale_x_discrete(breaks = unique(alluvialdataEp00$epichallenge)
@@ -116,8 +117,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
             scale_color_manual(values=c(chefcolors, outcomecolors)) +
             geom_stratum()  +
             geom_text(stat = "stratum", size=5,aes(label= paste(after_stat(stratum))),color="black") +
-            labs(title="\n    Top Chef World All Stars: Each Chef's Quickfire Challenge Journey"
-                 ,caption="Twitter @carlylevitz        Data from github.com/celevitz/topChef") +
+            labs(title="\n    Top Chef World All Stars: Each Chef's Quickfire Challenge Journey") +
             theme_minimal() +
             xlab("") +
             scale_x_discrete(breaks = unique(alluvialdataEp00$epichallenge)
@@ -130,7 +130,7 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
                   ,plot.caption = element_text(size=18))
 
       ## Combine the elimination chall & QF challenges into one figure
-        ggarrange(eliminationchall,QFchall,nrow=2)
+        ggarrange(QFchall,eliminationchall,nrow=2)
         dev.print(png, file = paste(savedirectory,"S20SankeyDiagram.png",sep=""), width = 2000, height = 1200)
         dev.off()
 
