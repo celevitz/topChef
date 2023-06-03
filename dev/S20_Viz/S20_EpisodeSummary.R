@@ -19,23 +19,31 @@ challengewins <- topChef::challengewins
   # season number
     currentseason <- 20
   # most recent episode
-    airedepisode <- 11
+    airedepisode <- 13
   # Episode description
-    episodedescription <- "In the Quickfire, the chefs had to share one pot of water and feature
-      a steamed element. Andrew Wong guest-judged. Buddha won. The elimination challenge was a
-      team challenge: Ali & Tom, Sara & Amar, and Buddha & Gabri. Each team was responsible for
-      making three Wellingtons. Buddha and Gabri won - meaning Buddha 'won' the episode and Gabri
-      won his first elimination challenge! Amar & Sara lost and went to compete in Last Chance Kitchen."
+    episodedescription <- "In the Quickfire, the chefs had to coach an unseen teammate in the Wall Challenge. Greg Marchand guest-judged. Ali won. The elimination challenge was to highlight button mushrooms and serve many Michelin-starred chefs. Sara won, and Ali was eliminated."
   ## Manually list the chefs who are still in Last Chance Kitchen (LCK) at this point
   ## These are the chefs that have been eliminated. I am not sharing which ones have also
   ## now been eliminated in LCK
-    stillinlck <- c("Sylwia Stachyra","Dale MacKay","Charbel Hayek","Nicole Gomes","Victoire Gouloubi","Sara B.","Amar S.")
+    #Episode 11
+    #stillinlck <- c("Sylwia Stachyra","Dale MacKay","Charbel Hayek","Nicole Gomes","Victoire Gouloubi","Sara B.","Amar S.")
+    # Episode 12 & 13
+    stillinlck <- NA
+
 
 # Copy the episode description with clean line breaks here; this will become ALT text on twitter
-#Top Chef World All Stars: Challenge statistics. Heat map of the contestants of Season 20 of Top Chef & the number of times they have won or been in the top or bottom of both quickfire & elimination challenges. Being in the bottom of an elimination challenge includes when the person was eliminated. Organized by in competition, in LCK, & out.
-#In the Quickfire, the chefs had to share one pot of water and feature a steamed element. Andrew Wong guest-judged. Buddha won. The elimination challenge was a team challenge: Ali & Tom, Sara & Amar, and Buddha & Gabri. Each team was responsible for making three Wellingtons. Buddha and Gabri won - meaning Buddha 'won' the episode and Gabri won his first elimination challenge! Amar & Sara lost and went to compete in Last Chance Kitchen.
-    #Remaining chefs: Buddha (3 elimination wins, 3 quickfire wins), Ali (2 elimination wins, 1 quickfire win), Gabri (1 elimination win, 0 quickfire wins), and Tom (1 elimination win and 1 quickfire win)
-#Data from: github.com/celevitz/topChef
+# Episode 11
+    #episodedescription <- "In the Quickfire, the chefs had to share one pot of water and feature a steamed element. Andrew Wong guest-judged. Buddha won. The elimination challenge was a team challenge: Ali & Tom, Sara & Amar, and Buddha & Gabri. Each team was responsible for making three Wellingtons. Buddha and Gabri won - meaning Buddha 'won' the episode and Gabri won his first elimination challenge! Amar & Sara lost and went to compete in Last Chance Kitchen."
+# Episode 12
+    #Top Chef World All Stars: Challenge statistics. Heat map of the contestants of Season 20 of Top Chef & the number of times they have won or been in the top or bottom of both quickfire & elimination challenges. Being in the bottom of an elimination challenge includes when the person was eliminated. Organized by in competition, in LCK, & out.
+    #Sara reenters the competition after winning Last Chance Kitchen. The quickfire challenge was to create a dessert using jelly and molds. Sam Bampas guest-judged. Buddha won. The elimination challenge was to create a trompe l'oeil dish, and Buddha once again won. Jeremy Chan guest-judged. Tom was eliminated.
+    #Chefs in this episode: Buddha (4 elimination wins, 4 quickfire wins), Ali (2 elimination wins, 1 quickfire win), Gabri (1 elimination win, 0 quickfire wins), Sara (0 elimination wins and 1 quickfire win), and Tom (1 elimination win1 and 1 quickfire win)
+    #Data from: github.com/celevitz/topChef
+# Episode 13
+  #Top Chef World All Stars: Challenge statistics. Heat map of the contestants of Season 20 of Top Chef & the number of times they have won or been in the top or bottom of both quickfire & elimination challenges. Being in the bottom of an elimination challenge includes when the person was eliminated. Organized by in competition, in LCK, & out.
+  #In the Quickfire, the chefs had to coach an unseen teammate in the Wall Challenge. Greg Marchand guest-judged. Ali won. The elimination challenge was to highlight button mushrooms and serve many Michelin-starred chefs. Sara won, and Ali was eliminated.
+  #Chefs in this episode: Buddha (4 elimination wins, 4 quickfire wins), Ali (2 elimination wins, 1 quickfire win), Gabri (1 elimination win, 0 quickfire wins), and Sara (0 elimination wins and 1 quickfire win)
+  #Data from: github.com/celevitz/topChef
 
 ##############################################################################
 ## Set up data
