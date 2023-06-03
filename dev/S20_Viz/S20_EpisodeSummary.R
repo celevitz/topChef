@@ -42,7 +42,7 @@ challengewins <- topChef::challengewins
 # Episode 13
   #Top Chef World All Stars: Challenge statistics. Heat map of the contestants of Season 20 of Top Chef & the number of times they have won or been in the top or bottom of both quickfire & elimination challenges. Being in the bottom of an elimination challenge includes when the person was eliminated. Organized by in competition, in LCK, & out.
   #In the Quickfire, the chefs had to coach an unseen teammate in the Wall Challenge. Greg Marchand guest-judged. Ali won. The elimination challenge was to highlight button mushrooms and serve many Michelin-starred chefs. Sara won, and Ali was eliminated.
-  #Chefs in this episode: Buddha (4 elimination wins, 4 quickfire wins), Ali (2 elimination wins, 1 quickfire win), Gabri (1 elimination win, 0 quickfire wins), and Sara (0 elimination wins and 1 quickfire win)
+  #Chefs in this episode: Buddha (4 elimination wins, 4 quickfire wins), Ali (2 elimination wins, 2 quickfire wins), Gabri (1 elimination win, 0 quickfire wins), and Sara (1 elimination win and 1 quickfire win)
   #Data from: github.com/celevitz/topChef
 
 ##############################################################################
@@ -143,8 +143,8 @@ viztable <-
              domain=c(0,4)) %>%
   data_color(method="numeric",
              columns=c(Quickfire_LOW,`Elimination_LOW*`),
-             palette=c("transparent","#ffbc69","#fc7d0b","#c85200","#c85200","#984447","#984447"),
-             domain=c(0,6))
+             palette=c("transparent","#ffbc69","#fc7d0b","#c85200","#c85200","#984447","#984447","#4B3B47"),
+             domain=c(0,7))
 
 gtsave(viztable,filename = paste(savedirectory,"S20E",airedepisode,"Summary.png",sep=""))
 
