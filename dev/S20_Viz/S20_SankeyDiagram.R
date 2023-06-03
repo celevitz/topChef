@@ -19,6 +19,8 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
   #################
     alluvialdata <- topChef::challengewins %>%
       filter(series=="US" & szn == "World All Stars") %>%
+      # drop most recent episode to reduce spoilers
+      filter(episode < max(episode) ) %>%
       # for sorting purposes, make the episode a two-digit character
       mutate(episodechar=case_when(episode <= 9 ~paste0("0",as.character(episode))
                                    ,TRUE ~as.character(episode) )
