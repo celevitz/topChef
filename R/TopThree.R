@@ -40,12 +40,12 @@ allseasons <- allseasons %>%
 
 ## Scatter plot
   ## Titles and captions
-    captiontexttop <- str_glue("#TopChef Weighted Index Score; Source: github.com/celevitz/topChef")
-    scoring <- str_glue("Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.")
+    captionsource <- str_glue("Visualization: @carlylevitz &bull; Source: github.com/celevitz/topChef &bull; Tools: #rstats #ggplot #ggtext #tidyverse")
+    scoring <- str_glue("Methodology for weighted index scores: Elimination win = 7 points &bull; Elimination high = 3 points<br>Elimination low = - 3 points &bull; Eliminated = - 7 points &bull; Quickfire win = 4 points <br> Quickfire high = 2 points &bull; Quickfire low = - 2 points<br><br>")
     titletext <- str_glue("Comparing Final Three Chefs Across Seasons")
     subtitletext <- str_glue("Top Chef Weighted Index: 13 elimination challenges into each season")
 
-    captiontext <- str_glue("{captiontexttop}\n{scoring}")
+    captiontext <- str_glue("{scoring} {captionsource}")
 
   ## colors
     bkg_col <- "#F9E3D1"
