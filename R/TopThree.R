@@ -38,41 +38,63 @@ allseasons <- allseasons %>%
                                     ,TRUE ~ placement)
          )
 
+## Scatter plot
+    allseasons %>%
+      ggplot(aes(x=placement,y=indexWeight))  +
+      geom_hline(yintercept=0, color="#ffbc69")  +
+      labs(title="\n\nComparing Final Three Chefs Across All Seasons:"
+           ,subtitle=paste0("Top Chef Weighted Index: 13 elimination challenges into each season")
+           ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\n\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
+      scale_x_continuous(lim=c(.7,4.5), breaks=c(1,2,3,4),labels=c("1st place","2nd place","3rd place","Season 20\nFinal Three")) +
+      scale_y_continuous(lim=c(-5,60),breaks=c(-5,seq(0,60,10)),labels=c(-5,seq(0,60,10))) +
+      theme_minimal() +
+      ylab("\nIndex score\n") + xlab("") +
+      theme(panel.grid = element_blank()
+            ,panel.background = element_rect(fill="darkcyan",color="darkcyan")
+            ,plot.background = element_rect(fill="darkcyan",color="darkcyan")
+            ,axis.ticks.y = element_line(color="white")
+            ,axis.line.y = element_line(color="white")
+            ,axis.line.x=element_blank()
+            ,axis.ticks.x=element_blank()
+            ,plot.title = element_text(size=24,face="bold",color="white")
+            ,plot.subtitle = element_text(size=24,color="white")
+            ,plot.caption = element_text(size=15,color="white")
+            ,axis.text=element_text(size=18,color="white")
+            ,axis.title = element_text(size=18,color="white")
+      ) +
+      # label people
+      geom_text(aes(x=plotxforlabel,y=indexWeight,label=labelname,hjust=alignment),color="white") +
+      # call out buddha & sara in their previous seasons
+      #geom_rect(xmin = .8, xmax = 1.2, ymin = 34 , ymax = 36,color="darkslategray",fill=NA) +
+      #geom_rect(xmin = 1.6, xmax = 2, ymin = 11 , ymax = 13,color="darkslategray",fill=NA) +
+      geom_rect(xmin = 3.8, xmax = 4.2, ymin = 49 , ymax = 51,color="darkslategray",fill=NA) +
+      geom_rect(xmin = 3.8, xmax = 4.2, ymin = 3 , ymax = 5,color="darkslategray",fill=NA) +
+      geom_rect(xmin = 3.6, xmax = 4.4, ymin = -1 , ymax = -3,color="darkslategray",fill=NA)
 
-allseasons %>%
-  ggplot(aes(x=placement,y=indexWeight))  +
-  geom_hline(yintercept=0, color="#ffbc69")  +
-  labs(title="\n\nComparing Final Three Chefs Across All Seasons:"
-       ,subtitle=paste0("Top Chef Weighted Index: 13 elimination challenges into each season")
-       ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\n\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
-  scale_x_continuous(lim=c(.7,4.5), breaks=c(1,2,3,4),labels=c("1st place","2nd place","3rd place","Season 20\nFinal Three")) +
-  scale_y_continuous(lim=c(-5,60),breaks=c(-5,seq(0,60,10)),labels=c(-5,seq(0,60,10))) +
-  theme_minimal() +
-  ylab("\nIndex score\n") + xlab("") +
-  theme(panel.grid = element_blank()
-        ,panel.background = element_rect(fill="darkcyan",color="darkcyan")
-        ,plot.background = element_rect(fill="darkcyan",color="darkcyan")
-        ,axis.ticks.y = element_line(color="white")
-        ,axis.line.y = element_line(color="white")
-        ,axis.line.x=element_blank()
-        ,axis.ticks.x=element_blank()
-        ,plot.title = element_text(size=24,face="bold",color="white")
-        ,plot.subtitle = element_text(size=24,color="white")
-        ,plot.caption = element_text(size=15,color="white")
-        ,axis.text=element_text(size=18,color="white")
-        ,axis.title = element_text(size=18,color="white")
-  ) +
-  # label people
-  geom_text(aes(x=plotxforlabel,y=indexWeight,label=labelname,hjust=alignment),color="white") +
-  # call out buddha & sara in their previous seasons
-  geom_rect(xmin = .8, xmax = 1.2, ymin = 34 , ymax = 36,color="darkslategray",fill=NA) +
-  geom_rect(xmin = 1.6, xmax = 2, ymin = 11 , ymax = 13,color="darkslategray",fill=NA) +
-  geom_rect(xmin = 3.8, xmax = 4.2, ymin = 49 , ymax = 51,color="darkslategray",fill=NA) +
-  geom_rect(xmin = 3.8, xmax = 4.2, ymin = 3 , ymax = 5,color="darkslategray",fill=NA) +
-  geom_rect(xmin = 3.6, xmax = 4.4, ymin = -1 , ymax = -3,color="darkslategray",fill=NA)
 
+    dev.print(png, file = paste(savedirectory,"TopThreeIndexScores.png",sep=""), width = 900, height = 900)
+    dev.off()
 
-dev.print(png, file = paste(savedirectory,"TopThreeIndexScores.png",sep=""), width = 900, height = 900)
-dev.off()
+## Histogram
 
+    allseasons %>%
+      ggplot(aes(x=indexWeight,color=factor(placement),fill=factor(placement))) +
+      geom_histogram(alpha = .3,binwidth=5,position="identity") +
+      xlab("Weighted Index Score") + ylab("Number of chefs") +
+      theme_minimal() +
+      scale_color_manual(values = c("slategray3","slategray2","slategray1","slategray4")) +
+      scale_fill_manual(values = c("slategray3","slategray2","slategray1","slategray4")) +
+      theme(panel.grid = element_blank()
+            #,panel.background = element_rect(fill="darkcyan",color="darkcyan")
+            #,plot.background = element_rect(fill="darkcyan",color="darkcyan")
+            ,axis.ticks.y = element_line(color="darkslategray")
+            ,axis.line.y = element_line(color="darkslategray")
+            ,axis.ticks.x = element_line(color="darkslategray")
+            ,axis.line.x = element_line(color="darkslategray")
+            ,plot.title = element_text(size=24,face="bold",color="darkslategray")
+            ,plot.subtitle = element_text(size=24,color="darkslategray")
+            ,plot.caption = element_text(size=15,color="darkslategray")
+            ,axis.text=element_text(size=18,color="darkslategray")
+            ,axis.title = element_text(size=18,color="darkslategray")
+      )
 
