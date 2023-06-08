@@ -43,7 +43,7 @@ allseasons <- allseasons %>%
     captionsource <- str_glue("Visualization: @carlylevitz &bull; Source: github.com/celevitz/topChef &bull; Tools: #rstats #ggplot #ggtext #tidyverse")
     scoring <- str_glue("Methodology for weighted index scores: Elimination win = 7 points &bull; Elimination high = 3 points<br>Elimination low = - 3 points &bull; Eliminated = - 7 points &bull; Quickfire win = 4 points <br> Quickfire high = 2 points &bull; Quickfire low = - 2 points<br><br>")
     titletext <- str_glue("Comparing Final Three Chefs Across Seasons")
-    subtitletext <- str_glue("Top Chef Weighted Index: 13 elimination challenges into each season")
+    subtitletext <- str_glue("Top Chef Weighted Index 13 elimination challenges into season")
 
     captiontext <- str_glue("{scoring} {captionsource}")
 
@@ -61,7 +61,7 @@ allseasons <- allseasons %>%
       scale_x_continuous(lim=c(.7,4.5), breaks=c(1,2,3,4),labels=c("1st place","2nd place","3rd place","Season 20\nFinal Three")) +
       scale_y_continuous(lim=c(-5,60),breaks=c(-5,seq(0,60,10)),labels=c(-5,seq(0,60,10))) +
       theme_minimal() +
-      ylab("\nIndex score\n") + xlab("") +
+      ylab("Index score") + xlab("") +
       theme(panel.grid         = element_blank()
             ,panel.background  = element_rect(fill=bkg_col,color=bkg_col)
 
@@ -87,7 +87,10 @@ allseasons <- allseasons %>%
             ,axis.ticks.x      = element_blank()
 
             ,axis.text=element_text(size=18,color=text_col)
-            ,axis.title = element_text(size=18,color=text_col)
+            ,axis.title.y = element_text(size     = 18
+                                         ,color   = text_col
+                                         ,margin  = margin(l=15,r=15)
+                                         ,angle  = 0)
       ) +
       # label people
       geom_text(aes(x=plotxforlabel,y=indexWeight,label=labelname,hjust=alignment),color=text_col) +
