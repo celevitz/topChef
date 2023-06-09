@@ -100,3 +100,61 @@ allseasons <- allseasons %>%
 
     dev.print(png, file = paste(savedirectory,"TopThreeIndexScores.png",sep=""), width = 900, height = 900)
     dev.off()
+
+
+## Weighted index by episode: cumulative
+    # Outcomes of the challenges
+      challengewins <- topChef::challengewins[,names(topChef::challengewins)[!(names(topChef::challengewins) %in% "rating")] ]
+
+    # combine types of challenges
+      challengewins$challenge_type[challengewins$challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire")] <- "Elimination"
+
+    # Exclude the uncommon challenge types
+      challengewins <- challengewins[!(challengewins$challenge_type %in% c("Battle of the Sous Chefs","Qualifying challenge")),]
+
+    # clean up outcomes: consolidate
+      challengewins$outcome[challengewins$outcome %in% c("High","HiGH")] <- "HIGH"
+      challengewins$outcome[grepl("LOW",challengewins$outcome)] <- "LOW"
+      challengewins$outcome[challengewins$outcome %in% c("DISQUALIFIED","RUNNER-UP","WITHDREW") | grepl("OUT",challengewins$outcome) ] <- "OUT"
+      challengewins$outcome[challengewins$outcome %in% c("Didn't compete") | grepl("N/A",challengewins$outcome) | grepl("Qualified",challengewins$outcome) ] <- "IN"
+      challengewins$outcome[challengewins$outcome %in% c("WINNER")] <- "WIN"
+
+    # need to sum (total) the counts, because of the combination of challenge types
+      challengewins <- challengewins %>%
+        filter(in.competition == "TRUE") %>%
+        group_by(szn,sznnumber,series,episode,chef,challenge_type,outcome) %>%
+        summarise(n=n()) %>%
+        # reshape so that we can get the index score
+        pivot_wider(names_from=challenge_type,values_from = n) %>%
+        pivot_wider(names_from = outcome,values_from = c("Elimination","Quickfire")) %>%
+        # Get the score for the episode
+        mutate(Quickfire_HIGH = ifelse(is.na(Quickfire_HIGH),0,Quickfire_HIGH*2)
+               ,Quickfire_WIN = ifelse(is.na(Quickfire_WIN),0,Quickfire_WIN*4)
+               ,Quickfire_LOW = ifelse(is.na(Quickfire_LOW),0,Quickfire_LOW*-2)
+               ,Quickfire_IN = ifelse(is.na(Quickfire_IN),0,Quickfire_IN)
+               ,Elimination_HIGH = ifelse(is.na(Elimination_HIGH),0,Elimination_HIGH*3)
+               ,Elimination_WIN = ifelse(is.na(Elimination_WIN),0,Elimination_WIN*7)
+               ,Elimination_LOW = ifelse(is.na(Elimination_LOW),0,Elimination_LOW*-3)
+               ,Elimination_IN = ifelse(is.na(Elimination_IN),0,Elimination_IN)
+               ,Elimination_OUT = ifelse(is.na(Elimination_OUT),0,Elimination_OUT*-7)) %>%
+        mutate(index=Elimination_WIN+
+                     Elimination_HIGH+
+                     Elimination_LOW+
+                     Elimination_OUT+
+                     Quickfire_WIN+
+                     Quickfire_HIGH+
+                     Quickfire_LOW)
+
+    # get cumulative score
+      cumulative <- challengewins %>%
+        select(szn,sznnumber,series,episode,chef,index) %>%
+        # add on the placement
+        full_join(topChef::chefdetails %>% select(chef,szn,sznnumber,series,placement)) %>%
+        # get the cumulative total
+        ungroup() %>% group_by(szn,sznnumber,series,chef) %>%
+        arrange(series,sznnumber,episode,chef) %>%
+        mutate(indexcumulative = cumsum(index))
+
+
+
+
