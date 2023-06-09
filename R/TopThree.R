@@ -273,5 +273,79 @@ allseasons <- allseasons %>%
       dev.print(png, file = paste(savedirectory,"TopThreeIndexScores_Cumulative.png",sep=""), width =1100, height = 900)
       dev.off()
 
+# Another version: by season
+      # plot it
+      cumulativeT3 %>%
+        mutate(cheflabelall = ifelse(episode == maxepi,str_split_fixed(chef," ",2)[,1],NA)
+               ,cheflabelall = case_when(chef == "Brooke W." & sznnumber == 10 & episode == 17 ~ NA
+                                         ,chef == "Brooke W." & sznnumber == 10 & episode == 16 ~ "Brooke"
+                                         ,chef == "Michael V." & sznnumber == 6 & episode == 15 ~ NA
+                                         ,chef == "Michael V." & sznnumber == 6 & episode == 14 ~ "Michael"
+                                         ,chef == "Ed C." & sznnumber == 7 & episode == 14 ~ NA
+                                         ,chef == "Ed C." & sznnumber == 7 & episode == 12 ~ "Ed"
+                                         ,chef == "Angelo S." & sznnumber == 7 & episode == 14 ~ NA
+                                         ,chef == "Angelo S." & sznnumber == 7 & episode == 9 ~ "Angelo"
+                                         ,chef == "Kelsey B.-C." & sznnumber == 16 & episode == 15 ~ NA
+                                         ,chef == "Kelsey B.-C." & sznnumber == 16 & episode == 14 ~ "Kelsey"
+                                         ,chef == "Eric A." & sznnumber == 16 & episode == 15 ~ NA
+                                         ,chef == "Eric A." & sznnumber == 16 & episode == 12 ~ "Eric"
+                                         ,chef == "Bryan V." & sznnumber == 17 & episode == 14 ~ NA
+                                         ,chef == "Bryan V." & sznnumber == 17 & episode == 12 ~ "Bryan"
+                                         ,chef == "Shota N." & sznnumber == 18 & episode == 14 ~ NA
+                                         ,chef == "Shota N." & sznnumber == 18 & episode == 13 ~ "Shota"
+                                        ,TRUE ~ cheflabelall)) %>%
+        arrange(sznnumber,episode,chef) %>%
+        ggplot(aes(x=episode,y=indexcumulative,color=chef,label=cheflabelall)) +
+        geom_hline(yintercept=0, color="#ffbc69")  +
+        labs(title=titletext
+             ,subtitle=subtitletext
+             ,caption= captiontext) +
+        ylab("Cumulative Weighted Index Score") + xlab("Episode") +
+        facet_wrap(~sznnumber) +
+        geom_point(aes(x=episode,y=indexcumulative,color=chef)) +
+        geom_line(aes(x=episode,y=indexcumulative,color=chef)) +
+        geom_text(aes(x=xposition,y=indexcumulative),col=text_col,hjust=0,size=3) +
+        scale_y_continuous(lim=c(-20,70),breaks=seq(-20,70,10),labels=seq(-20,70,10)) +
+        scale_x_continuous(lim=c(1,20),breaks=seq(1,16,2),labels=seq(1,16,2)) +
+        theme(legend.position    = "none"
+              ,panel.grid        = element_blank()
+              ,panel.background  = element_rect(fill=bkg_col,color=bkg_col)
 
+              ,plot.margin       = margin(t=10,r=10,b=10,l=10)
+              ,plot.background   = element_rect(fill=bkg_col,color=bkg_col)
+              ,plot.title        = element_markdown(
+                size    = 24
+                ,face   = "bold"
+                ,color  = title_col
+                ,margin = margin(t=10,b=5))
+              ,plot.subtitle     = element_markdown(
+                size    = 20
+                ,color  = subtitle_col
+                ,margin = margin(t=5,b=10))
+              ,plot.caption      = element_markdown(
+                size    = 15
+                ,color  = caption_col
+                ,hjust  = .5
+                ,halign = .5)
+
+              ,strip.text        = element_textbox(size     = 15
+                                                   ,face     = 'bold'
+                                                   ,fill    = text_col
+                                                   ,color = "white")
+              ,strip.background = element_rect(fill=text_col)
+
+              ,axis.ticks.y      = element_line(color=text_col)
+              ,axis.line.y       = element_line(color=text_col)
+              ,axis.line.x       = element_line(color=text_col)
+              ,axis.ticks.x      = element_line(color=text_col)
+
+              ,axis.text=element_text(size=13,color=text_col)
+              ,axis.title.x = element_text(size     = 18
+                                           ,color   = text_col)
+              ,axis.title.y = element_text(size     = 18
+                                           ,color   = text_col
+                                           ,margin  = margin(l=15,r=15) ) )
+
+      dev.print(png, file = paste(savedirectory,"TopThreeIndexScores_Cumulative_SeasonsSeparated.png",sep=""), width =1100, height = 900)
+      dev.off()
 
