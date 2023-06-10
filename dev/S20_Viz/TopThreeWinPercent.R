@@ -109,27 +109,29 @@ dataofinterest <- topChef::challengewins %>%
       legend_bkgcol <- "gray90"
       title_col <- subtitle_col <- caption_col <- text_col <- "darkslategray"
 
-      histogramtitle <- str_glue("Distribution of percent of elimination <br> challenges won prior to finale")
-      histogramsubtitle <- str_glue("Denominator for each chef is number of elimination <br> challenges participated in")
+      histogramtitle <- str_glue("Distribution of percent of elimination<br>challenges won prior to finale")
+      histogramcaption <- str_glue("The denominator for each chef is the number of elimination challenges they participated in.<br>159 chefs had a win percentage of 0 (not shown).<br>The minimum win percent for a chef that made it to the finale was 7.7%.")
 
-      percentwontitle <- str_glue("Percent of all elimination<br>challenges won by season<br>winner prior to finale")
+      percentwontitle <- str_glue("Percent of all elimination<br>challenges won by the season<br>winner prior to the finale")
+      percentwoncaption <- str_glue("Methodology: For team challenges, if the season winner was on the<br>winning team, the challenge was classified as the season winner winning<br>it. If a chef who made it to the finale was on the winning team but not the<br>season winner, it was categorized as a win for a non-winning finale chef.")
 
       facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs")
       facetsubtitle <- str_glue("If there was a chef with a winning percentage of 30% or greater prior to the finale, did they win?")
-      facetcaption <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded.")
+      facetcaption <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded.<br>Source: github.com/celevitz/topChef &bull; Twitter: @carlylevitz")
 
   # Histogram of all win %s
   graph1 <-
     results %>%
+    filter(winpercent > 0) %>%
     ggplot(aes(x=winpercent,group=final3,color=final3,fill=final3)) +
     geom_histogram(alpha=.5) +
     xlab("Elimination challenge win percent prior to finale") +
     ylab("Number of chefs") +
-    scale_x_continuous(lim=c(-.05,.8),breaks=seq(0,.8,.2),labels=c("0%","20%","40%","60%","80%")) +
+    scale_x_continuous(lim=c(0,.8),breaks=seq(0,.8,.2),labels=c("0%","20%","40%","60%","80%")) +
     scale_fill_manual(values=c("#ffbc69","#fc7d0b"))+
     scale_color_manual(values=c("#ffbc69","#fc7d0b"))+
     labs(title=histogramtitle
-         ,subtitle=histogramsubtitle) +
+         ,caption=histogramcaption) +
     guides(fill=guide_legend(title="Placement"),color=guide_legend(title="Placement")) +
     theme_minimal() +
     theme(legend.position    = c(.8,.8)
@@ -143,14 +145,14 @@ dataofinterest <- topChef::challengewins %>%
                     ,color  = title_col
                     ,margin = margin(t=10,b=5))
           ,plot.subtitle     = element_markdown(
-                    size    = 20
+                    size    = 18
                     ,color  = subtitle_col
                     ,margin = margin(t=5,b=10))
           ,plot.caption      = element_markdown(
-                    size    = 15
-                    ,color  = caption_col
-                    ,hjust  = .5
-                    ,halign = .5)
+            size    = 12
+            ,color  = caption_col
+            ,hjust  = .5
+            ,halign = 0)
           ,axis.line  = element_line(color=title_col)
           ,axis.ticks = element_line(color=title_col)
           ,axis.text = element_markdown(size=12,color=text_col)
@@ -165,7 +167,8 @@ dataofinterest <- topChef::challengewins %>%
                  ,label=cheflabels)) +
       geom_bar(stat="identity") +
       geom_text(aes(x=0.01,y=szn),color="white",hjust=0) +
-      labs(title=percentwontitle) +
+      labs(title=percentwontitle
+           ,caption=percentwoncaption) +
       xlab("Percent of elimination challenges won") +
       ylab("") +
       scale_x_continuous(lim=c(0,1),breaks=seq(0,1,.2),labels=c("0%","20%","40%","60%","80%","100%")) +
@@ -192,10 +195,10 @@ dataofinterest <- topChef::challengewins %>%
               ,color  = subtitle_col
               ,margin = margin(t=5,b=10))
             ,plot.caption      = element_markdown(
-              size    = 15
+              size    = 12
               ,color  = caption_col
               ,hjust  = .5
-              ,halign = .5)
+              ,halign = 0)
             ,axis.line.x  = element_line(color=title_col)
             ,axis.ticks.x = element_line(color=title_col)
             ,axis.text = element_markdown(size=12,color=text_col)
@@ -207,21 +210,46 @@ dataofinterest <- topChef::challengewins %>%
       filter(final3 == "Final 3") %>%
       ggplot(aes(x=placementmodified,y=winpercent,label=chef,col = dominantchef)) +
       facet_wrap(~sznnumber) +
+
       geom_bar(stat="identity") +
-      geom_text() +
+      geom_text(col=text_col) +
       labs(title = facettitle
            ,subtitle=facetsubtitle
            ,caption = facetcaption) +
       xlab("Placement") +
       ylab("Elimination challenge win percent prior to finale") +
-      scale_y_continuous(lim=c(0,.6),breaks=seq(0,.6,.2),labels=c("0%","20%","40%","60%"))
+      scale_y_continuous(lim=c(0,.6),breaks=seq(0,.6,.2),labels=c("0%","20%","40%","60%")) +
+      theme_minimal() +
+      theme(panel.grid        = element_blank()
+            ,panel.background  = element_rect(fill=bkg_col,color=bkg_col)
+            ,plot.margin       = margin(t=10,r=10,b=10,l=10)
+            ,plot.background   = element_rect(fill=bkg_col,color=bkg_col)
+            ,plot.title        = element_markdown(
+              size    = 24
+              ,face   = "bold"
+              ,color  = title_col
+              ,margin = margin(t=10,b=5))
+            ,plot.subtitle     = element_markdown(
+              size    = 18
+              ,color  = subtitle_col
+              ,margin = margin(t=5,b=10))
+            ,plot.caption      = element_markdown(
+              size    = 12
+              ,color  = caption_col
+              ,hjust  = .5
+              ,halign = 0)
+            ,axis.line  = element_line(color=title_col)
+            ,axis.ticks = element_line(color=title_col)
+            ,axis.text = element_markdown(size=12,color=text_col)
+            ,axis.title = element_markdown(size=15,color=text_col))
 
 
 
 
 
 
-ggarrange(ggarrange(graph1,graph2,nrow=2,ncol=1),graph3,nrow=1,ncol=2,widths=c(1,2))
+
+ggarrange(ggarrange(graph1,graph2,nrow=2,ncol=1,heights=c(1,2)),graph3,nrow=1,ncol=2,widths=c(1,2))
 dev.print(png, file = paste(savedirectory,"TopThreeWinPercent.png",sep=""), width =1600, height = 900)
 dev.off()
 
