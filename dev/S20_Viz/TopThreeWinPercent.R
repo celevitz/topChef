@@ -74,7 +74,6 @@ dataofinterest <- topChef::challengewins %>%
   ## To account for group challenges: if the winner was on the team, then it counts as the winner winning it
   ## if the winner wasn't on the team but another final 3 person was, then it counts as a final three person winning
       allchallengeswonbyfinal3 <- dataofinterest %>%
-
         # how many elimination challenges were there in a season where somebody won?
         filter(grepl("WIN",outcome)) %>%
         group_by(szn,sznnumber,series) %>%
@@ -91,27 +90,17 @@ dataofinterest <- topChef::challengewins %>%
         mutate(numberofwinsbycategory = n_distinct(episode)) %>%
         select(szn,sznnumber,series,numberofchalls,winnercategory,numberofwinsbycategory) %>%
         distinct() %>%
+        mutate(winnercategorylabs = case_when(winnercategory == 1 ~ "Winner"
+                                              ,winnercategory == 2 ~ "Final 2 or 3"
+                                              ,winnercategory == 3 ~ "Other chef not in finale") ) %>%
+        # for sorting purposes, get the % wins by category
+        mutate(percentwon = numberofwinsbycategory/numberofchalls)
         # doublecheck that there are the right number of episodes
-        ungroup() %>% group_by(szn,sznnumber,series) %>%
-        mutate(checknum = sum(numberofwinsbycategory)
-               ,check = ifelse(numberofchalls == checknum,"Fine","Bad"))
+        # ungroup() %>% group_by(szn,sznnumber,series) %>%
+        # mutate(checknum = sum(numberofwinsbycategory)
+        #        ,check = ifelse(numberofchalls == checknum,"Fine","Bad"))
 
-
-      allchallengeswonbyfinal3 %>% filter(check == "Bad") %>% print(n=50)
-
-      dataofinterest %>%
-        # how many elimination challenges were there in a season?
-        mutate(numberofchalls = n_distinct(episode)) %>%
-        # doing a left join because we've already filtered out all but US main seasons
-        left_join(topChef::chefdetails %>% select(series,sznnumber,szn,chef,placement)) %>%
-        mutate(final3 = case_when(placement == 1 ~ 1
-                                  ,placement %in% c(2,3) ~2
-                                  ,TRUE ~ 3) ) %>%
-        # who was the winner of each challenge/ was the winner in the final 3?
-        ungroup() %>% group_by(szn,sznnumber,series,episode) %>%
-        filter(grepl("WIN",outcome)) %>%
-        mutate(winnercategory = min(final3)) %>%
-        filter(sznnumber == 17)
+      allchallengeswonbyfinal3 <- allchallengeswonbyfinal3[order(allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon),]
 
 
 
@@ -127,6 +116,10 @@ dataofinterest <- topChef::challengewins %>%
     ylab("Number of chefs")
 
   # % of season's elimination challenges that the winner and other final 3 won
+      allchallengeswonbyfinal3 %>%
+        mutate(szn = fct_reorder(szn, desc(percentwon))) %>%
+        ggplot(aes(x=numberofwinsbycategory,y=szn,col=winnercategorylabs,fill=winnercategorylabs)) +
+        geom_bar(stat="identity")
 
   # graphs of just the final 3s
     facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs")
