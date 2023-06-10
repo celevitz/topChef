@@ -91,10 +91,11 @@ dataofinterest <- topChef::challengewins %>%
         select(szn,sznnumber,series,numberofchalls,winnercategory,numberofwinsbycategory) %>%
         distinct() %>%
         mutate(winnercategorylabs = case_when(winnercategory == 1 ~ "Winner"
-                                              ,winnercategory == 2 ~ "Final 2 or 3"
-                                              ,winnercategory == 3 ~ "Other chef not in finale") ) %>%
+                                              ,winnercategory == 2 ~ "Non-winning chef in finale"
+                                              ,winnercategory == 3 ~ "Chef not in finale") ) %>%
         # get the % wins by category
-        mutate(percentwon = numberofwinsbycategory/numberofchalls)
+        mutate(percentwon = numberofwinsbycategory/numberofchalls
+              ,cheflabels = ifelse(winnercategory == 1,paste0(round(percentwon*100,1),"% of ",numberofchalls),NA))
 
       # order things by the % of elimination challenges won by winner
       allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
@@ -103,28 +104,104 @@ dataofinterest <- topChef::challengewins %>%
 
 ##############################################################################
 ## Visualizations
+  # set up
+      bkg_col <- "lightcyan"
+      legend_bkgcol <- "gray90"
+      title_col <- subtitle_col <- caption_col <- text_col <- "darkslategray"
+
+      histogramtitle <- str_glue("Distribution of percent of elimination <br> challenges won prior to finale")
+      histogramsubtitle <- str_glue("Denominator for each chef is number of elimination <br> challenges participated in")
+
+      percentwontitle <- str_glue("Percent of all elimination<br>challenges won by season<br>winner prior to finale")
+
+      facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs")
+      facetsubtitle <- str_glue("If there was a chef with a winning percentage of 30% or greater prior to the finale, did they win?")
+      facetcaption <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded.")
+
   # Histogram of all win %s
   graph1 <-
-  results %>%
-    ggplot(aes(x=winpercent,group=final3,color=final3)) +
-    geom_histogram() +
+    results %>%
+    ggplot(aes(x=winpercent,group=final3,color=final3,fill=final3)) +
+    geom_histogram(alpha=.5) +
     xlab("Elimination challenge win percent prior to finale") +
-    ylab("Number of chefs")
+    ylab("Number of chefs") +
+    scale_x_continuous(lim=c(-.05,.8),breaks=seq(0,.8,.2),labels=c("0%","20%","40%","60%","80%")) +
+    scale_fill_manual(values=c("#ffbc69","#fc7d0b"))+
+    scale_color_manual(values=c("#ffbc69","#fc7d0b"))+
+    labs(title=histogramtitle
+         ,subtitle=histogramsubtitle) +
+    guides(fill=guide_legend(title="Placement"),color=guide_legend(title="Placement")) +
+    theme_minimal() +
+    theme(legend.position    = c(.8,.8)
+          ,panel.grid        = element_blank()
+          ,panel.background  = element_rect(fill=bkg_col,color=bkg_col)
+          ,plot.margin       = margin(t=10,r=10,b=10,l=10)
+          ,plot.background   = element_rect(fill=bkg_col,color=bkg_col)
+          ,plot.title        = element_markdown(
+                    size    = 24
+                    ,face   = "bold"
+                    ,color  = title_col
+                    ,margin = margin(t=10,b=5))
+          ,plot.subtitle     = element_markdown(
+                    size    = 20
+                    ,color  = subtitle_col
+                    ,margin = margin(t=5,b=10))
+          ,plot.caption      = element_markdown(
+                    size    = 15
+                    ,color  = caption_col
+                    ,hjust  = .5
+                    ,halign = .5)
+          ,axis.line  = element_line(color=title_col)
+          ,axis.ticks = element_line(color=title_col)
+          ,axis.text = element_markdown(size=12,color=text_col)
+          ,axis.title = element_markdown(size=15,color=text_col))
 
   # % of season's elimination challenges that the winner and other final 3 won
-    percentwontitle <- str_glue("Percent of elimination challenges won by season winner")
+
     graph2 <-
       allchallengeswonbyfinal3 %>%
-        ggplot(aes(x=percentwon,y=szn,fill=winnercategorylabs)) +
-        geom_bar(stat="identity") +
-        labs(title=percentwontitle) +
-        xlab("Percent of elimination challenges won")
+      ggplot(aes(x=percentwon,y=szn
+                 ,fill=winnercategorylabs,color=winnercategorylabs
+                 ,label=cheflabels)) +
+      geom_bar(stat="identity") +
+      geom_text(aes(x=0.01,y=szn),color="white",hjust=0) +
+      labs(title=percentwontitle) +
+      xlab("Percent of elimination challenges won") +
+      ylab("") +
+      scale_x_continuous(lim=c(0,1),breaks=seq(0,1,.2),labels=c("0%","20%","40%","60%","80%","100%")) +
+      scale_fill_manual(values=c(bkg_col,"#fc7d0b","#c85200"))+
+      scale_color_manual(values=c(rep(legend_bkgcol,3)))+
+      labs(title=percentwontitle) +
+      guides(fill=guide_legend(title="Placement"),color=guide_legend(title="Placement")) +
+      theme_minimal() +
+      theme(legend.position    = c(.8,.15)
+            ,legend.background = element_rect(fill=legend_bkgcol,color=legend_bkgcol)
+            ,legend.text       = element_text(color=caption_col)
+            ,legend.title      = element_text(color=caption_col)
+            ,panel.grid        = element_blank()
+            ,panel.background  = element_rect(fill=bkg_col,color=bkg_col)
+            ,plot.margin       = margin(t=10,r=10,b=10,l=10)
+            ,plot.background   = element_rect(fill=bkg_col,color=bkg_col)
+            ,plot.title        = element_markdown(
+              size    = 24
+              ,face   = "bold"
+              ,color  = title_col
+              ,margin = margin(t=10,b=5))
+            ,plot.subtitle     = element_markdown(
+              size    = 20
+              ,color  = subtitle_col
+              ,margin = margin(t=5,b=10))
+            ,plot.caption      = element_markdown(
+              size    = 15
+              ,color  = caption_col
+              ,hjust  = .5
+              ,halign = .5)
+            ,axis.line.x  = element_line(color=title_col)
+            ,axis.ticks.x = element_line(color=title_col)
+            ,axis.text = element_markdown(size=12,color=text_col)
+            ,axis.title = element_markdown(size=15,color=text_col))
 
   # graphs of just the final 3s
-    facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs")
-    facetsubtitle <- str_glue("If there was a chef with a winning percentage of 30% or greater prior to the finale, did they win?")
-    facetcaption <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded.")
-
     graph3 <-
     results %>%
       filter(final3 == "Final 3") %>%
@@ -144,8 +221,8 @@ dataofinterest <- topChef::challengewins %>%
 
 
 
-ggarrange(ggarrange(graph1,graph2,nrow=1,ncol=2),graph3,nrow=2,ncol=1,heights=c(1,2))
-dev.print(png, file = paste(savedirectory,"TopThreeWinPercent.png",sep=""), width =900, height = 1600)
+ggarrange(ggarrange(graph1,graph2,nrow=2,ncol=1),graph3,nrow=1,ncol=2,widths=c(1,2))
+dev.print(png, file = paste(savedirectory,"TopThreeWinPercent.png",sep=""), width =1600, height = 900)
 dev.off()
 
 
