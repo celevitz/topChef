@@ -1,7 +1,7 @@
 ## Top Three
-## 2023-06-08
+## written: 2023-06-08
+## updated: 2023-06-10
 ## Carly Levitz
-
 
 savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/"
 
@@ -348,4 +348,52 @@ allseasons <- allseasons %>%
 
       dev.print(png, file = paste(savedirectory,"TopThreeIndexScores_Cumulative_SeasonsSeparated.png",sep=""), width =1100, height = 900)
       dev.off()
+
+##########################################
+## Win %s
+results <- topChef::challengewins %>%
+        # exclude finale
+        group_by(szn,sznnumber,series) %>%
+        mutate(maxepi = case_when(challenge_type == "Elimination" ~ max(episode)
+                                   ,TRUE ~ NA) ) %>%
+        filter(episode != maxepi) %>%
+        # how many elimination challenges did they participate in
+        filter(in.competition == "TRUE" & challenge_type == "Elimination" & series == "US") %>%
+        ungroup() %>% group_by(szn,sznnumber,chef) %>%
+        # how many wins did they have
+        mutate(numberofepisodes=n()
+               ,won=ifelse(grepl("WIN",outcome),1,0)
+               ,numberofwins = sum(won)) %>%
+        # keep just relevant variables
+        select(szn,sznnumber,series,chef,numberofepisodes,numberofwins) %>%
+        distinct() %>%
+        # win %
+        mutate(winpercent = numberofwins/numberofepisodes) %>%
+        # call out just the final 3
+        full_join(topChef::chefdetails %>% select(series,sznnumber,szn,chef,placement)) %>%
+        mutate(final3 = ifelse(placement<=3,"Final 3","All others"))
+
+
+
+
+
+
+
+results %>%
+  ggplot(aes(x=winpercent,group=final3,color=final3)) +
+  geom_histogram()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
