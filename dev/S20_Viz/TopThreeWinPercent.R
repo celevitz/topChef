@@ -5,7 +5,7 @@
 
 savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/"
 
-library(topChef); library(tidyverse); library(ggtext)
+library(topChef); library(tidyverse); library(ggtext); library(ggpubr)
 
 ##############################################################################
 ## Get just the data that we are interested in
@@ -93,22 +93,18 @@ dataofinterest <- topChef::challengewins %>%
         mutate(winnercategorylabs = case_when(winnercategory == 1 ~ "Winner"
                                               ,winnercategory == 2 ~ "Final 2 or 3"
                                               ,winnercategory == 3 ~ "Other chef not in finale") ) %>%
-        # for sorting purposes, get the % wins by category
+        # get the % wins by category
         mutate(percentwon = numberofwinsbycategory/numberofchalls)
-        # doublecheck that there are the right number of episodes
-        # ungroup() %>% group_by(szn,sznnumber,series) %>%
-        # mutate(checknum = sum(numberofwinsbycategory)
-        #        ,check = ifelse(numberofchalls == checknum,"Fine","Bad"))
 
-      allchallengeswonbyfinal3 <- allchallengeswonbyfinal3[order(allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon),]
-
-
-
+      # order things by the % of elimination challenges won by winner
+      allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
+                                             levels=unique(allchallengeswonbyfinal3$szn[order(allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
 
 
 ##############################################################################
 ## Visualizations
   # Histogram of all win %s
+  graph1 <-
   results %>%
     ggplot(aes(x=winpercent,group=final3,color=final3)) +
     geom_histogram() +
@@ -116,17 +112,20 @@ dataofinterest <- topChef::challengewins %>%
     ylab("Number of chefs")
 
   # % of season's elimination challenges that the winner and other final 3 won
+    percentwontitle <- str_glue("Percent of elimination challenges won by season winner")
+    graph2 <-
       allchallengeswonbyfinal3 %>%
-        mutate(szn = fct_reorder(szn, desc(percentwon))) %>%
-        ggplot(aes(x=numberofwinsbycategory,y=szn,col=winnercategorylabs,fill=winnercategorylabs)) +
-        geom_bar(stat="identity")
+        ggplot(aes(x=percentwon,y=szn,fill=winnercategorylabs)) +
+        geom_bar(stat="identity") +
+        labs(title=percentwontitle) +
+        xlab("Percent of elimination challenges won")
 
   # graphs of just the final 3s
     facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs")
     facetsubtitle <- str_glue("If there was a chef with a winning percentage of 30% or greater prior to the finale, did they win?")
     facetcaption <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded.")
 
-
+    graph3 <-
     results %>%
       filter(final3 == "Final 3") %>%
       ggplot(aes(x=placementmodified,y=winpercent,label=chef,col = dominantchef)) +
@@ -145,8 +144,9 @@ dataofinterest <- topChef::challengewins %>%
 
 
 
-
-
+ggarrange(ggarrange(graph1,graph2,nrow=1,ncol=2),graph3,nrow=2,ncol=1,heights=c(1,2))
+dev.print(png, file = paste(savedirectory,"TopThreeWinPercent.png",sep=""), width =900, height = 1600)
+dev.off()
 
 
 
