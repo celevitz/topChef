@@ -60,7 +60,7 @@ dataofinterest <- topChef::challengewins %>%
                ,dominantchefwon = max(chefmorethan30)
                ,dominantchef = case_when(seasonmorethan30 == 1 & dominantchefwon == 1~"Dominant chef won"
                                          ,seasonmorethan30 == 1 & dominantchefwon == 0~"Dominant chef lost"
-                                         ,TRUE ~ "No dominant chef")) %>%
+                                         ,TRUE ~ "No dominant chef") ) %>%
         select(!c(morethan30,seasonmorethan30))
 
   ## who had the highest win % in that season who was in at least 4 elim challs?
@@ -107,6 +107,9 @@ dataofinterest <- topChef::challengewins %>%
   # set up
       bkg_col <- "lightcyan"
       legend_bkgcol <- "gray90"
+      color1 <- "#fc7d0b"
+      color2 <- "#1170AA"
+      color3 <- "gray60"
       title_col <- subtitle_col <- caption_col <- text_col <- "darkslategray"
 
       histogramtitle <- str_glue("Distribution of percent of elimination<br>challenges won prior to finale")
@@ -115,9 +118,12 @@ dataofinterest <- topChef::challengewins %>%
       percentwontitle <- str_glue("Percent of all elimination<br>challenges won by the season<br>winner prior to the finale")
       percentwoncaption <- str_glue("Methodology: For team challenges, if the season winner was on the<br>winning team, the challenge was classified as the season winner winning<br>it. If a chef who made it to the finale was on the winning team but not the<br>season winner, it was categorized as a win for a non-winning finale chef.")
 
-      facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs")
+      facettitle <- str_glue("Elimination challenge win percent of the Final 3 chefs prior to finale")
       facetsubtitle <- str_glue("If there was a chef with a winning percentage of 30% or greater prior to the finale, did they win?")
-      facetcaption <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded.<br>Source: github.com/celevitz/topChef &bull; Twitter: @carlylevitz")
+
+      captionsource <- str_glue("Visualization: Twitter @carlylevitz &bull; Source: github.com/celevitz/topChef &bull; Tools: #rstats #ggplot #tidyverse")
+      facetcaptionpart1 <- str_glue("A dominant chef is one with at least a 30% elimination challenge win percentage prior to the finale. The finale challenge is excluded. Season 20 is excluded to reduce spoilers.")
+      facetcaption <- captiontext <- str_glue("{facetcaptionpart1}<br>{captionsource}")
 
   # Histogram of all win %s
   graph1 <-
@@ -205,45 +211,41 @@ dataofinterest <- topChef::challengewins %>%
             ,axis.title = element_markdown(size=15,color=text_col))
 
   # graphs of just the final 3s
-    graph3 <-
-    results %>%
-      filter(final3 == "Final 3") %>%
-      ggplot(aes(x=placementmodified,y=winpercent,label=chef,col = dominantchef)) +
-      facet_wrap(~sznnumber) +
-
-      geom_bar(stat="identity") +
-      geom_text(col=text_col) +
-      labs(title = facettitle
-           ,subtitle=facetsubtitle
-           ,caption = facetcaption) +
+  # don't include season 20 so as to not have spoilers
+    graph3 <- results %>%
+      filter(final3 == "Final 3" & sznnumber != 20) %>%
+      mutate(sznlabel = case_when(sznnumber <= 9 ~ paste0("Season 0",as.character(sznnumber))
+                                  ,TRUE ~ paste0("Season ",as.character(sznnumber))))  %>%
+      ggplot(aes(x=placementmodified,y=winpercent,label=chef,fill=dominantchef)) +
+      facet_wrap(~sznlabel) +
+      geom_bar(stat="identity",color="gray50") +
+      geom_text(aes(x=placementmodified,y=winpercent+.05),col=text_col) +
+      geom_text(aes(x=placementmodified,y=0.05,label=paste0(round(winpercent*100,1),"%")),col="white") +
+      scale_fill_manual(values = c(color1,color2,color3)) +
+      labs(title = facettitle,subtitle=facetsubtitle,caption = facetcaption) +
       xlab("Placement") +
       ylab("Elimination challenge win percent prior to finale") +
-      scale_y_continuous(lim=c(0,.6),breaks=seq(0,.6,.2),labels=c("0%","20%","40%","60%")) +
+      scale_y_continuous(lim=c(0,.65),breaks=seq(0,.6,.2),labels=c("0%","20%","40%","60%")) +
       theme_minimal() +
+      guides(fill=guide_legend(title="Type of season")) +
       theme(panel.grid        = element_blank()
-            ,panel.background  = element_rect(fill=bkg_col,color=bkg_col)
+            ,panel.background  = element_rect(fill=bkg_col,    color=bkg_col)
             ,plot.margin       = margin(t=10,r=10,b=10,l=10)
-            ,plot.background   = element_rect(fill=bkg_col,color=bkg_col)
-            ,plot.title        = element_markdown(
-              size    = 24
-              ,face   = "bold"
-              ,color  = title_col
-              ,margin = margin(t=10,b=5))
-            ,plot.subtitle     = element_markdown(
-              size    = 18
-              ,color  = subtitle_col
-              ,margin = margin(t=5,b=10))
-            ,plot.caption      = element_markdown(
-              size    = 12
-              ,color  = caption_col
-              ,hjust  = .5
-              ,halign = 0)
+            ,plot.background   = element_rect(fill=bkg_col,    color=bkg_col)
+            ,plot.title        = element_markdown(size    = 24 ,face    = "bold",       color  = title_col,      margin = margin(t=10,b=5))
+            ,plot.subtitle     = element_markdown(size    = 18, color   = subtitle_col, margin = margin(t=5,b=10))
+            ,plot.caption      = element_markdown(size    = 14, color   = caption_col,  hjust  = 0,             halign = 0)
             ,axis.line  = element_line(color=title_col)
             ,axis.ticks = element_line(color=title_col)
-            ,axis.text = element_markdown(size=12,color=text_col)
-            ,axis.title = element_markdown(size=15,color=text_col))
-
-
+            ,axis.text = element_markdown(size=14,  color=text_col)
+            ,axis.title = element_markdown(size=18, color=text_col)
+            ,strip.background = element_rect(fill=text_col)
+            ,strip.text = element_markdown(color="white",  size = 12)
+            ,legend.text = element_markdown(size = 12)
+            ,legend.title = element_markdown(size = 15))
+    graph3
+    dev.print(png, file = paste(savedirectory,"TopThreeWinPercent_Graph3.png",sep=""), width =1400, height = 900)
+    dev.off()
 
 
 
