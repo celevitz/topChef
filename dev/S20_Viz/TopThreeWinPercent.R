@@ -104,6 +104,14 @@ dataofinterest <- topChef::challengewins %>%
       allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
                                              levels=unique(allchallengeswonbyfinal3$szn[order(allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
 
+      # instead, order by % of elimin challs won by winner + finale chefs
+      # allchallengeswonbyfinal3 <- allchallengeswonbyfinal3 %>%
+      #   ungroup() %>% group_by(series, szn, sznnumber) %>%
+      #   mutate(includeintotal = ifelse(winnercategory != 3,percentwon,NA)
+      #          ,total = sum(includeintotal,na.rm=TRUE))
+      # allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
+      #                                        levels=unique(allchallengeswonbyfinal3$szn[order(allchallengeswonbyfinal3$total,allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
+      #
 
 ##############################################################################
 ## Visualizations
@@ -189,7 +197,7 @@ dataofinterest <- topChef::challengewins %>%
       annotate("text",x=.98
                ,y=allchallengeswonbyfinal3$szn[allchallengeswonbyfinal3$winnercategory==1]
                ,label=paste0(round(allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==3]*100,1),"%")
-               ,color=darkbgcol,hjust=1,size=6) +
+               ,color=darkbgcol,hjust=1,size=4) +
       labs(title=percentwontitle ,caption=percentwoncaption) +
       xlab("\nPercent of elimination challenges (ECs) won\nprior to the season finale\n") + ylab("") +
       scale_x_continuous(lim=c(0,1),breaks=seq(0,1,.2),labels=c("0%","20%","40%","60%","80%","100%")) +
@@ -198,8 +206,7 @@ dataofinterest <- topChef::challengewins %>%
       labs(title=percentwontitle) +
       guides(fill=guide_legend(title="Legend:"),color=guide_legend(title="Legend:")) +
       theme_minimal() +
-      theme(#legend.position    = c(.75,.08)
-            legend.position = "top"
+      theme(legend.position = "top"
             ,legend.background = element_blank()
             ,legend.text       = element_markdown(color=text_col2,size=15)
             ,legend.title      = element_markdown(color=text_col2,size = 18, face = "bold")
@@ -207,7 +214,7 @@ dataofinterest <- topChef::challengewins %>%
             ,panel.background  = element_rect(fill=darkbgcol,color=darkbgcol)
             ,plot.margin       = margin(t=10,r=40,b=10,l=10)
             ,plot.background   = element_rect(fill=darkbgcol,color=darkbgcol)
-            ,plot.title        = element_markdown( size    = 28,face   = "bold",color  = title_col2,margin = margin(t=10,b=5,l=-250))
+            ,plot.title        = element_markdown( size    = 28,face   = "bold",color  = title_col2,margin = margin(t=10,b=10,l=-250))
             ,plot.subtitle     = element_markdown(size    = 20,color  = subtitle_col2,margin = margin(t=5,b=10))
             ,plot.caption      = element_markdown(size  = 15,color  = text_col2,halign = 0,lineheight = .6)
             ,axis.line.x  = element_line(color=title_col2)
