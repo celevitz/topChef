@@ -90,12 +90,15 @@ dataofinterest <- topChef::challengewins %>%
         mutate(numberofwinsbycategory = n_distinct(episode)) %>%
         select(szn,sznnumber,series,numberofchalls,winnercategory,numberofwinsbycategory) %>%
         distinct() %>%
-        mutate(winnercategorylabs = case_when(winnercategory == 1 ~ "Winner"
+        mutate(winnercategorylabs = case_when(winnercategory == 1 ~ "Season winner"
                                               ,winnercategory == 2 ~ "Non-winning chef in finale"
                                               ,winnercategory == 3 ~ "Chef not in finale") ) %>%
         # get the % wins by category
         mutate(percentwon = numberofwinsbycategory/numberofchalls
-              ,cheflabels = ifelse(winnercategory == 1,paste0(round(percentwon*100,1),"% of ",numberofchalls),NA))
+              ,cheflabels = ifelse(winnercategory == 1,paste0(round(percentwon*100,1),"%"),NA)) %>%
+              #,cheflabels = paste0(round(percentwon*100,1),"%")) %>%
+        # number of ECs before finale
+        mutate(szn = paste0(szn," (n=",numberofchalls," ECs)"))
 
       # order things by the % of elimination challenges won by winner
       allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
@@ -120,7 +123,9 @@ dataofinterest <- topChef::challengewins %>%
       histogramtitle <- str_glue("Distribution of percent of elimination<br>challenges won prior to finale")
       histogramcaption <- str_glue("The denominator for each chef is the number of elimination challenges they participated in.<br>159 chefs had a win percentage of 0 (not shown).<br>The minimum win percent for a chef that made it to the finale was 7.7%.")
 
-      percentwontitle <- str_glue("Percent of all elimination challenges won by the<br>season winner prior to the finale")
+      #percentwontitle <- str_glue("Percent of all elimination challenges prior to the<br>finale that were won by the season's winner or<br>other chefs in the finale")
+      percentwontitle <- str_glue("Who won the elimination challenges (ECs) prior to the finale?")
+      #percentwonsubtitle <- str_glue("The number of elimination challenges prior to the finale are listed after the<br>percent of challenges won by the season's winner")
       percentwoncaptionpart1 <- str_glue("Methodology: For team challenges, if the season winner was on the winning team, the challenge was<br>classified as the season winner winning it. If a chef who made it to the finale was on the winning team but<br>not the season winner, it was categorized as a win for a non-winning finale chef.")
       percentwoncaption <- str_glue("{percentwoncaptionpart1}<br><br>{captionsource}")
 
@@ -176,34 +181,42 @@ dataofinterest <- topChef::challengewins %>%
                  ,fill=winnercategorylabs,color=winnercategorylabs
                  ,label=cheflabels)) +
       geom_bar(stat="identity") +
-      geom_text(aes(x=0.01,y=szn),color=text_col2,hjust=0,size=6) +
+      geom_text(aes(x=0.01 ,y=szn),color=text_col2,hjust=0,size=6) +
+      annotate("text",x=allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==1]+.02
+               ,y=allchallengeswonbyfinal3$szn[allchallengeswonbyfinal3$winnercategory==1]
+               ,label=paste0(round(allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==2]*100,1),"%")
+               ,color=text_col2,hjust=0,size=6) +
+      annotate("text",x=.98
+               ,y=allchallengeswonbyfinal3$szn[allchallengeswonbyfinal3$winnercategory==1]
+               ,label=paste0(round(allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==3]*100,1),"%")
+               ,color=darkbgcol,hjust=1,size=6) +
       labs(title=percentwontitle ,caption=percentwoncaption) +
-      xlab("Percent of elimination challenges won\nprior to the season finale\n") + ylab("") +
+      xlab("\nPercent of elimination challenges (ECs) won\nprior to the season finale\n") + ylab("") +
       scale_x_continuous(lim=c(0,1),breaks=seq(0,1,.2),labels=c("0%","20%","40%","60%","80%","100%")) +
-      scale_fill_manual(values=c(text_col2,"#fc7d0b","#c85200"))+
-      scale_color_manual(values=c(rep(legend_bkgcol,3)))+
+      scale_fill_manual(values=c("#c85200","#fc7d0b",text_col2),breaks=c("Season winner","Non-winning chef in finale","Chef not in finale"))+
+      scale_color_manual(values=c(rep(legend_bkgcol,3)),breaks=c("Season winner","Non-winning chef in finale","Chef not in finale"))+
       labs(title=percentwontitle) +
-      guides(fill=guide_legend(title="Placement"),color=guide_legend(title="Placement")) +
+      guides(fill=guide_legend(title="Legend:"),color=guide_legend(title="Legend:")) +
       theme_minimal() +
-      theme(legend.position    = c(.8,.15)
-            ,legend.background = element_rect(fill=legend_bkgcol,color=legend_bkgcol)
-            ,legend.text       = element_text(color=caption_col)
-            ,legend.title      = element_text(color=caption_col)
+      theme(#legend.position    = c(.75,.08)
+            legend.position = "top"
+            ,legend.background = element_blank()
+            ,legend.text       = element_markdown(color=text_col2,size=15)
+            ,legend.title      = element_markdown(color=text_col2,size = 18, face = "bold")
             ,panel.grid        = element_blank()
             ,panel.background  = element_rect(fill=darkbgcol,color=darkbgcol)
-            ,plot.margin       = margin(t=10,r=20,b=10,l=10)
+            ,plot.margin       = margin(t=10,r=40,b=10,l=10)
             ,plot.background   = element_rect(fill=darkbgcol,color=darkbgcol)
-            ,plot.title        = element_markdown( size    = 28,face   = "bold",color  = title_col2,margin = margin(t=10,b=5))
+            ,plot.title        = element_markdown( size    = 28,face   = "bold",color  = title_col2,margin = margin(t=10,b=5,l=-250))
             ,plot.subtitle     = element_markdown(size    = 20,color  = subtitle_col2,margin = margin(t=5,b=10))
             ,plot.caption      = element_markdown(size  = 15,color  = text_col2,halign = 0,lineheight = .6)
             ,axis.line.x  = element_line(color=title_col2)
             ,axis.ticks.x = element_line(color=title_col2)
             ,axis.text = element_markdown(size=18,color=text_col2)
-            ,axis.title = element_markdown(size=24,color=text_col2))
+            ,axis.title = element_markdown(size=20,color=text_col2))
     graph2
     dev.print(png, file = paste(savedirectory,"TopThreeWinPercent_Graph2.png",sep=""), width =900, height = 1100)
     dev.off()
-
 
   # graphs of just the final 3s
   # don't include season 20 so as to not have spoilers
