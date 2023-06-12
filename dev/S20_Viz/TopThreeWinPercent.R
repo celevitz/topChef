@@ -197,7 +197,7 @@ dataofinterest <- topChef::challengewins %>%
       annotate("text",x=.98
                ,y=allchallengeswonbyfinal3$szn[allchallengeswonbyfinal3$winnercategory==1]
                ,label=paste0(round(allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==3]*100,1),"%")
-               ,color=darkbgcol,hjust=1,size=4) +
+               ,color=darkbgcol,hjust=1,size=5) +
       labs(title=percentwontitle ,caption=percentwoncaption) +
       xlab("\nPercent of elimination challenges (ECs) won\nprior to the season finale\n") + ylab("") +
       scale_x_continuous(lim=c(0,1),breaks=seq(0,1,.2),labels=c("0%","20%","40%","60%","80%","100%")) +
