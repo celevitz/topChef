@@ -1,5 +1,6 @@
 
 library(testthat)        # load testthat package
+library(topChef)         # lout my package
 
 # 1. Check that there aren't NAs where there shouldn't be
   ## A. Chef Details
@@ -57,6 +58,13 @@ library(testthat)        # load testthat package
             expect_equal(all(!(is.na(rewards[,varname]))),TRUE)
           })
         }
+
+## 2. Test Index Calculation
+  ## A. Does it output a data frame?
+        test_that("index calculation returns a data frame", {
+          indexoutput <- weightedindex(seriesname="US",seasonnumber=20,numberofelimchalls=10,numberofquickfires=8)
+          expect_s3_class(indexoutput,"data.frame")
+        })
 
 
 
