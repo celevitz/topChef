@@ -20,7 +20,6 @@
 
 rm(list=ls())
 
-library(tidyverse)
 library(openxlsx)
 library(usethis)
 library(rmarkdown)

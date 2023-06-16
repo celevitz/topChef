@@ -33,7 +33,9 @@ Data were collected manually while watching each season of Top Chef. Additional 
 Huge thanks to <https://github.com/doehm> for all his support!
 
 ```{r Library set up, message=FALSE, warning=FALSE,echo=FALSE,eval=TRUE}
-library(topChef); library(tidyverse)
+library(topChef)
+library(tidyr)
+library(dplyr)
 ```
 
 ## 4. Overview of datasets
@@ -170,7 +172,8 @@ chefdetails %>%
 #### 4.c.i. Visualization
 
 ```{r WonEpisodesViz, eval=TRUE,echo=FALSE,message=FALSE} 
-library(ggplot2); library(topChef)
+library(ggplot2)
+library(topChef)
 ## Won the episode
     # Data set up
         # how many episodes each chef won in each season
@@ -247,7 +250,8 @@ library(ggplot2); library(topChef)
 #### 4.c.ii. Code
 
 ```{r WonEpisodesViz_Code, eval=FALSE,echo=TRUE,message=FALSE} 
-library(ggplot2); library(topChef)
+library(ggplot2)
+library(topChef)
 ## Won the episode
     # Data set up
       # how many episodes each chef won in each season
@@ -347,7 +351,10 @@ The `weightedindex` function exports a tibble with the variables of: series, sea
 ### 5.a. Distribution of Weighted Index Scores at the Completion of All Seasons
 
 ```{r Viz_DensityPlot_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE} 
-library(topChef); library(tidyverse); library(RColorBrewer)
+library(topChef)
+library(tidyr)
+library(dplyr) 
+library(RColorBrewer)
  ## Get the index for all seasons, all episodes
     
     allseasons <- weightedindex("US",1,20,20)
@@ -441,7 +448,10 @@ library(topChef); library(tidyverse); library(RColorBrewer)
 
 ##### 5.b.i. Visualizations
 ```{r Viz_FinalIndex_Names_Setup, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE,warning=FALSE} 
-library(topChef); library(ggplot2); library(tidyverse)
+library(topChef) 
+library(ggplot2)
+library(tidyr)
+library(dplyr)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,20,20)
@@ -545,7 +555,10 @@ library(topChef); library(ggplot2); library(tidyverse)
 ##### 5.b.ii. Code
 ```{r Viz_FinalIndex_Names_Code, eval=FALSE,echo=TRUE,message=FALSE,warning=FALSE} 
 
-library(topChef); library(ggplot2); library(tidyverse)
+library(topChef)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,20,20)
@@ -645,7 +658,10 @@ library(topChef); library(ggplot2); library(tidyverse)
 
 ##### 5.c.i. Visualizations
 ```{r Viz_IndexAllSeasons_SetUp, eval=TRUE,echo=FALSE,message=FALSE,include=FALSE,warning=FALSE} 
-library(topChef); library(ggplot2); library(tidyverse)
+library(topChef)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,10,7)
@@ -717,7 +733,10 @@ This example shows the index scores for the Top Four chefs in all seasons with t
 
 ##### 5.c.ii. Code
 ```{r Code_IndexAllSeasons, eval=FALSE,echo=TRUE,message=FALSE,warning=FALSE} 
-library(topChef); library(ggplot2); library(tidyverse)
+library(topChef)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,10,7)
