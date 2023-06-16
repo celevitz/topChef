@@ -28,9 +28,9 @@ library(topChef); library(tidyverse)
     chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
     challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
     
-    ##############################################################################
+    ###########################################################################
     ## Set up data
-    ##############################################################################
+    ###########################################################################
     currentstats <- challengewins %>%
       select(!rating) %>% 
       full_join(chefdetails %>% 
@@ -43,7 +43,8 @@ library(topChef); library(tidyverse)
           # remove groups we don't want to visualize
           filter(!(is.na(outcome)))
         
-        nums$outcome <- factor(nums$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"))
+        nums$outcome <- factor(nums$outcome,levels=c("OUT","LOW","IN"
+                                                     ,"HIGH","WIN"))
       
         ## Create bar charts for #s of each combo of challenge type-outcome
           nums %>%
@@ -68,9 +69,9 @@ library(topChef); library(tidyverse)
     chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
     challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
     
-    ##############################################################################
+    ###########################################################################
     ## Set up data
-    ##############################################################################
+    ###########################################################################
     currentstats <- challengewins %>%
       select(!rating) %>% 
       full_join(chefdetails %>% 
@@ -83,7 +84,8 @@ library(topChef); library(tidyverse)
           # remove groups we don't want to visualize
           filter(!(is.na(outcome)))
         
-        nums$outcome <- factor(nums$outcome,levels=c("OUT","LOW","IN","HIGH","WIN"))
+        nums$outcome <- factor(nums$outcome,levels=c("OUT","LOW","IN"
+                                                     ,"HIGH","WIN"))
       
         ## Create bar charts for #s of each combo of challenge type-outcome
           nums %>%

@@ -20,7 +20,7 @@
 
 rm(list=ls())
 
-library(tidyverse); library(openxlsx); library(usethis); library(rmarkdown)
+library(tidyverse); library(openxlsx); library(usethis); library(rmarkdown); library(goodpractice)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -43,10 +43,11 @@ save(rewards, file = "data/rewards.rda")
 save(judges, file = "data/judges.rda")
 save(episodeinfo, file = "data/episodeinfo.rda")
 
-# Check for CRAN specific requirements
+# Check for CRAN specific requirementss
 #results <- rhub::check_for_cran()
 #results$cran_summary()
 #usethis::use_cran_comments()
 
 # Run this to see how much of your function is covered: devtools::test_coverage()
+# run good practice: goodpractice:gp()
 
