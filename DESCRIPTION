@@ -2,10 +2,12 @@ Package: topChef
 Type: Package
 Title: Top Chef Data
 Version: 0.1.0
-Authors@R: person("Levitz", "Carly", email = "celevitz@gmail.com", role = c("cre","aut"))
-Description: Several datasets which describe the chef contestants in Top Chef, the challenges that they compete 
-    in, and the results of those challenges. This data is useful for practicing data wrangling, graphing, 
-    and analyzing how each season of Top Chef played out.
+Authors@R: person("Levitz", "Carly", email = "celevitz@gmail.com", role = 
+            c("cre","aut"))
+Description: Several datasets which describe the chef contestants in Top Chef, 
+    the challenges that they compete in, and the results of those challenges. 
+    This data is useful for practicing data wrangling, graphing, and analyzing 
+    how each season of Top Chef played out.
 URL: https://github.com/celevitz/topChef
 BugReports: https://github.com/celevitz/topChef/issues
 Depends:
