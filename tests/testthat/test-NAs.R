@@ -39,8 +39,8 @@ library(topChef)         # lout my package
       # NA is okay in outcome only if in.competition is false
       test_that("The NAs in Outcome are only if they aren't in the competition"
                 , {
-        expect_equal(all(!(is.na(challengewins$outcome[challengewins$in.competition
-                                                       == "TRUE"]))),TRUE)
+        expect_equal(all(!(is.na(challengewins$outcome[challengewins$
+                                             in.competition == "TRUE"]))),TRUE)
       })
   ## D. Episode info
         # NAs are okay in overall episode number, episode name, air date as I

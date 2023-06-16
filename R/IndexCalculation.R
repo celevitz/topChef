@@ -43,8 +43,8 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
 
     # 1a. Outcomes of the challenges
     challengewins <-
-      topChef::challengewins[,names(topChef::challengewins)[!(names(topChef::challengewins)
-                                                            %in% "rating")] ]
+      topChef::challengewins[,names(topChef::challengewins)[!(names(topChef::
+                                              challengewins) %in% "rating")] ]
     challengewins <- challengewins[challengewins$series == seriesname &
                                      challengewins$sznnumber == seasonnumber,]
 
@@ -105,10 +105,12 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
 
      # 2a. keep just the episodes that are at or the same # of challenges
      # that have happened
-     statsbynumberofchalls <- statsbynumberofchalls[!(is.na(statsbynumberofchalls$count)),]
+     statsbynumberofchalls <- statsbynumberofchalls[!(is.na(
+                                                statsbynumberofchalls$count)),]
 
      # 2b. drop when people were not in the competition
-     statsbynumberofchalls <- statsbynumberofchalls[statsbynumberofchalls$in.competition == "TRUE",]
+     statsbynumberofchalls <- statsbynumberofchalls[statsbynumberofchalls$
+                                                      in.competition == "TRUE",]
 
      # 2c. drop unnecessary variables
      statsbynumberofchalls <- statsbynumberofchalls[,c("szn","sznnumber"
@@ -120,7 +122,8 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
      # don't combine outs & lows because we want to count those differently
      # in the index
      # for the currently airing season, they don't yet have a placement;
-     # they'll get dropped in this aggregate function if they are empty; fill them in for now
+     # they'll get dropped in this aggregate function if they are empty;
+     # fill them in for now
      statsbynumberofchalls$placement[is.na(statsbynumberofchalls$placement)] <-
        1.5
      statsbynumberofchalls$tempcount <- 1
