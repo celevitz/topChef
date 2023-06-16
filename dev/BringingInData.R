@@ -25,6 +25,7 @@ library(openxlsx)
 library(usethis)
 library(rmarkdown)
 library(goodpractice)
+library(stringi)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -38,7 +39,20 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sh
   # fix the date
   episodeinfo$air_date <- as.Date(as.numeric(episodeinfo$air_date), origin = "1899-12-30")
 
-## save things as RDA
+## Check for UTF-8 strings
+
+  chefdetails$name[grepl("ö",chefdetails$name)] <- gsub("ö",as.character(iconv("ö","UTF-8","latin1","Unicode")),chefdetails$name[grepl("ö",chefdetails$name)])
+
+  chefdetails$name[stri_enc_mark(chefdetails$name) == "UTF-8"]
+  chefdetails$chef[stri_enc_mark(chefdetails$chef) == "UTF-8"]
+
+  asc <- function(x) { strtoi(charToRaw(x),16L)}
+  chr <- function(n) { rawToChar(as.raw(n))}
+
+  chefdetails$name <- gsub("ñ",chr(asc("ñ")),chefdetails$name)
+
+
+## save things as RDAutf-8 t
 
 save(chefdetails, file = "data/chefdetails.rda")
 save(challengewins, file = "data/challengewins.rda")
