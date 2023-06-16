@@ -36,6 +36,7 @@ each challenge
 }
 \examples{
 library(dplyr)
+library(tidyverse)
 judges \%>\%
   filter(guestjudge == "Eric Ripert") \%>\%
   group_by(challenge_type) \%>\%

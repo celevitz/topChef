@@ -33,12 +33,13 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarise
-#' @importFrom dplyr pivot_wider
-#' @importFrom dplyr pivot_longer
+#' @importFrom tidyverse pivot_wider
+#' @importFrom tidyverse pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(dplyr)
+#' library(tidyverse)
 #' chefdetails %>%
 #'   filter(szn == "World All Stars")
 "chefdetails"
@@ -101,12 +102,13 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarise
-#' @importFrom dplyr pivot_wider
-#' @importFrom dplyr pivot_longer
+#' @importFrom tidyverse pivot_wider
+#' @importFrom tidyverse pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(dplyr)
+#' library(tidyverse)
 #' challengedescriptions %>%
 #'    group_by(series,szn,outcome_type) %>%
 #'    summarise(n=n()) %>%
@@ -151,12 +153,13 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarise
-#' @importFrom dplyr pivot_wider
-#' @importFrom dplyr pivot_longer
+#' @importFrom tidyverse pivot_wider
+#' @importFrom tidyverse pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(dplyr)
+#' library(tidyverse)
 #' challengewins %>%
 #'   group_by(outcome) %>%
 #'   summarise(n=n())
@@ -193,12 +196,13 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarise
-#' @importFrom dplyr pivot_wider
-#' @importFrom dplyr pivot_longer
+#' @importFrom tidyverse pivot_wider
+#' @importFrom tidyverse pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(dplyr)
+#' library(tidyverse)
 #' episodeinfo %>% filter(szn=="World All Stars")
 "episodeinfo"
 
@@ -237,12 +241,13 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarise
-#' @importFrom dplyr pivot_wider
-#' @importFrom dplyr pivot_longer
+#' @importFrom tidyverse pivot_wider
+#' @importFrom tidyverse pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(dplyr)
+#' library(tidyverse)
 #' judges %>%
 #'   filter(guestjudge == "Eric Ripert") %>%
 #'   group_by(challenge_type) %>%
@@ -282,12 +287,13 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr arrange
 #' @importFrom dplyr summarise
-#' @importFrom dplyr pivot_wider
-#' @importFrom dplyr pivot_longer
+#' @importFrom tidyverse pivot_wider
+#' @importFrom tidyverse pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
 #' library(dplyr)
+#' library(tidyverse)
 #' rewards %>%
 #'   filter(reward_type == "Money") %>%
 #'   mutate(reward=as.numeric(reward)) %>%
