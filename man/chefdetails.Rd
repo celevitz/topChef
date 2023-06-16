@@ -38,7 +38,7 @@ season of Top Chef Canada.
 }
 \examples{
 library(dplyr)
-library(tidyverse)
+library(tidyr)
 chefdetails \%>\%
   filter(szn == "World All Stars")
 }

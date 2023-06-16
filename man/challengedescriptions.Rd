@@ -60,7 +60,7 @@ Chefs compete in
 }
 \examples{
 library(dplyr)
-library(tidyverse)
+library(tidyr)
 challengedescriptions \%>\%
    group_by(series,szn,outcome_type) \%>\%
    summarise(n=n()) \%>\%
