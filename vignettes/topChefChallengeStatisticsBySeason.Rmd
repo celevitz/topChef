@@ -26,6 +26,7 @@ topChef provides the information that you need to summarize challenge statistics
 library(topChef)
 library(tidyr)
 library(dplyr)
+library(ggplot2)
 
     chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
     challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
@@ -69,6 +70,7 @@ library(dplyr)
 library(topChef)
 library(tidyr)
 library(dplyr)
+library(ggplot2)
 
     chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
     challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
