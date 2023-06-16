@@ -48,3 +48,5 @@ save(episodeinfo, file = "data/episodeinfo.rda")
 #results$cran_summary()
 #usethis::use_cran_comments()
 
+# Run this to see how much of your function is covered: devtools::test_coverage()
+
