@@ -7,3 +7,5 @@
 ^README.Rmd
 ^README_files$
 ^cran-comments\.md$
+^.Rd2pdf17818$
+^.Rd2pdf17947$
