@@ -23,7 +23,8 @@ topChef provides the information that you need to summarize challenge statistics
 
 ### Visualization
 ```{r ChallengeStatisticsVisualization, eval=TRUE,echo=FALSE,message=FALSE } 
-library(topChef); library(tidyverse)
+library(topChef)
+library(tidyverse)
 
     chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
     challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
@@ -64,7 +65,8 @@ library(topChef); library(tidyverse)
 ### Code
 
 ```{r ChallengeStatisticsVisualization_code, eval=FALSE,echo=TRUE,message=FALSE} 
-library(topChef); library(tidyverse)
+library(topChef)
+library(tidyverse)
 
     chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
     challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
