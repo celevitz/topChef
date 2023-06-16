@@ -37,11 +37,14 @@ rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=
 judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
 episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
   # fix the date
-  episodeinfo$air_date <- as.Date(as.numeric(episodeinfo$air_date), origin = "1899-12-30")
+  episodeinfo$air_date <- as.Date(as.numeric(episodeinfo$air_date)
+                                  , origin = "1899-12-30")
 
 ## Check for UTF-8 strings
 #
-#   chefdetails$name[grepl("ö",chefdetails$name)] <- gsub("ö",as.character(iconv("ö","UTF-8","latin1","Unicode")),chefdetails$name[grepl("ö",chefdetails$name)])
+#   chefdetails$name[grepl("ö",chefdetails$name)] <-
+#  gsub("ö",as.character(iconv("ö","UTF-8","latin1","Unicode"))
+#       ,chefdetails$name[grepl("ö",chefdetails$name)])
 #
 #   chefdetails$name[stri_enc_mark(chefdetails$name) == "UTF-8"]
 #   chefdetails$chef[stri_enc_mark(chefdetails$chef) == "UTF-8"]
@@ -50,9 +53,16 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sh
 #   chr <- function(n) { rawToChar(as.raw(n))}
 #
 #   chefdetails$name <- gsub("ñ",chr(asc("ñ")),chefdetails$name)
-#
+# For now - replace umlauts and such with non-special characters.
+#  definitely not ideal
 
-## save things as RDAutf-8 t
+  chefdetails$name <- gsub("ñ","n",gsub("ö","o",chefdetails$name))
+  chefdetails$chef <- gsub("ñ","n",gsub("ö","o",chefdetails$chef))
+  challengewins$chef <- gsub("ñ","n",gsub("ö","o",challengewins$chef))
+  rewards$chef <- gsub("ñ","n",gsub("ö","o",rewards$chef))
+
+
+## save things as RDA
 
 save(chefdetails, file = "data/chefdetails.rda")
 save(challengewins, file = "data/challengewins.rda")
@@ -67,5 +77,5 @@ save(episodeinfo, file = "data/episodeinfo.rda")
 #usethis::use_cran_comments()
 
 # Run this to see how much of your function is covered: devtools::test_coverage()
-# run good practice: goodpractice:gp()
+# run good practice: goodpractice::gp()
 
