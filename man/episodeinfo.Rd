@@ -9,8 +9,11 @@ This data frame contains the following columns:
 \describe{
   \item{\code{szn}}{Name of season}
   \item{\code{sznnumber}}{Season number}
-  \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters (listed as US Masters); Top Chef Canada (listed as Canada)}
-  \item{\code{overall.episode.number}}{Running number of episode within the series}
+  \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
+                       (listed as US Masters); Top Chef Canada (listed as
+                       Canada)}
+  \item{\code{overall.episode.number}}{Running number of episode within
+                                       the series}
   \item{\code{episode}}{Episode number}
   \item{\code{episode_name}}{Name of episode}
   \item{\code{air_date}}{Date the episode originally aired}

@@ -11,24 +11,29 @@ weightedindex(seriesname, seasonnumber, numberofelimchalls, numberofquickfires)
 
 \item{seasonnumber}{Integer of the season number within the series}
 
-\item{numberofelimchalls}{Number of elimination challenges you want to include in the index}
+\item{numberofelimchalls}{Number of elimination challenges you want to
+include in the index}
 
-\item{numberofquickfires}{Number of quickfire challenges you want to include in the index}
+\item{numberofquickfires}{Number of quickfire challenges you want to include
+in the index}
 }
 \value{
-Tibble of index score for each contestant in that season and their placement
+Tibble of index score for each contestant in that season and their
+         placement
 }
 \description{
-Calculates the Index score for each person within a season of Top Chef.
+Calculates the Index score for each person within a season of
+             Top Chef.
 }
 \details{
-The result of elimination challenges and quickfire challenges are weighted.
+The result of elimination challenges and quickfire challenges are
+         weighted.
          Scoring: Elimination win = +7 points. Elimination high = +3 points.
                   Elimination low = -3 points. Eliminated = -7 points.
                   Quickfire win = +4 points. Quickfire high = +2 points.
                   Quickfire low = -2 points.
          Combines Sudden Death Quickfires with Eliminations
          Excludes Qualifying Challenges
-         Holding constant the number of elimination challenges and quickfire challengess
-             will allow comparison across seasons if you want
+         Holding constant the number of elimination challenges and quickfire
+         challenges will allow comparison across seasons if you want
 }

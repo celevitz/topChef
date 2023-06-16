@@ -15,9 +15,12 @@ This data frame contains the following columns:
   \item{\code{age}}{Age of Chef at the time of the show}
   \item{\code{szn}}{Name of season}
   \item{\code{sznnumber}}{Season number}
-  \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters (listed as US Masters); Top Chef Canada (listed as Canada)}
+  \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
+                       (listed as US Masters); Top Chef Canada (listed
+                       as Canada)}
   \item{\code{placement}}{Final result of the Chef.}
-  \item{\code{poc}}{Flag for whether the Chef is a person of color. Will be blank if they are not}
+  \item{\code{poc}}{Flag for whether the Chef is a person of color. Will be
+                   blank if they are not}
   \item{\code{occupation}}{Occupation of Chef at time of show, if known}
   \item{\code{gender}}{Gender of Chef}
 }
@@ -29,7 +32,9 @@ This data frame contains the following columns:
 data(chefdetails)
 }
 \description{
-A dataset containing information on each Chef for each season. As of now, it has data for all Top Chef US seasons, Top Chef Masters (US), and one season of Top Chef Canada.
+A dataset containing information on each Chef for each season. As of now,
+it has data for all Top Chef US seasons, Top Chef Masters (US), and one
+season of Top Chef Canada.
 }
 \examples{
 library(tidyverse)

@@ -9,13 +9,19 @@ This data frame contains the following columns:
 \describe{
   \item{\code{szn}}{Name of season}
   \item{\code{sznnumber}}{Season number}
-  \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters (listed as US Masters); Top Chef Canada (listed as Canada)}
+  \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
+           (listed as US Masters); Top Chef Canada (listed as Canada)}
   \item{\code{episode}}{Episode number}
-  \item{\code{challenge_type}}{Challenge type: qualifying challenge, elimination, quickfire, sudden death quickfire, quickfire elimination, battle of the sous chefs}
-  \item{\code{outcome_type}}{Is the challenge run as a team or as an individual?}
+  \item{\code{challenge_type}}{Challenge type: qualifying challenge,
+             elimination, quickfire, sudden death quickfire, quickfire
+             elimination, battle of the sous chefs}
+  \item{\code{outcome_type}}{Is the challenge run as a team or as an
+  individual?}
   \item{\code{guestjudge}}{Name of guest judge}
-  \item{\code{competed_on_TC}}{Will have a value of Yes if they competed on a season of Top Chef}
-  \item{\code{other_shows}}{Information about other shows that this individual has appeared on}
+  \item{\code{competed_on_TC}}{Will have a value of Yes if they competed
+  on a season of Top Chef}
+  \item{\code{other_shows}}{Information about other shows that this
+  individual has appeared on}
 }
 }
 \source{
@@ -25,7 +31,8 @@ This data frame contains the following columns:
 data(judges)
 }
 \description{
-A dataset containing information about who were the guest judges for each challenge
+A dataset containing information about who were the guest judges for
+each challenge
 }
 \examples{
 library(tidyverse)
