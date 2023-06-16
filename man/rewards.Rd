@@ -33,7 +33,7 @@ data(rewards)
 A dataset containing information about rewards and prizes won by challenge
 }
 \examples{
-library(tidyverse)
+library(dplyr)
 rewards \%>\%
   filter(reward_type == "Money") \%>\%
   mutate(reward=as.numeric(reward)) \%>\%

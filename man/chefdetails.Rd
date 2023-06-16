@@ -37,7 +37,7 @@ it has data for all Top Chef US seasons, Top Chef Masters (US), and one
 season of Top Chef Canada.
 }
 \examples{
-library(tidyverse)
+library(dplyr)
 chefdetails \%>\%
   filter(szn == "World All Stars")
 }

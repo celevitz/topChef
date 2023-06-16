@@ -35,7 +35,7 @@ A dataset containing information about who were the guest judges for
 each challenge
 }
 \examples{
-library(tidyverse)
+library(dplyr)
 judges \%>\%
   filter(guestjudge == "Eric Ripert") \%>\%
   group_by(challenge_type) \%>\%

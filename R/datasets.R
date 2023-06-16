@@ -28,11 +28,17 @@
 #'   \item{\code{gender}}{Gender of Chef}
 #' }
 #'
-#' @import tidyverse
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom dplyr pivot_wider
+#' @importFrom dplyr pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
-#' library(tidyverse)
+#' library(dplyr)
 #' chefdetails %>%
 #'   filter(szn == "World All Stars")
 "chefdetails"
@@ -90,11 +96,17 @@
 #'   Restaurant Wars episodes.}
 #' }
 #'
-#' @import tidyverse
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom dplyr pivot_wider
+#' @importFrom dplyr pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
-#' library(tidyverse)
+#' library(dplyr)
 #' challengedescriptions %>%
 #'    group_by(series,szn,outcome_type) %>%
 #'    summarise(n=n()) %>%
@@ -134,11 +146,17 @@
 #'                        other seasons.}
 #' }
 #'
-#' @import tidyverse
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom dplyr pivot_wider
+#' @importFrom dplyr pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
-#' library(tidyverse)
+#' library(dplyr)
 #' challengewins %>%
 #'   group_by(outcome) %>%
 #'   summarise(n=n())
@@ -170,11 +188,17 @@
 #'   \item{\code{#.of.competitors}}{Number of Chefs still in the competition}
 #' }
 #'
-#' @import tidyverse
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom dplyr pivot_wider
+#' @importFrom dplyr pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
-#' library(tidyverse)
+#' library(dplyr)
 #' episodeinfo %>% filter(szn=="World All Stars")
 "episodeinfo"
 
@@ -208,11 +232,17 @@
 #'   individual has appeared on}
 #' }
 #'
-#' @import tidyverse
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom dplyr pivot_wider
+#' @importFrom dplyr pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
-#' library(tidyverse)
+#' library(dplyr)
 #' judges %>%
 #'   filter(guestjudge == "Eric Ripert") %>%
 #'   group_by(challenge_type) %>%
@@ -247,11 +277,17 @@
 #'   \item{\code{chef}}{Name of chef}
 #' }
 #'
-#' @import tidyverse
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom dplyr pivot_wider
+#' @importFrom dplyr pivot_longer
 #'
 #' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 #' @examples
-#' library(tidyverse)
+#' library(dplyr)
 #' rewards %>%
 #'   filter(reward_type == "Money") %>%
 #'   mutate(reward=as.numeric(reward)) %>%

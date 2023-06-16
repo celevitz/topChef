@@ -38,7 +38,7 @@ data(challengewins)
 A dataset containing win and loss data for each chef in each episode
 }
 \examples{
-library(tidyverse)
+library(dplyr)
 challengewins \%>\%
   group_by(outcome) \%>\%
   summarise(n=n())

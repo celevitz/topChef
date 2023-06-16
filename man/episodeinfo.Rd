@@ -30,7 +30,7 @@ data(episodeinfo)
 A dataset containing information about each episode
 }
 \examples{
-library(tidyverse)
+library(dplyr)
 episodeinfo \%>\% filter(szn=="World All Stars")
 }
 \keyword{datasets}

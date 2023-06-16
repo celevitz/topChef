@@ -59,7 +59,7 @@ A dataset containing information about each challenge that the
 Chefs compete in
 }
 \examples{
-library(tidyverse)
+library(dplyr)
 challengedescriptions \%>\%
    group_by(series,szn,outcome_type) \%>\%
    summarise(n=n()) \%>\%
