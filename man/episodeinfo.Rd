@@ -7,17 +7,17 @@
 \format{
 This data frame contains the following columns:
 \describe{
-  \item{\code{szn}}{Name of season}
-  \item{\code{sznnumber}}{Season number}
+  \item{\code{season}}{Name of season}
+  \item{\code{seasonNumber}}{Season number}
   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
                        (listed as US Masters); Top Chef Canada (listed as
                        Canada)}
-  \item{\code{overall.episode.number}}{Running number of episode within
+  \item{\code{overallEpisodeNumber}}{Running number of episode within
                                        the series}
   \item{\code{episode}}{Episode number}
-  \item{\code{episode_name}}{Name of episode}
-  \item{\code{air_date}}{Date the episode originally aired}
-  \item{\code{#.of.competitors}}{Number of Chefs still in the competition}
+  \item{\code{episodeName}}{Name of episode}
+  \item{\code{airDate}}{Date the episode originally aired}
+  \item{\code{nCompetitors}}{Number of Chefs still in the competition}
 }
 }
 \source{
@@ -32,6 +32,6 @@ A dataset containing information about each episode
 \examples{
 library(dplyr)
 library(tidyr)
-episodeinfo \%>\% filter(szn=="World All Stars")
+episodeinfo \%>\% filter(season=="World All Stars")
 }
 \keyword{datasets}

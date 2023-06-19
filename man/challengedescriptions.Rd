@@ -7,43 +7,43 @@
 \format{
 This data frame contains the following columns:
 \describe{
-  \item{\code{szn}}{Name of season}
-  \item{\code{sznnumber}}{Season number}
+  \item{\code{season}}{Name of season}
+  \item{\code{seasonNumber}}{Season number}
   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
             (listed as US Masters); Top Chef Canada (listed as Canada)}
   \item{\code{episode}}{Episode number}
-  \item{\code{challenge_type}}{Challenge type: qualifying challenge,
+  \item{\code{challengeType}}{Challenge type: qualifying challenge,
              elimination, quickfire, sudden death quickfire, quickfire
              elimination, battle of the sous chefs}
-  \item{\code{outcome_type}}{Is the challenge run as a team or as an
+  \item{\code{outcomeType}}{Is the challenge run as a team or as an
              individual?}
-  \item{\code{challenge.description}}{Description of the challenge}
-  \item{\code{shop.time}}{If they go shopping, how long do they have?
+  \item{\code{challengeDescription}}{Description of the challenge}
+  \item{\code{shopTime}}{If they go shopping, how long do they have?
              Unit is minutes}
-  \item{\code{shop.budget}}{If they go shopping, what is their budget?
+  \item{\code{shopBudget}}{If they go shopping, what is their budget?
              Unit is dollars unless otherwise specified.}
-  \item{\code{prep_time}}{If they have prep time, how long do they have?
+  \item{\code{prepTime}}{If they have prep time, how long do they have?
              Unit is minutes}
-  \item{\code{cook_time}}{How long they have to cook (in minutes)}
-  \item{\code{product.placement}}{List of products promoted in the
+  \item{\code{cookTime}}{How long they have to cook (in minutes)}
+  \item{\code{productPlacement}}{List of products promoted in the
              challenge, other than the usual series-wide product placement.
              Will be blank if none were mentioned}
   \item{\code{advantage}}{If an advantage is offered to the winner of the
            challenge, it will be listed here: e.g., Immunity, choosing
            a protein in the elimination challenge, choosing your team in
            the elimination challenge. Will be blank if none were mentioned.}
-  \item{\code{Last.Chance.Kitchen.winner.enters}}{If someone comes in from
+  \item{\code{lastChanceKitchenWinnerEnters}}{If someone comes in from
       Last Chance Kitchen at this challenge, their name will be listed here.
       Will be blank for all other challenges.}
-  \item{\code{Restaurant.War.winner}}{Role played by the winner of
+  \item{\code{restaurantWarWinner}}{Role played by the winner of
              restaurant wars: Executive Chef, Front of House, the full team,
              Line Cook, Roles Rotated, or No one won. Will only have values
              for Restaurant War episodes.}
-  \item{\code{Restaurant.War.eliminated}}{Role played by the Chef eliminated
+  \item{\code{restaurantWarEliminated}}{Role played by the Chef eliminated
             after restaurant wars: Executive Chef, Front of House, the full
             team, Line Cook, Roles Rotated. Will only have values for
             Restaurant War episodes.}
-  \item{\code{Did.judges.visit.winning.team.first}}{Categorical variable of
+  \item{\code{didJudgesVisitWinningTeamFirst}}{Categorical variable of
   which team was shown serving the judges first. Will only have values for
   Restaurant Wars episodes.}
 }
@@ -62,8 +62,8 @@ Chefs compete in
 library(dplyr)
 library(tidyr)
 challengedescriptions \%>\%
-   group_by(series,szn,outcome_type) \%>\%
+   group_by(series,season,outcomeType) \%>\%
    summarise(n=n()) \%>\%
-   pivot_wider(names_from=outcome_type,values_from=n)
+   pivot_wider(names_from=outcomeType,values_from=n)
 }
 \keyword{datasets}

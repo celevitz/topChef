@@ -37,7 +37,7 @@ rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=
 judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
 episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
   # fix the date
-  episodeinfo$air_date <- as.Date(as.numeric(episodeinfo$air_date)
+  episodeinfo$airDate <- as.Date(as.numeric(episodeinfo$airDate)
                                   , origin = "1899-12-30")
 
 ## Check for UTF-8 strings
@@ -81,14 +81,14 @@ challengewins$chef <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
                 ,gsub( "\\\\" ,"", gsub("ä","a",challengewins$chef) )))))
 rewards$chef <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
                 ,gsub( "\\\\" ,"", gsub("ä","a",rewards$chef) )))))
-judges$guestjudge <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
-                ,gsub( "\\\\" ,"", gsub("ä","a",judges$guestjudge) )))))
-challengedescriptions$challenge.description <- gsub("à","a",gsub("é","e"
+judges$guestJudge <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+                ,gsub( "\\\\" ,"", gsub("ä","a",judges$guestJudge) )))))
+challengedescriptions$challengeDescription <- gsub("à","a",gsub("é","e"
                  ,gsub("ñ","n",gsub("ö","o",gsub( "\\\\" ,"", gsub("ä","a"
-                 ,challengedescriptions$challenge.description) )))))
+                 ,challengedescriptions$challengeDescription) )))))
 
-episodeinfo$episode_name <-gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
-              ,gsub( "\\\\" ,"", gsub("ä","a",episodeinfo$episode_name) )))))
+episodeinfo$episodeName <-gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+              ,gsub( "\\\\" ,"", gsub("ä","a",episodeinfo$episodeName) )))))
 
 rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
               ,gsub( "\\\\" ,"", gsub("ä","a",rewards$reward) )))))

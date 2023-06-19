@@ -35,10 +35,10 @@
 weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
                           ,numberofquickfires) {
   # 1. Set up the data
-    placementdata <- topChef::chefdetails[,c("chef","series","szn","sznnumber"
-                                             ,"placement")]
+    placementdata <- topChef::chefdetails[,c("chef","series","season"
+                                             ,"seasonNumber","placement")]
     placementdata <- placementdata[placementdata$series == seriesname &
-                                     placementdata$sznnumber == seasonnumber,]
+                                   placementdata$seasonNumber == seasonnumber,]
 
 
     # 1a. Outcomes of the challenges
@@ -46,17 +46,17 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
       topChef::challengewins[,names(topChef::challengewins)[!(names(topChef::
                                               challengewins) %in% "rating")] ]
     challengewins <- challengewins[challengewins$series == seriesname &
-                                     challengewins$sznnumber == seasonnumber,]
+                                     challengewins$seasonNumber == seasonnumber,]
 
     # 1ai. combine types of challenges
-    challengewins$challenge_type[challengewins$challenge_type %in%
+    challengewins$challengeType[challengewins$challengeType %in%
                                  c("Quickfire Elimination"
                                    ,"Sudden Death Quickfire")] <- "Elimination"
 
     # 1aii. Exclude the uncommon challenge types
-    challengewins <- challengewins[!(challengewins$challenge_type %in%
+    challengewins <- challengewins[!(challengewins$challengeType %in%
                                        c("Battle of the Sous Chefs"
-                                         ,"Qualifying challenge")),]
+                                         ,"Qualifying Challenge")),]
 
     # 1aiii. clean up outcomes: consolidate
     challengewins$outcome[challengewins$outcome %in% c("High","HiGH")] <-
@@ -71,37 +71,38 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
     challengewins$outcome[challengewins$outcome %in% c("WINNER")] <- "WIN"
 
     # 1b. need to consecutively number each challenge of each challenge type
-    challnum <- unique(challengewins[,c("szn","sznnumber","challenge_type"
+    challnum <- unique(challengewins[,c("season","seasonNumber","challengeType"
                                         ,"episode")])
     challnum$count <- NA
 
     tempcount_elim <- 1
-    for (e in unique(challnum$episode[challnum$challenge_type ==
+    for (e in unique(challnum$episode[challnum$challengeType ==
                                       "Elimination"])) {
-      challnum$count[challnum$episode == e & challnum$challenge_type ==
+      challnum$count[challnum$episode == e & challnum$challengeType ==
                        "Elimination"] <- tempcount_elim
       tempcount_elim <- tempcount_elim +1
     }
 
     tempcount_qf <- 1
-    for (e in unique(challnum$episode[challnum$challenge_type ==
+    for (e in unique(challnum$episode[challnum$challengeType ==
                                       "Quickfire"])) {
-      challnum$count[challnum$episode == e & challnum$challenge_type ==
+      challnum$count[challnum$episode == e & challnum$challengeType ==
                        "Quickfire"] <- tempcount_qf
       tempcount_qf <- tempcount_qf +1
     }
 
     # 1bi. keep just the challenges that meet the criteria
     challkeep <- challnum[(challnum$count <= numberofelimchalls &
-                             challnum$challenge_type == "Elimination") |
+                             challnum$challengeType == "Elimination") |
                             (challnum$count <= numberofquickfires &
-                               challnum$challenge_type == "Quickfire") ,]
+                               challnum$challengeType == "Quickfire") ,]
 
     ## 2. get the number of wins, losses, highs, etc. by chef
      statsbynumberofchalls <- merge(challengewins,placementdata,by=c("series"
-                                                 ,"szn","sznnumber","chef"))
-     statsbynumberofchalls <- merge(statsbynumberofchalls,challkeep,by=c("szn"
-                                       ,"sznnumber","challenge_type","episode"))
+                                               ,"season","seasonNumber","chef"))
+     statsbynumberofchalls <- merge(statsbynumberofchalls,challkeep,by=
+                                      c("season","seasonNumber","challengeType"
+                                        ,"episode"))
 
      # 2a. keep just the episodes that are at or the same # of challenges
      # that have happened
@@ -110,11 +111,11 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
 
      # 2b. drop when people were not in the competition
      statsbynumberofchalls <- statsbynumberofchalls[statsbynumberofchalls$
-                                                      in.competition == "TRUE",]
+                                                      inCompetition == "TRUE",]
 
      # 2c. drop unnecessary variables
-     statsbynumberofchalls <- statsbynumberofchalls[,c("szn","sznnumber"
-                     ,"series","challenge_type","chef","outcome","placement")]
+     statsbynumberofchalls <- statsbynumberofchalls[,c("season","seasonNumber"
+                     ,"series","challengeType","chef","outcome","placement")]
 
 
      # 3. create summary stats by chef
@@ -129,15 +130,15 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
      statsbynumberofchalls$tempcount <- 1
      statsbynumberofchalls <- aggregate(statsbynumberofchalls$tempcount
                               ,by=list(statsbynumberofchalls$chef
-                                       ,statsbynumberofchalls$szn
-                                       ,statsbynumberofchalls$sznnumber
+                                       ,statsbynumberofchalls$season
+                                       ,statsbynumberofchalls$seasonNumber
                                        ,statsbynumberofchalls$series
-                                       ,statsbynumberofchalls$challenge_type
+                                       ,statsbynumberofchalls$challengeType
                                        ,statsbynumberofchalls$outcome
                                        ,statsbynumberofchalls$placement)
                               ,FUN=sum)
-     names(statsbynumberofchalls) <- c("chef","szn","sznnumber","series"
-                                       ,"challenge_type","outcome","placement"
+     names(statsbynumberofchalls) <- c("chef","season","seasonNumber","series"
+                                       ,"challengeType","outcome","placement"
                                        ,"count")
 
      # 3a. reshape the data
@@ -147,13 +148,13 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
         statsbynumberofchalls[statsbynumberofchalls$outcome != "IN",]
       statsbynumberofchalls <- reshape(statsbynumberofchalls,
                                        timevar = "challenge_type",
-                                       idvar = c("chef","szn","sznnumber"
+                                       idvar = c("chef","season","seasonNumber"
                                                  ,"series","outcome"
                                                  ,"placement"),
                                        direction = "wide")
       statsbynumberofchalls <- reshape(statsbynumberofchalls,
                                        timevar = "outcome",
-                                       idvar = c("chef","szn","sznnumber"
+                                       idvar = c("chef","season","seasonNumber"
                                                  ,"series","placement"),
                                        direction = "wide")
       names(statsbynumberofchalls) <- gsub("count.",""
@@ -162,8 +163,8 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
 
     # 3b. if NA, replace with 0
       for (var in c(names(statsbynumberofchalls)[!(names(statsbynumberofchalls)
-                               %in% c("chef","szn"
-                                      ,"sznnumber","series","placement"))])) {
+                               %in% c("chef","season","seasonNumber","series"
+                                      ,"placement"))])) {
         statsbynumberofchalls[is.na(statsbynumberofchalls[,var]),var] <- 0
       }
 

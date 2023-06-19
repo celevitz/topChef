@@ -7,17 +7,17 @@
 \format{
 This data frame contains the following columns:
 \describe{
-  \item{\code{szn}}{Name of season}
-  \item{\code{sznnumber}}{Season number}
+  \item{\code{season}}{Name of season}
+  \item{\code{seasonNumber}}{Season number}
   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
                        (listed as US Masters); Top Chef Canada (listed
                        as Canada)}
   \item{\code{episode}}{Episode number}
-  \item{\code{in.competition}}{True / false for whether the Chef was still
+  \item{\code{inCompetition}}{True / false for whether the Chef was still
                                in the competition at the time of the
                                challenge}
   \item{\code{chef}}{Name of chef}
-  \item{\code{challenge_type}}{Challenge type: qualifying challenge,
+  \item{\code{challengeType}}{Challenge type: qualifying challenge,
                              elimination, quickfire, sudden death quickfire,
                              quickfire elimination, battle of the sous
                              chefs}

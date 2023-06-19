@@ -7,17 +7,17 @@
 \format{
 This data frame contains the following columns:
 \describe{
-  \item{\code{szn}}{Name of season}
-  \item{\code{sznnumber}}{Season number}
+  \item{\code{season}}{Name of season}
+  \item{\code{seasonNumber}}{Season number}
   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
   (listed as US Masters); Top Chef Canada (listed as Canada)}
   \item{\code{episode}}{Episode number}
-  \item{\code{challenge_type}}{Challenge type: qualifying challenge,
+  \item{\code{challengeType}}{Challenge type: qualifying challenge,
   elimination, quickfire, sudden death quickfire, quickfire elimination,
   battle of the sous chefs}
-  \item{\code{outcome_type}}{Is the challenge run as a team or as an
+  \item{\code{outcomeType}}{Is the challenge run as a team or as an
   individual?}
-  \item{\code{reward_type}}{Variable describing whether the reward is
+  \item{\code{rewardType}}{Variable describing whether the reward is
   money or a prize}
   \item{\code{reward}}{Description of the full reward}
   \item{\code{chef}}{Name of chef}
@@ -36,9 +36,9 @@ A dataset containing information about rewards and prizes won by challenge
 library(dplyr)
 library(tidyr)
 rewards \%>\%
-  filter(reward_type == "Money") \%>\%
+  filter(rewardType == "Money") \%>\%
   mutate(reward=as.numeric(reward)) \%>\%
-  group_by(szn) \%>\%
+  group_by(season) \%>\%
   summarise(total=sum(reward))
 }
 \keyword{datasets}
