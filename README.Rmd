@@ -367,13 +367,15 @@ library(RColorBrewer)
     
     allseasons <- weightedindex("US",1,20,20)
     for (season in seq(2,20,1)) {
-      allseasons <- rbind(allseasons,weightedindex("US",season,20,20))
+      allseasons <- rbind(allseasons
+                          ,weightedindex("US",season,20,20))
       
     }
     
  # for sorting reasons, have the season be a character
     allseasons$seasonnumchar[allseasons$seasonNumber <= 9] <- 
-      paste0("0",as.character(allseasons$seasonNumber[allseasons$seasonNumber <= 9]))
+      paste0("0"
+         ,as.character(allseasons$seasonNumber[allseasons$seasonNumber <= 9]))
     allseasons$seasonnumchar[allseasons$seasonNumber > 9] <- 
       as.character(allseasons$seasonNumber[allseasons$seasonNumber > 9])
     
@@ -396,25 +398,27 @@ library(RColorBrewer)
 ```{r Viz_DensityPlot, eval=TRUE,echo=FALSE,message=FALSE} 
   
   allseasons %>%
-    ggplot(aes(x=indexWeight,color=season,fill=season)) + 
-      geom_density(alpha=.01) + 
-      labs(title="Density Plot of Weighted Index Score for Every Top Chef US Season") +
-      scale_color_manual(values=c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C" 
-                                  ,"#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00" 
-                                  ,"#CAB2D6", "#6A3D9A","#FFFF99","#B15928"
-                                  ,"#1B9E77", "#D95F02" ,"#7570B3" ,"#E7298A" 
-                                  ,"#66A61E", "#E6AB02", "#A6761D", "#666666")) +
-      scale_fill_manual(values=c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C" 
+  ggplot(aes(x=indexWeight,color=season,fill=season)) + 
+    geom_density(alpha=.01) + 
+    labs(title=
+           "Density Plot of Weighted Index Score for Every Top Chef US Season"
+         ) +
+    scale_color_manual(values=c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C" 
                                 ,"#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00" 
                                 ,"#CAB2D6", "#6A3D9A","#FFFF99","#B15928"
                                 ,"#1B9E77", "#D95F02" ,"#7570B3" ,"#E7298A" 
                                 ,"#66A61E", "#E6AB02", "#A6761D", "#666666")) +
-      theme_minimal()+    
-      theme(legend.position="right"
-            ,legend.key.size = unit(.5, 'cm')) +
-      guides(color=guide_legend(title="Season name")
-             ,fill=guide_legend(title="Season name")) +
-      ylab("Density") + xlab("Weighted Index Score")
+    scale_fill_manual(values=c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C" 
+                              ,"#FB9A99", "#E31A1C", "#FDBF6F", "#FF7F00" 
+                              ,"#CAB2D6", "#6A3D9A","#FFFF99","#B15928"
+                              ,"#1B9E77", "#D95F02" ,"#7570B3" ,"#E7298A" 
+                              ,"#66A61E", "#E6AB02", "#A6761D", "#666666")) +
+    theme_minimal()+    
+    theme(legend.position="right"
+          ,legend.key.size = unit(.5, 'cm')) +
+    guides(color=guide_legend(title="Season name")
+           ,fill=guide_legend(title="Season name")) +
+    ylab("Density") + xlab("Weighted Index Score")
 
   allseasons %>%
       ggplot(aes(x=seasonnumchar,y=indexWeight) ) +
@@ -426,10 +430,15 @@ library(RColorBrewer)
                     ,ymax=0.5)
                 ,fill="#ffbc69") +
       theme_minimal() +
-      labs(title=paste0("Top Chef Weighted Index: Comparing All Completed Seasons")
-           ,subtitle="Box plots show the minimum, first quartile, median, third quartile, and 
-           maximum weighted index scores for each season. Circles indicate outliers.")+
-      scale_x_discrete(labels=unique(allseasons$season[order(allseasons$seasonNumber)])) +
+      labs(title=
+             paste0("Top Chef Weighted Index: Comparing All Completed Seasons")
+           ,subtitle=
+           "Box plots show the minimum, first quartile, median, third quartile, and 
+           maximum weighted index scores for each season. Circles indicate outliers."
+           )+
+      scale_x_discrete(labels=
+                        unique(allseasons$season[order(allseasons$seasonNumber
+                                                       )])) +
       theme_minimal() +
       ylab("Index score") + xlab("") +
       theme(panel.grid = element_blank() 
@@ -441,14 +450,17 @@ library(RColorBrewer)
     geom_hline(yintercept=0, color="darkcyan")  +
     geom_point(alpha=.3,size=4) +
     theme_minimal() +
-    ylab("") + xlab("Standard deviation of weighted index scores of each season") +
+    ylab("") + 
+    xlab("Standard deviation of weighted index scores of each season") +
     theme(panel.grid = element_blank()
           ,axis.line.x=element_line(color="black")
           ,axis.ticks.x=element_line(color="black")
           ,axis.line.y=element_blank()
           ,axis.text.y=element_blank()) +
-    labs(title="Standard deviation of each Top Chef season's weighted index scores"
-         ,subtitle="Lower standard deviations indicate more even distribution of scores in that season") +
+    labs(title=
+           "Standard deviation of each Top Chef season's weighted index scores"
+         ,subtitle=
+           "Lower standard deviations indicate more even distribution of scores in that season") +
     geom_text(angle=45,hjust=standarddevs$labeljust) +
     scale_x_continuous(lim=c(7.5,23),breaks=seq(8,22,2),labels=seq(8,22,2))
 
