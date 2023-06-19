@@ -2,7 +2,7 @@ Package: topChef
 Type: Package
 Title: Top Chef Data
 Version: 0.1.0
-Authors@R: person("Levitz", "Carly", email = "celevitz@gmail.com", role = 
+Authors@R: person("Levitz", "Carly E", email = "celevitz@gmail.com", role = 
             c("cre","aut","cph"),comment=c(ORCID = "000-0003-3094-411X"))
 Description: Several datasets which describe the chef contestants in Top Chef, 
     the challenges that they compete in, and the results of those challenges. 
