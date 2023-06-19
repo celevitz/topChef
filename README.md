@@ -20,9 +20,9 @@ into your library.
 devtools::install_github("celevitz/topChef")
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpSJzuIa/remotes1366a32cdc80b/celevitz-topChef-ac4ff22/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpSJzuIa/remotes1366a32cdc80b/celevitz-topChef-ac4ff22/DESCRIPTION’
+#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpaQ5GZd/remotes49bb6eddc60a/celevitz-topChef-e0b5034/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpaQ5GZd/remotes49bb6eddc60a/celevitz-topChef-e0b5034/DESCRIPTION’
 #>   ─  preparing ‘topChef’:
-#>    checking      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
+#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
 #>   ─  checking for LF line-endings in source and make files and shell scripts
 #>   ─  checking for empty or unneeded directories
 #>   ─  building ‘topChef_0.1.0.tar.gz’
@@ -44,8 +44,8 @@ Huge thanks to <https://github.com/doehm> for all his support!
 Across datasets, key joining variables include:
 
 - `chef`
-- `szn`
-- `sznnumber`
+- `season`
+- `seasonNumber`
 - `series`
 - `episode`
 
@@ -61,20 +61,20 @@ whether they are a person of color, and their occupation.
 ``` r
 chefdetails 
 #> # A tibble: 416 × 13
-#>    name  chef  hometown city  state   age szn   sznnumber series placement poc  
-#>    <chr> <chr> <chr>    <chr> <chr> <dbl> <chr>     <dbl> <chr>      <dbl> <chr>
-#>  1 Rich… Rich… <NA>     <NA>  <NA>     38 All …         8 US             1 <NA> 
-#>  2 Mike… Mike… <NA>     <NA>  <NA>     35 All …         8 US             2 <NA> 
-#>  3 Anto… Anto… <NA>     <NA>  <NA>     34 All …         8 US             3 <NA> 
-#>  4 Tiff… Tiff… <NA>     <NA>  <NA>     27 All …         8 US             4 POC  
-#>  5 Carl… Carl… <NA>     <NA>  <NA>     46 All …         8 US             5 POC  
-#>  6 Dale… Dale… <NA>     <NA>  <NA>     32 All …         8 US             6 POC  
-#>  7 Ange… Ange… <NA>     <NA>  <NA>     35 All …         8 US             7 POC  
-#>  8 Fabi… Fabi… <NA>     <NA>  <NA>     32 All …         8 US             8 <NA> 
-#>  9 Tre … Tre … <NA>     <NA>  <NA>     34 All …         8 US             9 POC  
-#> 10 Marc… Marc… <NA>     <NA>  <NA>     30 All …         8 US            10 <NA> 
+#>    name    chef  hometown city  state   age season seasonNumber series placement
+#>    <chr>   <chr> <chr>    <chr> <chr> <dbl> <chr>         <dbl> <chr>      <dbl>
+#>  1 Richar… Rich… <NA>     <NA>  <NA>     38 All S…            8 US             1
+#>  2 Mike I… Mike… <NA>     <NA>  <NA>     35 All S…            8 US             2
+#>  3 Antoni… Anto… <NA>     <NA>  <NA>     34 All S…            8 US             3
+#>  4 Tiffan… Tiff… <NA>     <NA>  <NA>     27 All S…            8 US             4
+#>  5 Carla … Carl… <NA>     <NA>  <NA>     46 All S…            8 US             5
+#>  6 Dale T… Dale… <NA>     <NA>  <NA>     32 All S…            8 US             6
+#>  7 Angelo… Ange… <NA>     <NA>  <NA>     35 All S…            8 US             7
+#>  8 Fabio … Fabi… <NA>     <NA>  <NA>     32 All S…            8 US             8
+#>  9 Tre Wi… Tre … <NA>     <NA>  <NA>     34 All S…            8 US             9
+#> 10 Marcel… Marc… <NA>     <NA>  <NA>     30 All S…            8 US            10
 #> # ℹ 406 more rows
-#> # ℹ 2 more variables: occupation <chr>, gender <chr>
+#> # ℹ 3 more variables: personOfColor <chr>, occupation <chr>, gender <chr>
 ```
 
 #### 4.a.ii. Challenge descriptions
@@ -84,25 +84,25 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 636 × 17
-#>    szn      sznnumber series episode challenge_type outcome_type
-#>    <chr>        <dbl> <chr>    <dbl> <chr>          <chr>       
-#>  1 Kentucky        16 US           1 Quickfire      Team        
-#>  2 Kentucky        16 US           1 Elimination    Team        
-#>  3 Kentucky        16 US           2 Quickfire      Individual  
-#>  4 Kentucky        16 US           2 Elimination    Team        
-#>  5 Kentucky        16 US           3 Quickfire      Individual  
-#>  6 Kentucky        16 US           3 Elimination    Individual  
-#>  7 Kentucky        16 US           4 Quickfire      Individual  
-#>  8 Kentucky        16 US           4 Elimination    Team        
-#>  9 Kentucky        16 US           5 Elimination    Team        
-#> 10 Kentucky        16 US           6 Elimination    Individual  
-#> # ℹ 626 more rows
-#> # ℹ 11 more variables: challenge.description <chr>, shop.time <chr>,
-#> #   shop.budget <chr>, prep_time <dbl>, cook_time <dbl>,
-#> #   product.placement <chr>, advantage <chr>,
-#> #   Last.Chance.Kitchen.winner.enters <chr>, Restaurant.War.winner <chr>,
-#> #   Restaurant.War.eliminated <chr>, Did.judges.visit.winning.team.first <chr>
+#> # A tibble: 641 × 17
+#>    season   seasonNumber series episode challengeType outcomeType
+#>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>      
+#>  1 Kentucky           16 US           1 Quickfire     Team       
+#>  2 Kentucky           16 US           1 Elimination   Team       
+#>  3 Kentucky           16 US           2 Quickfire     Individual 
+#>  4 Kentucky           16 US           2 Elimination   Team       
+#>  5 Kentucky           16 US           3 Quickfire     Individual 
+#>  6 Kentucky           16 US           3 Elimination   Individual 
+#>  7 Kentucky           16 US           4 Quickfire     Individual 
+#>  8 Kentucky           16 US           4 Elimination   Team       
+#>  9 Kentucky           16 US           5 Elimination   Team       
+#> 10 Kentucky           16 US           6 Elimination   Individual 
+#> # ℹ 631 more rows
+#> # ℹ 11 more variables: challengeDescription <chr>, shopTime <chr>,
+#> #   shopBudget <chr>, prepTime <dbl>, cookTime <dbl>, productPlacement <chr>,
+#> #   advantage <chr>, lastChanceKitchenWinnerEnters <chr>,
+#> #   restaurantWarWinner <chr>, restaurantWarEliminated <chr>,
+#> #   didJudgesVisitWinningTeamFirst <chr>
 ```
 
 #### 4.a.iii. Challenge wins
@@ -111,20 +111,20 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,587 × 9
-#>    szn      sznnumber series episode in.competition chef  challenge_type outcome
-#>    <chr>        <dbl> <chr>    <dbl> <lgl>          <chr> <chr>          <chr>  
-#>  1 All Sta…         8 US           1 TRUE           Ange… Quickfire      LOW    
-#>  2 All Sta…         8 US           1 TRUE           Anto… Quickfire      WIN    
-#>  3 All Sta…         8 US           1 TRUE           Carl… Quickfire      LOW    
-#>  4 All Sta…         8 US           1 TRUE           Case… Quickfire      HIGH   
-#>  5 All Sta…         8 US           1 TRUE           Dale… Quickfire      HIGH   
-#>  6 All Sta…         8 US           1 TRUE           Dale… Quickfire      WIN    
-#>  7 All Sta…         8 US           1 TRUE           Elia… Quickfire      LOW    
-#>  8 All Sta…         8 US           1 TRUE           Fabi… Quickfire      LOW    
-#>  9 All Sta…         8 US           1 TRUE           Jami… Quickfire      LOW    
-#> 10 All Sta…         8 US           1 TRUE           Jenn… Quickfire      HIGH   
-#> # ℹ 9,577 more rows
+#> # A tibble: 9,667 × 9
+#>    season  seasonNumber series episode inCompetition chef  challengeType outcome
+#>    <chr>          <dbl> <chr>    <dbl> <lgl>         <chr> <chr>         <chr>  
+#>  1 All St…            8 US           1 TRUE          Ange… Quickfire     LOW    
+#>  2 All St…            8 US           1 TRUE          Anto… Quickfire     WIN    
+#>  3 All St…            8 US           1 TRUE          Carl… Quickfire     LOW    
+#>  4 All St…            8 US           1 TRUE          Case… Quickfire     HIGH   
+#>  5 All St…            8 US           1 TRUE          Dale… Quickfire     HIGH   
+#>  6 All St…            8 US           1 TRUE          Dale… Quickfire     WIN    
+#>  7 All St…            8 US           1 TRUE          Elia… Quickfire     LOW    
+#>  8 All St…            8 US           1 TRUE          Fabi… Quickfire     LOW    
+#>  9 All St…            8 US           1 TRUE          Jami… Quickfire     LOW    
+#> 10 All St…            8 US           1 TRUE          Jenn… Quickfire     HIGH   
+#> # ℹ 9,657 more rows
 #> # ℹ 1 more variable: rating <dbl>
 ```
 
@@ -135,21 +135,21 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 750 × 9
-#>    szn           sznnumber series episode challenge_type outcome_type guestjudge
-#>    <chr>             <dbl> <chr>    <dbl> <chr>          <chr>        <chr>     
-#>  1 All Stars: N…         8 US           1 Quickfire      Team         Tom Colic…
-#>  2 All Stars: N…         8 US           1 Elimination    Individual   Anthony B…
-#>  3 All Stars: N…         8 US           2 Quickfire      Individual   Joe Jonas 
-#>  4 All Stars: N…         8 US           2 Elimination    Team         Katie Lee 
-#>  5 All Stars: N…         8 US           3 Quickfire      Team         David Cha…
-#>  6 All Stars: N…         8 US           3 Elimination    Team         Anthony B…
-#>  7 All Stars: N…         8 US           3 Elimination    Team         Kate Krad…
-#>  8 All Stars: N…         8 US           4 Quickfire      Individual   Tony Mant…
-#>  9 All Stars: N…         8 US           4 Elimination    Team         Tony Mant…
-#> 10 All Stars: N…         8 US           5 Quickfire      Individual   Tom Colic…
-#> # ℹ 740 more rows
-#> # ℹ 2 more variables: competed_on_TC <chr>, other_shows <chr>
+#> # A tibble: 755 × 9
+#>    season       seasonNumber series episode challengeType outcomeType guestJudge
+#>    <chr>               <dbl> <chr>    <dbl> <chr>         <chr>       <chr>     
+#>  1 All Stars: …            8 US           1 Quickfire     Team        Tom Colic…
+#>  2 All Stars: …            8 US           1 Elimination   Individual  Anthony B…
+#>  3 All Stars: …            8 US           2 Quickfire     Individual  Joe Jonas 
+#>  4 All Stars: …            8 US           2 Elimination   Team        Katie Lee 
+#>  5 All Stars: …            8 US           3 Quickfire     Team        David Cha…
+#>  6 All Stars: …            8 US           3 Elimination   Team        Anthony B…
+#>  7 All Stars: …            8 US           3 Elimination   Team        Kate Krad…
+#>  8 All Stars: …            8 US           4 Quickfire     Individual  Tony Mant…
+#>  9 All Stars: …            8 US           4 Elimination   Team        Tony Mant…
+#> 10 All Stars: …            8 US           5 Quickfire     Individual  Tom Colic…
+#> # ℹ 745 more rows
+#> # ℹ 2 more variables: competedOnTC <chr>, otherShows <chr>
 ```
 
 #### 4.a.v. Rewards
@@ -159,21 +159,21 @@ challenge.
 
 ``` r
 rewards
-#> # A tibble: 327 × 9
-#>    szn   sznnumber series episode challenge_type outcome_type reward_type reward
-#>    <chr>     <dbl> <chr>    <dbl> <chr>          <chr>        <chr>       <chr> 
-#>  1 All …         8 US           1 Elimination    Individual   Money       10000…
-#>  2 All …         8 US           3 Quickfire      Team         Money       5000.0
-#>  3 All …         8 US           3 Quickfire      Team         Money       5000.0
-#>  4 All …         8 US           3 Quickfire      Team         Money       5000.0
-#>  5 All …         8 US           3 Quickfire      Team         Money       5000.0
-#>  6 All …         8 US           3 Elimination    Team         Prize       Trip …
-#>  7 All …         8 US           4 Quickfire      Individual   Money       20000…
-#>  8 All …         8 US           4 Elimination    Team         Prize       Trip …
-#>  9 All …         8 US           5 Quickfire      Individual   Prize       Toyot…
-#> 10 All …         8 US           6 Elimination    Team         Prize       Trip …
-#> # ℹ 317 more rows
-#> # ℹ 1 more variable: chef <chr>
+#> # A tibble: 328 × 9
+#>    season       seasonNumber series episode challengeType outcomeType rewardType
+#>    <chr>               <dbl> <chr>    <dbl> <chr>         <chr>       <chr>     
+#>  1 All Stars: …            8 US           1 Elimination   Individual  Money     
+#>  2 All Stars: …            8 US           3 Quickfire     Team        Money     
+#>  3 All Stars: …            8 US           3 Quickfire     Team        Money     
+#>  4 All Stars: …            8 US           3 Quickfire     Team        Money     
+#>  5 All Stars: …            8 US           3 Quickfire     Team        Money     
+#>  6 All Stars: …            8 US           3 Elimination   Team        Prize     
+#>  7 All Stars: …            8 US           4 Quickfire     Individual  Money     
+#>  8 All Stars: …            8 US           4 Elimination   Team        Prize     
+#>  9 All Stars: …            8 US           5 Quickfire     Individual  Prize     
+#> 10 All Stars: …            8 US           6 Elimination   Team        Prize     
+#> # ℹ 318 more rows
+#> # ℹ 2 more variables: reward <chr>, chef <chr>
 ```
 
 #### 4.a.vi. Episode info
@@ -182,21 +182,21 @@ A tibble containing information about each episode.
 
 ``` r
 episodeinfo 
-#> # A tibble: 356 × 8
-#>    szn   sznnumber series overall.episode.number episode episode_name air_date  
-#>    <chr>     <dbl> <chr>                   <dbl>   <dbl> <chr>        <date>    
-#>  1 Kent…        16 US                        232       1 "\"The Fast… 2018-12-06
-#>  2 Kent…        16 US                        233       2 "\"Bourbon,… 2018-12-13
-#>  3 Kent…        16 US                        234       3 "\"Naughty … 2018-12-20
-#>  4 Kent…        16 US                        235       4 "\"Surprise… 2018-12-27
-#>  5 Kent…        16 US                        236       5 "\"Restaura… 2019-01-03
-#>  6 Kent…        16 US                        237       6 "\"Roaring … 2019-01-10
-#>  7 Kent…        16 US                        238       7 "\"Carne!\"" 2019-01-17
-#>  8 Kent…        16 US                        239       8 "\"Whatever… 2019-01-24
-#>  9 Kent…        16 US                        240       9 "\"Music Ci… 2019-01-31
-#> 10 Kent…        16 US                        241      10 "\"Hoop Dre… 2019-02-07
-#> # ℹ 346 more rows
-#> # ℹ 1 more variable: `#.of.competitors` <dbl>
+#> # A tibble: 358 × 8
+#>    season        seasonNumber series overallEpisodeNumber episode episodeName   
+#>    <chr>                <dbl> <chr>                 <dbl>   <dbl> <chr>         
+#>  1 Canada 6                 6 Canada                   60       1 The Next Wave 
+#>  2 Canada 6                 6 Canada                   61       2 The Chicken o…
+#>  3 Canada 6                 6 Canada                   62       3 Que Rico      
+#>  4 Canada 6                 6 Canada                   63       4 Restaurant Wa…
+#>  5 Canada 6                 6 Canada                   64       5 Double Overti…
+#>  6 Canada 6                 6 Canada                   65       6 That's a Lot …
+#>  7 Canada 6                 6 Canada                   66       7 Wine of the T…
+#>  8 Canada 6                 6 Canada                   67       8 Finale Four W…
+#>  9 San Francisco            1 US                        1       1 Who Deserves …
+#> 10 San Francisco            1 US                        2       2 Food of Love  
+#> # ℹ 348 more rows
+#> # ℹ 2 more variables: airDate <date>, nCompetitors <dbl>
 ```
 
 ### 4.b. Example using multiple datasets: How many elimination challenge wins did Top Chef winners have?
@@ -213,13 +213,14 @@ library(ggplot2)
 chefdetails %>% 
   # Keep just winners and relevant variables (just the winning chef's name)
   filter(placement == 1) %>%
-  select(chef, gender,series,szn) %>%
+  select(chef, gender,series,season) %>%
   # Bring on the challenge result data
   left_join(challengewins) %>%
   # Keep just elimination & sudden death quickfire challenges
-  filter(challenge_type %in% c("Elimination","Quickfire Elimination","Sudden Death Quickfire")) %>%
+  filter(challengeType %in% c("Elimination","Quickfire Elimination"
+                              ,"Sudden Death Quickfire")) %>%
   # Get the number of wins for each person
-  group_by(series,szn,sznnumber,chef,gender) %>%
+  group_by(series,season,seasonNumber,chef,gender) %>%
   filter(outcome %in% c("WIN","WINNER")) %>%
   summarise(wins=n()) %>%
   # Plot
@@ -253,34 +254,35 @@ chefdetails %>%
 #### 4.c.ii. Code
 
 ``` r
-library(ggplot2); library(topChef)
+library(ggplot2)
+library(topChef)
 ## Won the episode
     # Data set up
       # how many episodes each chef won in each season
           wonepi <- challengewins %>% select(!rating) %>%
-                    mutate(challenge_type=case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Quickfire"
-                                                    ,TRUE ~ challenge_type)) %>%
-                    filter(outcome %in% c("WIN","WINNER") & challenge_type %in% c("Elimination","Quickfire")) %>%
+                    mutate(challengeType=case_when(challengeType %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Quickfire"
+                                                    ,TRUE ~ challengeType)) %>%
+                    filter(outcome %in% c("WIN","WINNER") & challengeType %in% c("Elimination","Quickfire")) %>%
                     distinct() %>%
-                    pivot_wider(names_from=challenge_type,values_from=outcome) %>%
+                    pivot_wider(names_from=challengeType,values_from=outcome) %>%
                     filter(Quickfire == "WIN" & (Elimination %in% c("WIN","WINNER"))) %>%
                     # were there multiple winners
-                      group_by(series,szn,sznnumber, episode) %>%
+                      group_by(series,season,seasonNumber, episode) %>%
                       mutate(nchefs=n()
                              ,chef=ifelse(nchefs > 1,paste0(chef,"*"),chef)) %>%
                     # how many times did each chef win an episode?
-                    ungroup() %>% group_by(series,szn,sznnumber,chef) %>%
+                    ungroup() %>% group_by(series,season,seasonNumber,chef) %>%
                     summarise(n=n()) %>%
-                    select(series,szn,sznnumber,chef,n) %>%
+                    select(series,season,seasonNumber,chef,n) %>%
                     distinct() %>%
-                    mutate(sznnumberchar=case_when(sznnumber <= 9 ~paste0("0",as.character(sznnumber))
-                                                   ,TRUE ~as.character(sznnumber)) ) %>%
+                    mutate(seasonNumberchar=case_when(seasonNumber <= 9 ~paste0("0",as.character(seasonNumber))
+                                                   ,TRUE ~as.character(seasonNumber)) ) %>%
                     filter(series == "US") 
           
     # visualize
           wonepivizdata <- wonepi %>%
             # add on placement of chefs, just for those who have won an episode
-            left_join(topChef::chefdetails %>% select(szn,sznnumber,chef,placement)) %>%
+            left_join(topChef::chefdetails %>% select(season,seasonNumber,chef,placement)) %>%
             mutate(placement=as.character(case_when(placement > 5 ~ 5
                                                     ,TRUE ~ placement)) 
                    ,placement = case_when(placement == "5" ~ "5th or lower"
@@ -290,11 +292,11 @@ library(ggplot2); library(topChef)
                                           ,placement == "4" ~ "4th"
                                           ,TRUE ~ placement))
           
-          wonepivizdata <- wonepivizdata[order(wonepivizdata$sznnumberchar,wonepivizdata$n,wonepivizdata$chef),]
+          wonepivizdata <- wonepivizdata[order(wonepivizdata$seasonNumberchar,wonepivizdata$n,wonepivizdata$chef),]
 
     ## Visualization
           wonepivizdata %>%
-            ggplot(aes(x=sznnumberchar,y=n,label=chef,fill=factor(placement))) +
+            ggplot(aes(x=seasonNumberchar,y=n,label=chef,fill=factor(placement))) +
             scale_fill_manual(values=c("#141B41","#1170AA","#5fa2ce","#a3cce9","#ababab")) +
             geom_col(position="stack",color="white") +
             geom_text(size = 1, position = position_stack(vjust=.5),angle=15
@@ -380,7 +382,10 @@ challenge wins/highs/lows, and the weighted index score.
 
 ``` r
 
-library(topChef); library(ggplot2); library(tidyverse)
+library(topChef)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,20,20)
@@ -391,10 +396,10 @@ library(topChef); library(ggplot2); library(tidyverse)
     
   ## Graph it
     # for sorting reasons, have the season be a character
-    allseasons$seasonnumchar[allseasons$sznnumber <= 9] <- 
-      paste0("0",as.character(allseasons$sznnumber[allseasons$sznnumber <= 9]))
-    allseasons$seasonnumchar[allseasons$sznnumber > 9] <- 
-      as.character(allseasons$sznnumber[allseasons$sznnumber > 9])
+    allseasons$seasonnumchar[allseasons$seasonNumber <= 9] <- 
+      paste0("0",as.character(allseasons$seasonNumber[allseasons$seasonNumber <= 9]))
+    allseasons$seasonnumchar[allseasons$seasonNumber > 9] <- 
+      as.character(allseasons$seasonNumber[allseasons$seasonNumber > 9])
     
     # for sorting reasons, have the placement as a character
     allseasons$placementchar[allseasons$placement <= 9] <- 
@@ -463,13 +468,13 @@ library(topChef); library(ggplot2); library(tidyverse)
     }
     
     graphalltitles(allseasons %>%
-      filter(sznnumber %in% c(1,2,3,4,5,6)) ) 
+      filter(seasonNumber %in% c(1,2,3,4,5,6)) ) 
     graphnotitlenocaption(allseasons %>%
-      filter(sznnumber %in% c(7,8,9,10,11,12)) ) 
+      filter(seasonNumber %in% c(7,8,9,10,11,12)) ) 
     graphnotitlenocaption(allseasons %>%
-      filter(sznnumber %in% c(13,14,15,16,17,18)) )      
+      filter(seasonNumber %in% c(13,14,15,16,17,18)) )      
     graphonlycaption(allseasons %>%
-      filter(sznnumber %in% c(19,20)) ) 
+      filter(seasonNumber %in% c(19,20)) ) 
     
     
 ```
@@ -494,7 +499,10 @@ Buddha, and Amar thus far have the highest index scores.
 ##### 5.c.ii. Code
 
 ``` r
-library(topChef); library(ggplot2); library(tidyverse)
+library(topChef)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
  ## Get the index for all seasons
     
     allseasons <- weightedindex("US",1,10,7)
@@ -504,14 +512,14 @@ library(topChef); library(ggplot2); library(tidyverse)
     }
 
     # drop unneeded variables
-    allseasons <- allseasons[,c("chef","szn","sznnumber","placement","indexWeight")]
+    allseasons <- allseasons[,c("chef","season","seasonNumber","placement","indexWeight")]
     
   ## Graph it
     # for sorting reasons, have the season be a character
-    allseasons$seasonnumchar[allseasons$sznnumber <= 9] <- 
-      paste0("0",as.character(allseasons$sznnumber[allseasons$sznnumber <= 9]))
-    allseasons$seasonnumchar[allseasons$sznnumber > 9] <- 
-      as.character(allseasons$sznnumber[allseasons$sznnumber > 9])
+    allseasons$seasonnumchar[allseasons$seasonNumber <= 9] <- 
+      paste0("0",as.character(allseasons$seasonNumber[allseasons$seasonNumber <= 9]))
+    allseasons$seasonnumchar[allseasons$seasonNumber > 9] <- 
+      as.character(allseasons$seasonNumber[allseasons$seasonNumber > 9])
     
     # for sorting reasons, have the placement as a character
     allseasons$placementchar[allseasons$placement <= 9] <- 
@@ -529,7 +537,7 @@ library(topChef); library(ggplot2); library(tidyverse)
       labs(title=paste0("Top Chef Weighted Index: 7 quickfires & 10 elimination challenges\ninto each season")
            ,subtitle="Comparing All Chefs Across All Seasons\n"
            ,caption="Scoring: Elimination win = 7 points. Elimination high = 3. Elimination low = -3. Eliminated = -7.\nQuickfire win = 4. Quickfire high = 2. Quickfire low = -2.\nData github.com/celevitz/topChef ||| Twitter @carlylevitz")+
-      scale_x_discrete(labels=unique(allseasons$szn[order(allseasons$sznnumber)])) +
+      scale_x_discrete(labels=unique(allseasons$season[order(allseasons$seasonNumber)])) +
       theme_minimal() +
       ylab("Index score") + xlab("") +
       theme(panel.grid = element_blank() 
