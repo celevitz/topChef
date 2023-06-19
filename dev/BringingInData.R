@@ -17,6 +17,11 @@
 #   Knit                       'Cmd + Shift + K'
 
 # Check for things that don't yet have documentation library(tools); undoc(topChef)
+# Note to self:
+#   After updating something, run:
+# devtools::document()
+# goodpractice::gp()
+# usethis::use_cran_comments()
 
 rm(list=ls())
 
