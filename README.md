@@ -11,26 +11,22 @@ information.
 
 ## 2. Installation
 
-Not yet on CRAN. So please use:
-*devtools::install.packages(“celevitz/topChef”)*. If it’s not appearing
-to be updated, restart your R sessions, install it again, and call it
-into your library.
+I am continually improving the datasets, so github version is likely to
+be more up-to-date. If it’s not appearing to be updated, restart your R
+sessions, install it again, and call it into your library.
 
 ``` r
 devtools::install_github("celevitz/topChef")
-#> 
-#> ── R CMD build ─────────────────────────────────────────────────────────────────
-#>      checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpaQ5GZd/remotes49bb6eddc60a/celevitz-topChef-e0b5034/DESCRIPTION’ ...  ✔  checking for file ‘/private/var/folders/0p/_s6v9q110z9fh4y0vq9ml47m0000gp/T/RtmpaQ5GZd/remotes49bb6eddc60a/celevitz-topChef-e0b5034/DESCRIPTION’
-#>   ─  preparing ‘topChef’:
-#>      checking DESCRIPTION meta-information ...  ✔  checking DESCRIPTION meta-information
-#>   ─  checking for LF line-endings in source and make files and shell scripts
-#>   ─  checking for empty or unneeded directories
-#>   ─  building ‘topChef_0.1.0.tar.gz’
-#>      
-#> 
 ```
 
-## 3. References & Acknowlegements
+I am submitting to CRAN the week of June 19, 2023. Once it is accepted,
+you can install it as you would any other package.
+
+``` r
+install.packages("topChef")
+```
+
+## 3. References & Acknowlegments
 
 Data were collected manually while watching each season of Top Chef.
 Additional data were collected from
