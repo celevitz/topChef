@@ -4,12 +4,17 @@
 \alias{weightedindex}
 \title{Calculate One Season's Chef's Weighted Scores (Index)}
 \usage{
-weightedindex(seriesname, seasonnumber, numberofelimchalls, numberofquickfires)
+weightedindex(
+  seriesname,
+  seasonnumberofchoice,
+  numberofelimchalls,
+  numberofquickfires
+)
 }
 \arguments{
 \item{seriesname}{Values can be: US, US Masters, Canada}
 
-\item{seasonnumber}{Integer of the season number within the series}
+\item{seasonnumberofchoice}{Integer of the season number within the series}
 
 \item{numberofelimchalls}{Number of elimination challenges you want to
 include in the index}
