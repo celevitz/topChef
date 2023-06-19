@@ -29,7 +29,7 @@ I am submitting to CRAN the week of June 19, 2023. Once it is accepted, you can 
 install.packages("topChef")
 ```
 
-## 3. References & Acknowlegments
+## 3. References & Acknowledgments
 
 Data were collected manually while watching each season of Top Chef. Additional data were collected from <https://en.wikipedia.org/wiki/Top_Chef>. My Top Chef data journey was inspired by <https://topchefstats.com/>.
 

@@ -26,7 +26,7 @@ you can install it as you would any other package.
 install.packages("topChef")
 ```
 
-## 3. References & Acknowlegments
+## 3. References & Acknowledgments
 
 Data were collected manually while watching each season of Top Chef.
 Additional data were collected from
