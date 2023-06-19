@@ -1,27 +1,4 @@
-# Hello, world!
-#
-# This is an example function named 'hello'
-# which prints 'Hello, world!'.
-#
-# You can learn more about package authoring with RStudio at:
-#
-#   http://r-pkgs.had.co.nz/
-#
-# Some useful keyboard shortcuts for package authoring:
-#
-#   Install Package:           'Cmd + Shift + B'
-#   Check Package:             'Cmd + Shift + E'
-#     Other checks:             rhub::check_for_cran()
-#                               devtools::check()
-#   Test Package:              'Cmd + Shift + T'
-#   Knit                       'Cmd + Shift + K'
-
-# Check for things that don't yet have documentation library(tools); undoc(topChef)
-# Note to self:
-#   After updating something, run:
-# devtools::document()
-# goodpractice::gp()
-# usethis::use_cran_comments()
+## Bring in data from Excel file
 
 rm(list=ls())
 
@@ -107,11 +84,5 @@ save(rewards, file = "data/rewards.rda")
 save(judges, file = "data/judges.rda")
 save(episodeinfo, file = "data/episodeinfo.rda")
 
-# Check for CRAN specific requirementss
-#results <- rhub::check_for_cran()
-#results$cran_summary()
-#usethis::use_cran_comments()
 
-# Run this to see how much of your function is covered: devtools::test_coverage()
-# run good practice: goodpractice::gp()
 
