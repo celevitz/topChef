@@ -32,6 +32,9 @@ notes as last time, except that I added my middle initial to my maintainer name.
   checking for detritus in the temp directory ... NOTE
   Found the following files/directories:
     'lastMiKTeXException'
+    
+    Note from submitter: I could not install miktext since it isn't available 
+    for the version of R that I have (4.2.3). Same with pdflatex.
 
 ❯ On ubuntu-gcc-release (r-release)
   checking CRAN incoming feasibility ... [6s/11s] NOTE
