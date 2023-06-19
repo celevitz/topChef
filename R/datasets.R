@@ -220,7 +220,7 @@
 #' @format This data frame contains the following columns:
 #' \describe{
 #'   \item{\code{season}}{Name of season}
-#'   \item{\code{seasonnumber}}{Season number}
+#'   \item{\code{seasonNumber}}{Season number}
 #'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
 #'            (listed as US Masters); Top Chef Canada (listed as Canada)}
 #'   \item{\code{episode}}{Episode number}
