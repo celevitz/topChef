@@ -30,3 +30,5 @@ inteRgrate::check_lintr()
 inteRgrate::check_tidy_description()
 inteRgrate::check_r_filenames()
 inteRgrate::check_gitignore()
+
+#devtools::release()
