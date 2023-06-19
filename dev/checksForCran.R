@@ -21,6 +21,7 @@ usethis::use_cran_comments()
 devtools::check_win_devel()
 devtools::document()
 # Update News
+usethis::use_news_md()
 # Update description
 devtools::spell_check()
 goodpractice::gp()
