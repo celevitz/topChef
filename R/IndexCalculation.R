@@ -4,7 +4,7 @@
 #'              Top Chef.
 #'
 #' @param seriesname Values can be: US, US Masters, Canada
-#' @param seasonnumber Integer of the season number within the series
+#' @param seasonnumberofchoice Integer of the season number within the series
 #' @param numberofelimchalls Number of elimination challenges you want to
 #'                            include in the index
 #' @param numberofquickfires Number of quickfire challenges you want to include
@@ -32,13 +32,13 @@
 #'
 #'
 
-weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
+weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
                           ,numberofquickfires) {
   # 1. Set up the data
     placementdata <- topChef::chefdetails[,c("chef","series","season"
                                              ,"seasonNumber","placement")]
     placementdata <- placementdata[placementdata$series == seriesname &
-                                   placementdata$seasonNumber == seasonnumber,]
+                           placementdata$seasonNumber == seasonnumberofchoice,]
 
 
     # 1a. Outcomes of the challenges
@@ -46,7 +46,7 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
       topChef::challengewins[,names(topChef::challengewins)[!(names(topChef::
                                               challengewins) %in% "rating")] ]
     challengewins <- challengewins[challengewins$series == seriesname &
-                                     challengewins$seasonNumber == seasonnumber,]
+                           challengewins$seasonNumber == seasonnumberofchoice,]
 
     # 1ai. combine types of challenges
     challengewins$challengeType[challengewins$challengeType %in%
@@ -65,9 +65,9 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
     challengewins$outcome[challengewins$outcome %in%
                             c("DISQUALIFIED","RUNNER-UP","WITHDREW") |
                             grepl("OUT",challengewins$outcome) ] <- "OUT"
-    challengewins$outcome[challengewins$outcome %in% c("Didn't compete") |
+    challengewins$outcome[challengewins$outcome %in% c("DIDN'T COMPETE") |
                             grepl("N/A",challengewins$outcome) |
-                            grepl("Qualified",challengewins$outcome) ] <- "IN"
+                            grepl("QUALIFIED",challengewins$outcome) ] <- "IN"
     challengewins$outcome[challengewins$outcome %in% c("WINNER")] <- "WIN"
 
     # 1b. need to consecutively number each challenge of each challenge type
