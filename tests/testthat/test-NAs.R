@@ -6,7 +6,8 @@ library(topChef)         # lout my package
   ## A. Chef Details
     # NAs are okay in: hometown, city, state, age, poc, occupation,
     # and placement in season 20
-      for (varname in c("name","chef","season","seasonNumber","series","gender")) {
+      for (varname in c("name","chef","season","seasonNumber","series"
+                        ,"gender")) {
 
         test_that(paste("There are no NAs in",varname,sep=" "), {
           expect_equal(all(!(is.na(chefdetails[,varname]))),TRUE)
