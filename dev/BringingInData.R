@@ -25,6 +25,7 @@ library(usethis)
 library(rmarkdown)
 library(goodpractice)
 library(stringi)
+library(tidyr)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -48,11 +49,15 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sh
 #   chefdetails$name[stri_enc_mark(chefdetails$name) == "UTF-8"]
 #   chefdetails$chef[stri_enc_mark(chefdetails$chef) == "UTF-8"]
 #   judges$guestjudge[stri_enc_mark(judges$guestjudge) == "UTF-8"]
-#
+#   challengewins$chef[stri_enc_mark(challengewins$chef) == "UTF-8"]
 #   asc <- function(x) { strtoi(charToRaw(x),16L)}
 #   chr <- function(n) { rawToChar(as.raw(n))}
 #
 #   chefdetails$name <- gsub("ñ",chr(asc("ñ")),chefdetails$name)
+
+
+
+
 # For now - replace umlauts and such with non-special characters.
 #  definitely not ideal
 
