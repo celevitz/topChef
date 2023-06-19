@@ -11,49 +11,56 @@ library(topChef); library(tidyverse); library(ggtext); library(ggpubr)
 ## Get just the data that we are interested in
 dataofinterest <- topChef::challengewins %>%
   # exclude elimination challenges without winners
-  filter(!(episode == 9 & sznnumber == 13)) %>%
+  filter(!(episode == 9 & seasonNumber == 13)) %>%
   # exclude finale
-  group_by(szn,sznnumber,series) %>%
-  mutate(maxepi = case_when(challenge_type == "Elimination" ~ max(episode)
+  group_by(season,seasonNumber,series) %>%
+  mutate(maxepi = case_when(challengeType == "Elimination" ~ max(episode)
                             ,TRUE ~ NA) ) %>%
   filter(episode != maxepi) %>%
   # how many elimination challenges did they participate in
-  filter(in.competition == "TRUE" & challenge_type == "Elimination" & series == "US") %>%
+  filter(in.competition == "TRUE" &
+           challengeType == "Elimination" & series == "US") %>%
   ungroup()
 
 ##############################################################################
 ## Data set up
   ## Win percentages for just the elimination challenges prior the finale
     results <- dataofinterest %>%
-        group_by(szn,sznnumber,chef) %>%
+        group_by(season,seasonNumber,chef) %>%
         # how many wins did they have
         mutate(numberofepisodes=n()
                ,won=ifelse(grepl("WIN",outcome),1,0)
                ,numberofwins = sum(won)) %>%
         # keep just relevant variables
-        select(szn,sznnumber,series,chef,numberofepisodes,numberofwins) %>%
+        select(season,seasonNumber,series,chef,numberofepisodes,numberofwins) %>%
         distinct() %>%
         # win %
         mutate(winpercent = numberofwins/numberofepisodes) %>%
         # call out just the final 3
         # doing a left join because we've already filtered out all but US main seasons
-        left_join(topChef::chefdetails %>% select(series,sznnumber,szn,chef,placement)) %>%
+        left_join(topChef::chefdetails %>%
+                    select(series,seasonNumber,season,chef,placement)) %>%
         mutate(final3 = ifelse(placement<=3,"Final 3","All others")
                # want to organize the data for the visualizaiton
                ,placementmodified =as.character(placement)
                ,placementmodified = case_when(placementmodified == "1" ~ "1st"
-                                              ,placementmodified == "2" ~ "2nd (a)"
-                                              ,placementmodified == "3" ~ "3rd (a)"
-                                              ,TRUE ~ placementmodified)
+                                          ,placementmodified == "2" ~ "2nd (a)"
+                                          ,placementmodified == "3" ~ "3rd (a)"
+                                          ,TRUE ~ placementmodified)
                ,placementmodified = case_when(
-                                              #chef %in% c("Casey T.","Lisa F.","Carla H.","Bryan V.","Angelo S.","Sara B.","Dawn B.","Evelyn G.") & placement == 2~ "2nd (a)"
-                                              chef %in% c("Dale L.","Richard B.","Stefan R.","Kevin G.","Ed C.","Stephanie C.","Shota N.","Sarah W.","Gabriel Rodriguez") & placement == 2 ~ "2nd (b)"
-                                              #,chef %in% c("Elia A.") & placement == 3 ~ "3rd (a)"
-                                              ,chef %in% c("Sam T.") & placement == 3 ~ "3rd (b)"
-                                              ,TRUE ~ placementmodified ) ) %>%
+                                  #chef %in% c("Casey T.","Lisa F.","Carla H.","Bryan V.","Angelo S.","Sara B.","Dawn B.","Evelyn G.") & placement == 2~ "2nd (a)"
+                                  chef %in% c("Dale L.","Richard B.","Stefan R."
+                                              ,"Kevin G.","Ed C.","Stephanie C."
+                                              ,"Shota N.","Sarah W."
+                                              ,"Gabriel Rodriguez") &
+                                    placement == 2 ~ "2nd (b)"
+                                  #,chef %in% c("Elia A.") & placement == 3 ~ "3rd (a)"
+                                  ,chef %in% c("Sam T.") &
+                                    placement == 3 ~ "3rd (b)"
+                                  ,TRUE ~ placementmodified ) ) %>%
         # was there a final 3 person who had a win % of more than 30%?
         # and did the dominant chef end up winning?
-        ungroup() %>% group_by(series,szn,sznnumber) %>%
+        ungroup() %>% group_by(series,season,seasonNumber) %>%
         mutate(morethan30 = ifelse(winpercent >= .3 & final3 == "Final 3",1,0)
                ,seasonmorethan30 = max(morethan30)
                ,chefmorethan30 = ifelse(winpercent >= .3 & placement == 1,1,0)
@@ -66,7 +73,7 @@ dataofinterest <- topChef::challengewins %>%
   ## who had the highest win % in that season who was in at least 4 elim challs?
       results %>%
         filter(numberofepisodes >= 6) %>%
-        ungroup() %>% group_by(series,szn,sznnumber) %>%
+        ungroup() %>% group_by(series,season,seasonNumber) %>%
         filter(winpercent == max(winpercent)) %>%
         print(n=30)
 
@@ -76,19 +83,19 @@ dataofinterest <- topChef::challengewins %>%
       allchallengeswonbyfinal3 <- dataofinterest %>%
         # how many elimination challenges were there in a season where somebody won?
         filter(grepl("WIN",outcome)) %>%
-        group_by(szn,sznnumber,series) %>%
+        group_by(season,seasonNumber,series) %>%
         mutate(numberofchalls = n_distinct(episode)) %>%
         # doing a left join because we've already filtered out all but US main seasons
-        left_join(topChef::chefdetails %>% select(series,sznnumber,szn,chef,placement)) %>%
+        left_join(topChef::chefdetails %>% select(series,seasonNumber,season,chef,placement)) %>%
         mutate(final3 = case_when(placement == 1 ~ 1
                                   ,placement %in% c(2,3) ~2
                                   ,TRUE ~ 3) ) %>%
         # who was the winner of each challenge/ was the winner in the final 3?
-        ungroup() %>% group_by(szn,sznnumber,series,episode) %>%
+        ungroup() %>% group_by(season,seasonNumber,series,episode) %>%
         mutate(winnercategory = min(final3)) %>%
-        ungroup() %>% group_by(szn,sznnumber,series,winnercategory) %>%
+        ungroup() %>% group_by(season,seasonNumber,series,winnercategory) %>%
         mutate(numberofwinsbycategory = n_distinct(episode)) %>%
-        select(szn,sznnumber,series,numberofchalls,winnercategory,numberofwinsbycategory) %>%
+        select(season,seasonNumber,series,numberofchalls,winnercategory,numberofwinsbycategory) %>%
         distinct() %>%
         mutate(winnercategorylabs = case_when(winnercategory == 1 ~ "Season winner"
                                               ,winnercategory == 2 ~ "Non-winning chef in finale"
@@ -98,19 +105,19 @@ dataofinterest <- topChef::challengewins %>%
               ,cheflabels = ifelse(winnercategory == 1,paste0(round(percentwon*100,1),"%"),NA)) %>%
               #,cheflabels = paste0(round(percentwon*100,1),"%")) %>%
         # number of ECs before finale
-        mutate(szn = paste0(szn," (n=",numberofchalls," ECs)"))
+        mutate(season = paste0(season," (n=",numberofchalls," ECs)"))
 
       # order things by the % of elimination challenges won by winner
-      allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
-                                             levels=unique(allchallengeswonbyfinal3$szn[order(allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
+      allchallengeswonbyfinal3$season <- factor(allchallengeswonbyfinal3$season,
+                                             levels=unique(allchallengeswonbyfinal3$season[order(allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
 
       # instead, order by % of elimin challs won by winner + finale chefs
       # allchallengeswonbyfinal3 <- allchallengeswonbyfinal3 %>%
-      #   ungroup() %>% group_by(series, szn, sznnumber) %>%
+      #   ungroup() %>% group_by(series, season, seasonNumber) %>%
       #   mutate(includeintotal = ifelse(winnercategory != 3,percentwon,NA)
       #          ,total = sum(includeintotal,na.rm=TRUE))
-      # allchallengeswonbyfinal3$szn <- factor(allchallengeswonbyfinal3$szn,
-      #                                        levels=unique(allchallengeswonbyfinal3$szn[order(allchallengeswonbyfinal3$total,allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
+      # allchallengeswonbyfinal3$season <- factor(allchallengeswonbyfinal3$season,
+      #                                        levels=unique(allchallengeswonbyfinal3$season[order(allchallengeswonbyfinal3$total,allchallengeswonbyfinal3$winnercategory,allchallengeswonbyfinal3$percentwon)]))
       #
 
 ##############################################################################
@@ -185,17 +192,17 @@ dataofinterest <- topChef::challengewins %>%
   # % of season's elimination challenges that the winner and other final 3 won
 
     graph2 <- allchallengeswonbyfinal3 %>%
-      ggplot(aes(x=percentwon,y=szn
+      ggplot(aes(x=percentwon,y=season
                  ,fill=winnercategorylabs,color=winnercategorylabs
                  ,label=cheflabels)) +
       geom_bar(stat="identity") +
-      geom_text(aes(x=0.01 ,y=szn),color=text_col2,hjust=0,size=6) +
+      geom_text(aes(x=0.01 ,y=season),color=text_col2,hjust=0,size=6) +
       annotate("text",x=allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==1]+.02
-               ,y=allchallengeswonbyfinal3$szn[allchallengeswonbyfinal3$winnercategory==1]
+               ,y=allchallengeswonbyfinal3$season[allchallengeswonbyfinal3$winnercategory==1]
                ,label=paste0(round(allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==2]*100,1),"%")
                ,color=text_col2,hjust=0,size=6) +
       annotate("text",x=.98
-               ,y=allchallengeswonbyfinal3$szn[allchallengeswonbyfinal3$winnercategory==1]
+               ,y=allchallengeswonbyfinal3$season[allchallengeswonbyfinal3$winnercategory==1]
                ,label=paste0(round(allchallengeswonbyfinal3$percentwon[allchallengeswonbyfinal3$winnercategory==3]*100,1),"%")
                ,color=darkbgcol,hjust=1,size=5) +
       labs(title=percentwontitle ,caption=percentwoncaption) +
@@ -228,11 +235,11 @@ dataofinterest <- topChef::challengewins %>%
   # graphs of just the final 3s
   # don't include season 20 so as to not have spoilers
     graph3 <- results %>%
-      filter(final3 == "Final 3" & sznnumber != 20) %>%
-      mutate(sznlabel = case_when(sznnumber <= 9 ~ paste0("Season 0",as.character(sznnumber))
-                                  ,TRUE ~ paste0("Season ",as.character(sznnumber))))  %>%
+      filter(final3 == "Final 3" & seasonNumber != 20) %>%
+      mutate(seasonlabel = case_when(seasonNumber <= 9 ~ paste0("Season 0",as.character(seasonNumber))
+                                  ,TRUE ~ paste0("Season ",as.character(seasonNumber))))  %>%
       ggplot(aes(x=placementmodified,y=winpercent,label=chef,fill=dominantchef)) +
-      facet_wrap(~sznlabel) +
+      facet_wrap(~seasonlabel) +
       geom_bar(stat="identity",color="gray50") +
       geom_text(aes(x=placementmodified,y=winpercent+.05),col=text_col) +
       geom_text(aes(x=placementmodified,y=0.05,label=paste0(round(winpercent*100,1),"%")),col="white") +

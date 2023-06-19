@@ -21,15 +21,15 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
     topfourepisode <- topChef::episodeinfo %>%
       #keep just the episodes with four or more chefs;
       # we want to keep those episodes to see how well they've done up until that point
-      filter(`#.of.competitors` >= 4) %>%
+      filter(nCompetitors >= 4) %>%
         # drop reunions
         filter(!(grepl("Reunion",episode_name)) & episode_name != "Top Chef Holiday Special") %>%
         # since there are some seasons where there are multiple episodes with four contestants,
         # choose the episode that is the latest in the season
-        group_by(szn,sznnumber,series) %>%
+        group_by(season,seasonNumber,series) %>%
         mutate(highestepisode = max(episode)) %>%
         filter(episode == highestepisode) %>%
-      select(szn,sznnumber,series,episode) %>%
+      select(season,seasonNumber,series,episode) %>%
       rename(episodeflag = episode)
 
   # Which Chefs are in the final four?
@@ -37,12 +37,12 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
   # and INCLUDE those who weren't in F4 but came in after and did 4th or better (e.g., Kristen in Seattle)
     finalfourchefs <- topfourepisode %>%
       left_join(topChef::challengewins) %>%
-      filter(in.competition == "TRUE" & episode == episodeflag) %>%
-      select(series,szn,sznnumber,chef) %>%
+      filter(inCompetition == "TRUE" & episode == episodeflag) %>%
+      select(series,season,seasonNumber,chef) %>%
       distinct() %>%
       mutate(keep="keep") %>%
       # merge on placement information
-      full_join(topChef::chefdetails %>% select(szn,sznnumber,series,chef,gender,placement)) %>%
+      full_join(topChef::chefdetails %>% select(season,seasonNumber,series,chef,gender,placement)) %>%
       # need to do <=4 twice
       filter((keep == "keep" | placement <= 4) & (placement <= 4 | is.na(placement))) %>%
       select(!keep)
@@ -59,22 +59,22 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
         # combine low & out because want to consider them both as low; otherwise, only just a few chefs will have "out" as a separate category
         # and do some edits to issues of
         mutate(outcome = case_when(outcome %in% c("WITHDREW","OUT","RUNNER-UP") ~ "LOW"
-                                   ,outcome %in% c("Didn't compete","Qualified") ~ "IN"
+                                   ,outcome %in% c("DIDN'T COMPETE","QUALIFIED") ~ "IN"
                                    ,outcome %in% c("WINNER") ~ "WIN"
                                    ,TRUE ~ outcome)
         #combine different types of challenges: Eliminations or not
-        ,challenge_type = case_when(challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Elimination"
-                                    ,TRUE ~ challenge_type)
+        ,challengeType = case_when(challengeType %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Elimination"
+                                    ,TRUE ~ challengeType)
         ) %>%
       # Keep just US (not Masters or Canada)
         filter(series == "US") %>%
       # count number of wins and stuff
-        group_by(szn,sznnumber,series,chef,challenge_type,outcome,placement,gender) %>%
+        group_by(season,seasonNumber,series,chef,challengeType,outcome,placement,gender) %>%
         summarise(n=n()) %>%
       # Because we need to have 0s when appropriate - and right now, if someone didn't e.g., win a quickfire they don't have a row for that
       #   I need to transpose the data, add in zeros for the NAs, and then re-transpose the data back to long
-        pivot_wider(names_from = challenge_type,values_from = n) %>%
-        select(!`Qualifying challenge`) %>%
+        pivot_wider(names_from = challengeType,values_from = n) %>%
+        select(!`Qualifying Challenge`) %>%
         filter(!(is.na(outcome))) %>%
         pivot_wider(names_from = outcome,values_from = c("Quickfire","Elimination")) %>%
         mutate(Quickfire_HIGH = ifelse(is.na(Quickfire_HIGH),0,Quickfire_HIGH)
@@ -85,21 +85,21 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-agnostic/
                ,Elimination_WIN = ifelse(is.na(Elimination_WIN),0,Elimination_WIN)
                ,Elimination_LOW = ifelse(is.na(Elimination_LOW),0,Elimination_LOW)
                ,Elimination_IN = ifelse(is.na(Elimination_IN),0,Elimination_IN)) %>%
-        pivot_longer(!(c(szn,sznnumber,series,chef,placement,gender)),names_to = "temp", values_to = "n") %>%
-        separate(temp,c("challenge_type","outcome"),"_") %>%
+        pivot_longer(!(c(season,seasonNumber,series,chef,placement,gender)),names_to = "temp", values_to = "n") %>%
+        separate(temp,c("challengeType","outcome"),"_") %>%
       # set up for graphing
-      mutate(x = case_when(challenge_type == "Elimination" & outcome == "WIN" ~ 1
-                           ,challenge_type == "Quickfire" & outcome == "WIN" ~ 2
-                           ,challenge_type == "Elimination" & outcome == "HIGH" ~ 3
-                           ,challenge_type == "Quickfire" & outcome == "HIGH" ~ 4
-                           ,challenge_type == "Elimination" & outcome == "LOW" ~ 5))
+      mutate(x = case_when(challengeType == "Elimination" & outcome == "WIN" ~ 1
+                           ,challengeType == "Quickfire" & outcome == "WIN" ~ 2
+                           ,challengeType == "Elimination" & outcome == "HIGH" ~ 3
+                           ,challengeType == "Quickfire" & outcome == "HIGH" ~ 4
+                           ,challengeType == "Elimination" & outcome == "LOW" ~ 5))
 
 
 
 
 ## Visualize all top fours
-  topfourepisodeSorted <- topfourdata[order(topfourdata$x,desc(topfourdata$n),topfourdata$chef,topfourdata$sznnumber),]
-  topfourepisodeSorted$chefseason <- paste0(topfourepisodeSorted$chef," (",topfourepisodeSorted$szn,")")
+  topfourepisodeSorted <- topfourdata[order(topfourdata$x,desc(topfourdata$n),topfourdata$chef,topfourdata$seasonNumber),]
+  topfourepisodeSorted$chefseason <- paste0(topfourepisodeSorted$chef," (",topfourepisodeSorted$season,")")
   topfourepisodeSorted$Y <- NA
   #if people were in final four more than once, they only get plotted once
   # so take into account the season number
@@ -143,7 +143,7 @@ outcomevar <- "HIGH"
 
 topfourgraphs <- function(challengevar,outcomevar) {
   graphdata <- topfourdata %>%
-    filter(challenge_type == challengevar & outcome == outcomevar)
+    filter(challengeType == challengevar & outcome == outcomevar)
 
   # Notes
   graphzero <- graphdata %>%
@@ -220,7 +220,7 @@ topfourgraphs <- function(challengevar,outcomevar) {
   chefswithmost <-  graphdata %>%
     filter(n >= threshold) %>%
     arrange(desc(n)) %>%
-    mutate(chefinseason = paste0(chef," (",szn,")"))
+    mutate(chefinseason = paste0(chef," (",season,")"))
 
   graphfour <-
     chefswithmost %>%

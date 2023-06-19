@@ -9,18 +9,18 @@ library(topChef); library(tidyverse); library(ggtext)
 
 allseasons <- weightedindex("US",1,13,10)
 for (season in seq(2,20,1)) {
-  allseasons <- rbind(allseasons,weightedindex("US",season,13,10))
+  allseasons <- rbind(allseasons,weightedindex("US",seasonnumberofchoice,13,10))
 
 }
 
 
 allseasons <- allseasons %>%
   # keep just variables of interest
-  select(chef,szn,sznnumber,placement,indexWeight) %>%
+  select(chef,season,seasonNumber,placement,indexWeight) %>%
   # keep just top three / season 20 folks
   filter(placement <=3 | is.na(placement)) %>%
   # put the current season folks at placement of "4th"
-  mutate(placement = ifelse(sznnumber == 20,4,placement)) %>%
+  mutate(placement = ifelse(seasonNumber == 20,4,placement)) %>%
   # label chefs with their index scores
   mutate(labelname = paste0(chef," (",indexWeight,")")
          # change alignment for some chefs that would plot over each other
@@ -110,19 +110,19 @@ allseasons <- allseasons %>%
       challengewins$challenge_type[challengewins$challenge_type %in% c("Quickfire Elimination","Sudden Death Quickfire")] <- "Elimination"
 
     # Exclude the uncommon challenge types
-      challengewins <- challengewins[!(challengewins$challenge_type %in% c("Battle of the Sous Chefs","Qualifying challenge")),]
+      challengewins <- challengewins[!(challengewins$challenge_type %in% c("Battle of the Sous Chefs","Qualifying Challenge")),]
 
     # clean up outcomes: consolidate
       challengewins$outcome[challengewins$outcome %in% c("High","HiGH")] <- "HIGH"
       challengewins$outcome[grepl("LOW",challengewins$outcome)] <- "LOW"
       challengewins$outcome[challengewins$outcome %in% c("DISQUALIFIED","RUNNER-UP","WITHDREW") | grepl("OUT",challengewins$outcome) ] <- "OUT"
-      challengewins$outcome[challengewins$outcome %in% c("Didn't compete") | grepl("N/A",challengewins$outcome) | grepl("Qualified",challengewins$outcome) ] <- "IN"
+      challengewins$outcome[challengewins$outcome %in% c("DIDN'T COMPETE") | grepl("N/A",challengewins$outcome) | grepl("QUALIFIED",challengewins$outcome) ] <- "IN"
       challengewins$outcome[challengewins$outcome %in% c("WINNER")] <- "WIN"
 
     # need to sum (total) the counts, because of the combination of challenge types
       challengewins <- challengewins %>%
-        filter(in.competition == "TRUE") %>%
-        group_by(szn,sznnumber,series,episode,chef,challenge_type,outcome) %>%
+        filter(inCompetition == "TRUE") %>%
+        group_by(season,seasonNumber,series,episode,chef,challenge_type,outcome) %>%
         summarise(n=n()) %>%
         # reshape so that we can get the index score
         pivot_wider(names_from=challenge_type,values_from = n) %>%
@@ -147,12 +147,12 @@ allseasons <- allseasons %>%
 
     # get cumulative score
       cumulative <- challengewins %>%
-        select(szn,sznnumber,series,episode,chef,index) %>%
+        select(season,seasonNumber,series,episode,chef,index) %>%
         # add on the placement
-        full_join(topChef::chefdetails %>% select(chef,szn,sznnumber,series,placement)) %>%
+        full_join(topChef::chefdetails %>% select(chef,season,seasonNumber,series,placement)) %>%
         # get the cumulative total
-        ungroup() %>% group_by(szn,sznnumber,series,chef) %>%
-        arrange(series,sznnumber,episode,chef) %>%
+        ungroup() %>% group_by(season,seasonNumber,series,chef) %>%
+        arrange(series,seasonNumber,episode,chef) %>%
         mutate(indexcumulative = cumsum(index))
 
     # keep just top three
@@ -164,18 +164,18 @@ allseasons <- allseasons %>%
                                            ,is.na(placement) ~ "Current season"
                                            ,TRUE ~ "")) %>%
         # what is the max episode by chef? use this to create labels
-        group_by(sznnumber,chef) %>%
+        group_by(seasonNumber,chef) %>%
         mutate(maxepi = max(episode)
-               ,cheflabelall = ifelse(episode == maxepi,paste0(str_split_fixed(chef," ",2)[,1]," (S",sznnumber,")"),NA)
+               ,cheflabelall = ifelse(episode == maxepi,paste0(str_split_fixed(chef," ",2)[,1]," (S",seasonNumber,")"),NA)
                # make some of the labels be not at the end
-               ,cheflabelall = case_when(chef == "Stefan R." & sznnumber == 5 & episode == 11 ~ "Stefan (S5)"
-                                         ,chef == "Stefan R." & sznnumber == 5 & episode == 14 ~ NA
-                                         ,chef == "Gregory G." & sznnumber == 12 & episode == 5 ~ "Gregory (S12)"
-                                         ,chef == "Gregory G." & sznnumber == 12 & episode == 15 ~ NA
-                                         ,chef == "Doug A." & sznnumber == 12 & episode == 9 ~ "Doug (S12)"
-                                         ,chef == "Doug A." & sznnumber == 12 & episode == 14 ~ NA
-                                         ,chef == "Kevin G." & sznnumber == 6 & episode == 14 ~ "Kevin (S6)"
-                                         ,chef == "Kevin G." & sznnumber == 6 & episode == 15 ~ NA
+               ,cheflabelall = case_when(chef == "Stefan R." & seasonNumber == 5 & episode == 11 ~ "Stefan (S5)"
+                                         ,chef == "Stefan R." & seasonNumber == 5 & episode == 14 ~ NA
+                                         ,chef == "Gregory G." & seasonNumber == 12 & episode == 5 ~ "Gregory (S12)"
+                                         ,chef == "Gregory G." & seasonNumber == 12 & episode == 15 ~ NA
+                                         ,chef == "Doug A." & seasonNumber == 12 & episode == 9 ~ "Doug (S12)"
+                                         ,chef == "Doug A." & seasonNumber == 12 & episode == 14 ~ NA
+                                         ,chef == "Kevin G." & seasonNumber == 6 & episode == 14 ~ "Kevin (S6)"
+                                         ,chef == "Kevin G." & seasonNumber == 6 & episode == 15 ~ NA
                                          ,chef == "Tiffani F." & placement == 2 ~ NA
                                          ,chef == "Carla H." & placement == 2 ~ NA
                                          ,chef == "Amar S." & placement == 2 ~ NA
@@ -188,8 +188,8 @@ allseasons <- allseasons %>%
                                          ,chef == "Marcel V." & placement == 2 ~ NA
                                          ,chef == "Casey T." & placement == 2 ~ NA
                                          ,chef == "Sam T." & placement == 3 ~ NA
-                                         ,chef == "Sheldon S." & placement == 3 & sznnumber == 14~ NA
-                                         ,chef == "Joe S." & placement == 3 & sznnumber == 15~ NA
+                                         ,chef == "Sheldon S." & placement == 3 & seasonNumber == 14~ NA
+                                         ,chef == "Joe S." & placement == 3 & seasonNumber == 15~ NA
                                          ,chef == "Harold D." & placement == 1 ~ NA
                                          ,chef == "Ilan H." & placement == 1 ~ NA
                                          ,chef == "Gabe E." & placement == 1 ~ NA
@@ -218,7 +218,7 @@ allseasons <- allseasons %>%
 
     # plot it
       cumulativeT3 %>%
-        arrange(sznnumber,episode,chef) %>%
+        arrange(seasonNumber,episode,chef) %>%
         ggplot(aes(x=episode,y=indexcumulative,color=chef,label=cheflabelall)) +
           geom_hline(yintercept=0, color="#ffbc69")  +
           labs(title=titletext
@@ -277,31 +277,31 @@ allseasons <- allseasons %>%
       # plot it
       cumulativeT3 %>%
         mutate(cheflabelall = ifelse(episode == maxepi,str_split_fixed(chef," ",2)[,1],NA)
-               ,cheflabelall = case_when(chef == "Brooke W." & sznnumber == 10 & episode == 17 ~ NA
-                                         ,chef == "Brooke W." & sznnumber == 10 & episode == 16 ~ "Brooke"
-                                         ,chef == "Michael V." & sznnumber == 6 & episode == 15 ~ NA
-                                         ,chef == "Michael V." & sznnumber == 6 & episode == 14 ~ "Michael"
-                                         ,chef == "Ed C." & sznnumber == 7 & episode == 14 ~ NA
-                                         ,chef == "Ed C." & sznnumber == 7 & episode == 12 ~ "Ed"
-                                         ,chef == "Angelo S." & sznnumber == 7 & episode == 14 ~ NA
-                                         ,chef == "Angelo S." & sznnumber == 7 & episode == 9 ~ "Angelo"
-                                         ,chef == "Kelsey B.-C." & sznnumber == 16 & episode == 15 ~ NA
-                                         ,chef == "Kelsey B.-C." & sznnumber == 16 & episode == 14 ~ "Kelsey"
-                                         ,chef == "Eric A." & sznnumber == 16 & episode == 15 ~ NA
-                                         ,chef == "Eric A." & sznnumber == 16 & episode == 12 ~ "Eric"
-                                         ,chef == "Bryan V." & sznnumber == 17 & episode == 14 ~ NA
-                                         ,chef == "Bryan V." & sznnumber == 17 & episode == 12 ~ "Bryan"
-                                         ,chef == "Shota N." & sznnumber == 18 & episode == 14 ~ NA
-                                         ,chef == "Shota N." & sznnumber == 18 & episode == 13 ~ "Shota"
+               ,cheflabelall = case_when(chef == "Brooke W." & seasonNumber == 10 & episode == 17 ~ NA
+                                         ,chef == "Brooke W." & seasonNumber == 10 & episode == 16 ~ "Brooke"
+                                         ,chef == "Michael V." & seasonNumber == 6 & episode == 15 ~ NA
+                                         ,chef == "Michael V." & seasonNumber == 6 & episode == 14 ~ "Michael"
+                                         ,chef == "Ed C." & seasonNumber == 7 & episode == 14 ~ NA
+                                         ,chef == "Ed C." & seasonNumber == 7 & episode == 12 ~ "Ed"
+                                         ,chef == "Angelo S." & seasonNumber == 7 & episode == 14 ~ NA
+                                         ,chef == "Angelo S." & seasonNumber == 7 & episode == 9 ~ "Angelo"
+                                         ,chef == "Kelsey B.-C." & seasonNumber == 16 & episode == 15 ~ NA
+                                         ,chef == "Kelsey B.-C." & seasonNumber == 16 & episode == 14 ~ "Kelsey"
+                                         ,chef == "Eric A." & seasonNumber == 16 & episode == 15 ~ NA
+                                         ,chef == "Eric A." & seasonNumber == 16 & episode == 12 ~ "Eric"
+                                         ,chef == "Bryan V." & seasonNumber == 17 & episode == 14 ~ NA
+                                         ,chef == "Bryan V." & seasonNumber == 17 & episode == 12 ~ "Bryan"
+                                         ,chef == "Shota N." & seasonNumber == 18 & episode == 14 ~ NA
+                                         ,chef == "Shota N." & seasonNumber == 18 & episode == 13 ~ "Shota"
                                         ,TRUE ~ cheflabelall)) %>%
-        arrange(sznnumber,episode,chef) %>%
+        arrange(seasonNumber,episode,chef) %>%
         ggplot(aes(x=episode,y=indexcumulative,color=chef,label=cheflabelall)) +
         geom_hline(yintercept=0, color="#ffbc69")  +
         labs(title=titletext
              ,subtitle=subtitletext
              ,caption= captiontext) +
         ylab("Cumulative Weighted Index Score") + xlab("Episode") +
-        facet_wrap(~sznnumber) +
+        facet_wrap(~seasonNumber) +
         geom_point(aes(x=episode,y=indexcumulative,color=chef)) +
         geom_line(aes(x=episode,y=indexcumulative,color=chef)) +
         geom_text(aes(x=xposition,y=indexcumulative),col=text_col,hjust=0,size=3) +

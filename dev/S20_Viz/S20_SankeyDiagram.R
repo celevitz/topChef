@@ -18,26 +18,26 @@ savedirectory <- "/Users/carlylevitz/Documents/Data/TCSeason20/Episode-specific/
   # data set-up
   #################
     alluvialdata <- topChef::challengewins %>%
-      filter(series=="US" & szn == "World All Stars") %>%
+      filter(series=="US" & season == "World All Stars") %>%
       # drop most recent episode to reduce spoilers
       filter(episode < max(episode) ) %>%
       # for sorting purposes, make the episode a two-digit character
       mutate(episodechar=case_when(episode <= 9 ~paste0("0",as.character(episode))
                                    ,TRUE ~as.character(episode) )
              # for sorting purposes, make quickfire come before elimination alphabetically
-             ,challenge_type=case_when(challenge_type == "Quickfire" ~ "AQuickfire"
-                                       ,TRUE ~ challenge_type)
+             ,challengeType=case_when(challengeType == "Quickfire" ~ "AQuickfire"
+                                       ,TRUE ~ challengeType)
              # make the x label a combination of episode number & challenge type
-             ,epichallenge=paste("Ep. ",episodechar,":\n",challenge_type,sep="")
+             ,epichallenge=paste("Ep. ",episodechar,":\n",challengeType,sep="")
              ,freq=1 ) %>%
-      select(!(c(szn,sznnumber,series,in.competition,rating,episode))) %>%
+      select(!(c(season,seasonNumber,series,inCompetition,rating,episode))) %>%
       # drop those after they are out
       filter(!(is.na(outcome)))
 
       alluvialdata$outcome <- factor(alluvialdata$outcome,levels=c("WIN","HIGH","IN","LOW","OUT"))
 
-      alluvialdata <- alluvialdata[order(alluvialdata$episodechar,alluvialdata$challenge_type,alluvialdata$outcome,alluvialdata$chef),]
-      alluvialdata$challenge_type <- NULL
+      alluvialdata <- alluvialdata[order(alluvialdata$episodechar,alluvialdata$challengeType,alluvialdata$outcome,alluvialdata$chef),]
+      alluvialdata$challengeType <- NULL
 
     # Add names so that it's easier to read
     # combine with full dataset

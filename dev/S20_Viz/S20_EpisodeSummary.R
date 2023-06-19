@@ -50,27 +50,27 @@ challengewins <- topChef::challengewins
 ##############################################################################
 currentstats <-
   ## Who is still in the competition?
-  chefdetails %>% filter(sznnumber == currentseason) %>%
-  mutate(in.competition=ifelse(is.na(placement),2,0)
+  chefdetails %>% filter(seasonNumber == currentseason) %>%
+  mutate(inCompetition=ifelse(is.na(placement),2,0)
          # call out LCK people
-         ,in.competition=ifelse(chef %in% stillinlck,1,in.competition)
+         ,inCompetition=ifelse(chef %in% stillinlck,1,inCompetition)
   ) %>%
-  select(chef,in.competition,placement) %>%
+  select(chef,inCompetition,placement) %>%
   ## merge on the challenge wins
   left_join(challengewins %>%
-              filter(sznnumber == currentseason) %>%
-              select(!c(in.competition,rating,episode))) %>%
+              filter(seasonNumber == currentseason) %>%
+              select(!c(inCompetition,rating,episode))) %>%
   ## get counts of wins, highs, and lows
   ## and, if they were out, include that as being on the bottom
   mutate(outcome=ifelse(outcome == "OUT","LOW",outcome)) %>%
-  group_by(chef,challenge_type,outcome,in.competition) %>%
+  group_by(chef,challengeType,outcome,inCompetition) %>%
   mutate(tempcount=1,count=sum(tempcount)) %>%
-  select(!c(tempcount,szn,sznnumber)) %>%
+  select(!c(tempcount,season,seasonNumber)) %>%
   distinct() %>%
   ## reshape the data
   mutate(outcome=ifelse(is.na(outcome),"IN",outcome)) %>%
   filter(outcome != "IN") %>%
-  pivot_wider(names_from=challenge_type,values_from=count) %>%
+  pivot_wider(names_from=challengeType,values_from=count) %>%
   ungroup() %>%
   pivot_wider(names_from=outcome,values_from=c(Elimination,Quickfire)) %>%
   ## format things for gt()
@@ -80,7 +80,7 @@ currentstats <-
          Quickfire_WIN=ifelse(is.na(Quickfire_WIN),0,Quickfire_WIN),
          Quickfire_HIGH=ifelse(is.na(Quickfire_HIGH),0,Quickfire_HIGH),
          Quickfire_LOW=ifelse(is.na(Quickfire_LOW),0,Quickfire_LOW)) %>%
-  arrange(desc(in.competition),placement,desc(Elimination_WIN),desc(Elimination_HIGH)
+  arrange(desc(inCompetition),placement,desc(Elimination_WIN),desc(Elimination_HIGH)
           ,desc(Quickfire_WIN),desc(Quickfire_HIGH),Quickfire_LOW) %>%
   relocate(Elimination_WIN,Elimination_HIGH,Elimination_LOW
            ,Quickfire_WIN,Quickfire_HIGH,Quickfire_LOW
@@ -96,11 +96,11 @@ viztable <-
   rename(Chef = chef) %>%
   gt() %>%
   tab_spanner_delim(delim = "_") %>%
-  cols_hide(columns=c(in.competition,series)) %>%
+  cols_hide(columns=c(inCompetition,series)) %>%
   tab_source_note(source_note = "*Data notes: LOW also includes when the chefs were eliminated (e.g., Dale). /// Data: github.com/celevitz/topChef /// Twitter@carlylevitz") %>%
-  tab_row_group(label = "Eliminated",rows = in.competition==0) %>%
-  tab_row_group(label = "In Last Chance Kitchen",rows = in.competition==1) %>%
-  tab_row_group(label = "In the competition",rows = in.competition==2) %>%
+  tab_row_group(label = "Eliminated",rows = inCompetition==0) %>%
+  tab_row_group(label = "In Last Chance Kitchen",rows = inCompetition==1) %>%
+  tab_row_group(label = "In the competition",rows = inCompetition==2) %>%
   tab_options(data_row.padding = px(1),
               column_labels.padding = px(1),
               row_group.padding = px(1))  %>%
