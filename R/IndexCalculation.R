@@ -147,7 +147,7 @@ weightedindex <- function(seriesname,seasonnumber,numberofelimchalls
       statsbynumberofchalls <-
         statsbynumberofchalls[statsbynumberofchalls$outcome != "IN",]
       statsbynumberofchalls <- reshape(statsbynumberofchalls,
-                                       timevar = "challenge_type",
+                                       timevar = "challengeType",
                                        idvar = c("chef","season","seasonNumber"
                                                  ,"series","outcome"
                                                  ,"placement"),
