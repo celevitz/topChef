@@ -66,22 +66,25 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sh
 # For now - replace umlauts and such with non-special characters.
 #  definitely not ideal
 
-chefdetails$name <- gsub("é","e",gsub("ñ","n"
-                                      ,gsub("ö","o",chefdetails$name)))
-chefdetails$chef <- gsub("é","e",gsub("ñ","n"
-                                      ,gsub("ö","o",chefdetails$chef)))
-challengewins$chef <- gsub("é","e",gsub("ñ","n"
-                                        ,gsub("ö","o",challengewins$chef)))
-rewards$chef <- gsub("é","e",gsub("ñ","n"
-                                  ,gsub("ö","o",rewards$chef)))
-judges$guestjudge <- gsub("é","e",gsub("ñ","n"
-                                       ,gsub("ö","o",judges$guestjudge)))
-challengedescriptions$challenge.description <- gsub("é","e"
-    ,gsub("ñ","n",gsub("ö","o",challengedescriptions$challenge.description)))
+chefdetails$name <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+                ,gsub( "\\\\" ,"", gsub("ä","a",chefdetails$name) )))))
+chefdetails$chef <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+                ,gsub( "\\\\" ,"", gsub("ä","a",chefdetails$chef) )))))
+challengewins$chef <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+                ,gsub( "\\\\" ,"", gsub("ä","a",challengewins$chef) )))))
+rewards$chef <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+                ,gsub( "\\\\" ,"", gsub("ä","a",rewards$chef) )))))
+judges$guestjudge <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+                ,gsub( "\\\\" ,"", gsub("ä","a",judges$guestjudge) )))))
+challengedescriptions$challenge.description <- gsub("à","a",gsub("é","e"
+                 ,gsub("ñ","n",gsub("ö","o",gsub( "\\\\" ,"", gsub("ä","a"
+                 ,challengedescriptions$challenge.description) )))))
 
-episodeinfo$episode_name <-gsub( "\\\\" ,"", gsub("ä","a",episodeinfo$episode_name) )
+episodeinfo$episode_name <-gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+              ,gsub( "\\\\" ,"", gsub("ä","a",episodeinfo$episode_name) )))))
 
-rewards$reward <- gsub("à","a",gsub("é","e",rewards$reward)  )
+rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
+              ,gsub( "\\\\" ,"", gsub("ä","a",rewards$reward) )))))
 
 ## save things as RDA
 
