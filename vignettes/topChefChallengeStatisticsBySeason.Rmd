@@ -28,8 +28,8 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-    chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
-    challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
+    chefdetails <- topChef::chefdetails %>% filter(seasonNumber == 20)
+    challengewins <- topChef::challengewins %>% filter(seasonNumber == 20)
     
     ###########################################################################
     ## Set up data
@@ -37,11 +37,11 @@ library(ggplot2)
     currentstats <- challengewins %>%
       select(!rating) %>% 
       full_join(chefdetails %>% 
-                  select(series,szn,sznnumber,chef,placement,gender)) 
+                  select(series,season,seasonNumber,chef,placement,gender)) 
     
       ## number of each type (combination of challenge + outcome)
         nums <- currentstats %>%
-          group_by(chef,challenge_type,outcome,placement,gender) %>%
+          group_by(chef,challengeType,outcome,placement,gender) %>%
           summarise(n=n()) %>%
           # remove groups we don't want to visualize
           filter(!(is.na(outcome)))
@@ -54,7 +54,7 @@ library(ggplot2)
             filter(!(outcome %in% c("IN","OUT"))) %>%
             ggplot(aes(x=n,y=chef,color=outcome,fill=outcome)) +
             geom_bar(stat="identity" ,alpha=.8 ) +
-            facet_wrap(challenge_type ~ outcome) +
+            facet_wrap(challengeType ~ outcome) +
             scale_fill_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
             scale_color_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
             theme_minimal() +
@@ -72,8 +72,8 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-    chefdetails <- topChef::chefdetails %>% filter(sznnumber == 20)
-    challengewins <- topChef::challengewins %>% filter(sznnumber == 20)
+    chefdetails <- topChef::chefdetails %>% filter(seasonNumber == 20)
+    challengewins <- topChef::challengewins %>% filter(seasonNumber == 20)
     
     ###########################################################################
     ## Set up data
@@ -81,11 +81,11 @@ library(ggplot2)
     currentstats <- challengewins %>%
       select(!rating) %>% 
       full_join(chefdetails %>% 
-                  select(series,szn,sznnumber,chef,placement,gender)) 
+                  select(series,season,seasonNumber,chef,placement,gender)) 
     
       ## number of each type (combination of challenge + outcome)
         nums <- currentstats %>%
-          group_by(chef,challenge_type,outcome,placement,gender) %>%
+          group_by(chef,challengeType,outcome,placement,gender) %>%
           summarise(n=n()) %>%
           # remove groups we don't want to visualize
           filter(!(is.na(outcome)))
@@ -98,7 +98,7 @@ library(ggplot2)
             filter(!(outcome %in% c("IN","OUT"))) %>%
             ggplot(aes(x=n,y=chef,color=outcome,fill=outcome)) +
             geom_bar(stat="identity" ,alpha=.8 ) +
-            facet_wrap(challenge_type ~ outcome) +
+            facet_wrap(challengeType ~ outcome) +
             scale_fill_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
             scale_color_manual(values=c("#ffbc69","#a3cce9","#1170AA"))+
             theme_minimal() +
