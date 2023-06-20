@@ -11,6 +11,10 @@ information.
 
 ## 2. Installation
 
+``` r
+install.packages("topChef")
+```
+
 I am continually improving the datasets, so github version is likely to
 be more up-to-date. If it’s not appearing to be updated, restart your R
 sessions, install it again, and call it into your library.
@@ -19,14 +23,7 @@ sessions, install it again, and call it into your library.
 devtools::install_github("celevitz/topChef")
 ```
 
-I am submitting to CRAN the week of June 19, 2023. Once it is accepted,
-you can install it as you would any other package.
-
-``` r
-install.packages("topChef")
-```
-
-## 3. References & Acknowledgments
+## 3. Acknowledgments and Inspiration
 
 Data were collected manually while watching each season of Top Chef.
 Additional data were collected from
