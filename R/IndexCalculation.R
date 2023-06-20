@@ -178,7 +178,7 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
       statsbynumberofchalls$Quickfire.HIGH*2-
       statsbynumberofchalls$Quickfire.LOW*2
 
-  return(statsbynumberofchalls)
+  statsbynumberofchalls
 }
 
 
