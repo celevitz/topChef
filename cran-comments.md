@@ -1,15 +1,12 @@
-* This is a new package (first release).
+## R CMD check results
 
+0 errors | 0 warnings | 1 note
 
-I submitted this earlier today but it failed an automatic check.
-I received automated email at 12:55 Pacific June 29 2023 saying that:
-  Authors@R field gives persons with invalid ORCID identifiers:
-  Levitz Carly <celevitz@gmail.com> [cre, aut, cph] (000-0003-3094-411X)
-  
-In this submission, I removed the reference to my ORCID. I received the same 
-notes as last time, except that I added my middle initial to my maintainer name.
+* This is a new release.
 
-0 errors ✔ | 0 warnings ✔ | 6 notes ✖
+Based on feedback from CRAN submission reviewer, I renamed a section of my
+readme to better reflect content. I also removed the print() command from within
+my function.
 
 ## Test environments
 - R-hub windows-x86_64-devel (r-devel)
@@ -18,7 +15,7 @@ notes as last time, except that I added my middle initial to my maintainer name.
 
 ## R CMD check results
 ❯ On windows-x86_64-devel (r-devel)
-  checking CRAN incoming feasibility ... NOTE
+  checking CRAN incoming feasibility ... [15s] NOTE
   Maintainer: 'Levitz Carly E <celevitz@gmail.com>'
   
   New submission
@@ -37,7 +34,7 @@ notes as last time, except that I added my middle initial to my maintainer name.
     for the version of R that I have (4.2.3). Same with pdflatex.
 
 ❯ On ubuntu-gcc-release (r-release)
-  checking CRAN incoming feasibility ... [6s/11s] NOTE
+  checking CRAN incoming feasibility ... [6s/13s] NOTE
   Maintainer: ‘Levitz Carly E <celevitz@gmail.com>’
   
   New submission
@@ -47,7 +44,9 @@ notes as last time, except that I added my middle initial to my maintainer name.
   Skipping checking HTML validation: no command 'tidy' found
 
 ❯ On fedora-clang-devel (r-devel)
-  checking CRAN incoming feasibility ... [6s/17s] NOTE
+  checking CRAN incoming feasibility ... [6s/16s] NOTE
   Maintainer: ‘Levitz Carly E <celevitz@gmail.com>’
   
   New submission
+
+0 errors ✔ | 0 warnings ✔ | 6 notes ✖
