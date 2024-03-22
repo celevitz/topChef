@@ -16,6 +16,8 @@ This data frame contains the following columns:
   \item{\code{inCompetition}}{True / false for whether the Chef was still
                                in the competition at the time of the
                                challenge}
+  \item{\code{immune}}{True / false for whether that Chef was immune from
+                           being eliminated for challenge}
   \item{\code{chef}}{Name of chef}
   \item{\code{challengeType}}{Challenge type: qualifying challenge,
                              elimination, quickfire, sudden death quickfire,

@@ -22,6 +22,7 @@ This data frame contains the following columns:
   \item{\code{personOfColor}}{Flag for whether the Chef is a person of color.
                    Will be blank if they are not}
   \item{\code{occupation}}{Occupation of Chef at time of show, if known}
+  \item{\code{occupation_category}}{Categorization of occupation}
   \item{\code{gender}}{Gender of Chef}
 }
 }

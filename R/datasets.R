@@ -25,6 +25,7 @@
 #'   \item{\code{personOfColor}}{Flag for whether the Chef is a person of color.
 #'                    Will be blank if they are not}
 #'   \item{\code{occupation}}{Occupation of Chef at time of show, if known}
+#'   \item{\code{occupation_category}}{Categorization of occupation}
 #'   \item{\code{gender}}{Gender of Chef}
 #' }
 #'
@@ -136,6 +137,8 @@
 #'   \item{\code{inCompetition}}{True / false for whether the Chef was still
 #'                                in the competition at the time of the
 #'                                challenge}
+#'   \item{\code{immune}}{True / false for whether that Chef was immune from
+#'                            being eliminated for challenge}
 #'   \item{\code{chef}}{Name of chef}
 #'   \item{\code{challengeType}}{Challenge type: qualifying challenge,
 #'                              elimination, quickfire, sudden death quickfire,
