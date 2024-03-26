@@ -53,21 +53,22 @@ whether they are a person of color, and their occupation.
 
 ``` r
 chefdetails 
-#> # A tibble: 416 × 13
+#> # A tibble: 431 × 14
 #>    name    chef  hometown city  state   age season seasonNumber series placement
 #>    <chr>   <chr> <chr>    <chr> <chr> <dbl> <chr>         <dbl> <chr>      <dbl>
-#>  1 Richar… Rich… <NA>     <NA>  <NA>     38 All S…            8 US             1
-#>  2 Mike I… Mike… <NA>     <NA>  <NA>     35 All S…            8 US             2
-#>  3 Antoni… Anto… <NA>     <NA>  <NA>     34 All S…            8 US             3
-#>  4 Tiffan… Tiff… <NA>     <NA>  <NA>     27 All S…            8 US             4
-#>  5 Carla … Carl… <NA>     <NA>  <NA>     46 All S…            8 US             5
-#>  6 Dale T… Dale… <NA>     <NA>  <NA>     32 All S…            8 US             6
-#>  7 Angelo… Ange… <NA>     <NA>  <NA>     35 All S…            8 US             7
-#>  8 Fabio … Fabi… <NA>     <NA>  <NA>     32 All S…            8 US             8
-#>  9 Tre Wi… Tre … <NA>     <NA>  <NA>     34 All S…            8 US             9
-#> 10 Marcel… Marc… <NA>     <NA>  <NA>     30 All S…            8 US            10
-#> # ℹ 406 more rows
-#> # ℹ 3 more variables: personOfColor <chr>, occupation <chr>, gender <chr>
+#>  1 Aaron … Aaro… Livonia… Chic… Illi…    29 New O…           11 US            17
+#>  2 Aaron … Aaro… Tacoma,… Nort… Cali…    27 Boston           12 US            11
+#>  3 Adam H… Adam… New Yor… New … New …    29 Boston           12 US             7
+#>  4 Adrien… Adri… Chicago… Harl… New …    NA Color…           15 US             2
+#>  5 Adrien… Adri… <NA>     Bost… Mass…    NA Kentu…           16 US             5
+#>  6 Alex E… Alex… New Yor… Los … Cali…    33 New Y…            5 US            13
+#>  7 Alex R… Alex… Brookly… Holl… Cali…    33 D.C.              7 US             7
+#>  8 Alex S… Alex… <NA>     Las … Neva…    NA Maste…            3 US Ma…         7
+#>  9 Ali Gh… Ali … Irbid, … Amman Jord…    NA World…           20 US             4
+#> 10 Alisha… Alis… Palatin… Chic… Illi…    NA Wisco…           21 US            NA
+#> # ℹ 421 more rows
+#> # ℹ 4 more variables: personOfColor <chr>, occupation <chr>, gender <chr>,
+#> #   occupation_category <chr>
 ```
 
 #### 4.a.ii. Challenge descriptions
@@ -77,7 +78,7 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 641 × 17
+#> # A tibble: 643 × 17
 #>    season   seasonNumber series episode challengeType outcomeType
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>      
 #>  1 Kentucky           16 US           1 Quickfire     Team       
@@ -90,7 +91,7 @@ challengedescriptions
 #>  8 Kentucky           16 US           4 Elimination   Team       
 #>  9 Kentucky           16 US           5 Elimination   Team       
 #> 10 Kentucky           16 US           6 Elimination   Individual 
-#> # ℹ 631 more rows
+#> # ℹ 633 more rows
 #> # ℹ 11 more variables: challengeDescription <chr>, shopTime <chr>,
 #> #   shopBudget <chr>, prepTime <dbl>, cookTime <dbl>, productPlacement <chr>,
 #> #   advantage <chr>, lastChanceKitchenWinnerEnters <chr>,
@@ -104,21 +105,21 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,667 × 9
-#>    season  seasonNumber series episode inCompetition chef  challengeType outcome
-#>    <chr>          <dbl> <chr>    <dbl> <lgl>         <chr> <chr>         <chr>  
-#>  1 All St…            8 US           1 TRUE          Ange… Quickfire     LOW    
-#>  2 All St…            8 US           1 TRUE          Anto… Quickfire     WIN    
-#>  3 All St…            8 US           1 TRUE          Carl… Quickfire     LOW    
-#>  4 All St…            8 US           1 TRUE          Case… Quickfire     HIGH   
-#>  5 All St…            8 US           1 TRUE          Dale… Quickfire     HIGH   
-#>  6 All St…            8 US           1 TRUE          Dale… Quickfire     WIN    
-#>  7 All St…            8 US           1 TRUE          Elia… Quickfire     LOW    
-#>  8 All St…            8 US           1 TRUE          Fabi… Quickfire     LOW    
-#>  9 All St…            8 US           1 TRUE          Jami… Quickfire     LOW    
-#> 10 All St…            8 US           1 TRUE          Jenn… Quickfire     HIGH   
-#> # ℹ 9,657 more rows
-#> # ℹ 1 more variable: rating <dbl>
+#> # A tibble: 9,712 × 10
+#>    season   seasonNumber series episode inCompetition immune chef  challengeType
+#>    <chr>           <dbl> <chr>    <dbl> <lgl>         <lgl>  <chr> <chr>        
+#>  1 All Sta…            8 US           1 TRUE          FALSE  Ange… Quickfire    
+#>  2 All Sta…            8 US           1 TRUE          FALSE  Anto… Quickfire    
+#>  3 All Sta…            8 US           1 TRUE          FALSE  Carl… Quickfire    
+#>  4 All Sta…            8 US           1 TRUE          FALSE  Case… Quickfire    
+#>  5 All Sta…            8 US           1 TRUE          FALSE  Dale… Quickfire    
+#>  6 All Sta…            8 US           1 TRUE          FALSE  Dale… Quickfire    
+#>  7 All Sta…            8 US           1 TRUE          FALSE  Elia… Quickfire    
+#>  8 All Sta…            8 US           1 TRUE          FALSE  Fabi… Quickfire    
+#>  9 All Sta…            8 US           1 TRUE          FALSE  Jami… Quickfire    
+#> 10 All Sta…            8 US           1 TRUE          FALSE  Jenn… Quickfire    
+#> # ℹ 9,702 more rows
+#> # ℹ 2 more variables: outcome <chr>, rating <dbl>
 ```
 
 #### 4.a.iv. Judges
@@ -128,7 +129,7 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 755 × 9
+#> # A tibble: 757 × 9
 #>    season       seasonNumber series episode challengeType outcomeType guestJudge
 #>    <chr>               <dbl> <chr>    <dbl> <chr>         <chr>       <chr>     
 #>  1 All Stars: …            8 US           1 Quickfire     Team        Tom Colic…
@@ -141,7 +142,7 @@ judges
 #>  8 All Stars: …            8 US           4 Quickfire     Individual  Tony Mant…
 #>  9 All Stars: …            8 US           4 Elimination   Team        Tony Mant…
 #> 10 All Stars: …            8 US           5 Quickfire     Individual  Tom Colic…
-#> # ℹ 745 more rows
+#> # ℹ 747 more rows
 #> # ℹ 2 more variables: competedOnTC <chr>, otherShows <chr>
 ```
 
@@ -175,7 +176,7 @@ A tibble containing information about each episode.
 
 ``` r
 episodeinfo 
-#> # A tibble: 358 × 8
+#> # A tibble: 359 × 8
 #>    season        seasonNumber series overallEpisodeNumber episode episodeName   
 #>    <chr>                <dbl> <chr>                 <dbl>   <dbl> <chr>         
 #>  1 Canada 6                 6 Canada                   60       1 The Next Wave 
@@ -188,7 +189,7 @@ episodeinfo
 #>  8 Canada 6                 6 Canada                   67       8 Finale Four W…
 #>  9 San Francisco            1 US                        1       1 Who Deserves …
 #> 10 San Francisco            1 US                        2       2 Food of Love  
-#> # ℹ 348 more rows
+#> # ℹ 349 more rows
 #> # ℹ 2 more variables: airDate <date>, nCompetitors <dbl>
 ```
 
@@ -411,7 +412,7 @@ library(dplyr)
       labs(title=paste0("Top Chef Weighted Index Scores at the End of Seasons")
            ,subtitle="Comparing All Chefs Across All Seasons\n")+
       ylab("Index Score") + xlab("Placement") +
-      scale_y_continuous(lim=c(-25,50)) +
+      scale_y_continuous(lim=c(-25,60)) +
       scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
       theme(panel.grid = element_blank() 
             ,axis.text.x=element_text(size=6,color="black")
@@ -430,7 +431,7 @@ library(dplyr)
         geom_text(hjust=0.5,size=2) +
       theme_minimal() +
       ylab("Index score") + xlab("Placement") +
-      scale_y_continuous(lim=c(-25,50)) +
+      scale_y_continuous(lim=c(-25,60)) +
       scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
       theme(panel.grid = element_blank() 
             ,axis.text.x=element_text(size=6,color="black")
@@ -448,7 +449,7 @@ library(dplyr)
         geom_text(hjust=0.5,size=2) +
         theme_minimal() +
         ylab("Index Score") + xlab("Placement") +
-        scale_y_continuous(lim=c(-25,50)) +
+        scale_y_continuous(lim=c(-25,60)) +
         scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
         theme(panel.grid = element_blank() 
               ,axis.text.x=element_text(size=6,color="black")
