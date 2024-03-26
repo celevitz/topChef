@@ -97,6 +97,19 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
        ,occupation %in% c("Consultant/Private Caterer","Private Chef","Private Chef/Consultant") ~ "Private chef"
        ,occupation %in% c("Executive Sous Chef","Sous Chef") ~ "Sous Chef"))
 
+    chefdetails %>%
+      filter(series == "US") %>%
+      group_by(occupation_category) %>%
+      summarise(n=n())
+
+    chefdetails %>%
+      filter(series == "US" & !(is.na(occupation))) %>%
+      group_by(occupation_category) %>%
+      summarise(n=n()) %>%
+      mutate(percent=n/sum(n)) %>%
+      arrange(desc(percent))
+
+
 ## save things as RDA
 
 save(chefdetails, file = "data/chefdetails.rda")
