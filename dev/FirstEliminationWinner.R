@@ -69,4 +69,4 @@ statsbynumberofchalls %>%
   select(chef,score) %>%
   arrange(desc(score))
 
-weightedindex()
+
