@@ -6,9 +6,9 @@
 #' @param seriesname Values can be: US, US Masters, Canada
 #' @param seasonnumberofchoice Integer of the season number within the series
 #' @param numberofelimchalls Number of elimination challenges you want to
-#'                            include in the index
+#'                            include in the index. Must be greater than 0
 #' @param numberofquickfires Number of quickfire challenges you want to include
-#'                          in the index
+#'                          in the index. Must be greater than 0.
 #'
 #' @details The result of elimination challenges and quickfire challenges are
 #'          weighted.
