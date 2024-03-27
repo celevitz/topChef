@@ -17,10 +17,10 @@ weightedindex(
 \item{seasonnumberofchoice}{Integer of the season number within the series}
 
 \item{numberofelimchalls}{Number of elimination challenges you want to
-include in the index}
+include in the index. Must be greater than 0}
 
 \item{numberofquickfires}{Number of quickfire challenges you want to include
-in the index}
+in the index. Must be greater than 0.}
 }
 \value{
 Tibble of index score for each contestant in that season and their
