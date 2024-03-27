@@ -412,7 +412,7 @@ library(dplyr)
       labs(title=paste0("Top Chef Weighted Index Scores at the End of Seasons")
            ,subtitle="Comparing All Chefs Across All Seasons\n")+
       ylab("Index Score") + xlab("Placement") +
-      scale_y_continuous(lim=c(-25,60)) +
+      scale_y_continuous(lim=c(-30,70)) +
       scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
       theme(panel.grid = element_blank() 
             ,axis.text.x=element_text(size=6,color="black")
@@ -431,7 +431,7 @@ library(dplyr)
         geom_text(hjust=0.5,size=2) +
       theme_minimal() +
       ylab("Index score") + xlab("Placement") +
-      scale_y_continuous(lim=c(-25,60)) +
+      scale_y_continuous(lim=c(-30,70)) +
       scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
       theme(panel.grid = element_blank() 
             ,axis.text.x=element_text(size=6,color="black")
@@ -449,7 +449,7 @@ library(dplyr)
         geom_text(hjust=0.5,size=2) +
         theme_minimal() +
         ylab("Index Score") + xlab("Placement") +
-        scale_y_continuous(lim=c(-25,60)) +
+        scale_y_continuous(lim=c(-30,70)) +
         scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
         theme(panel.grid = element_blank() 
               ,axis.text.x=element_text(size=6,color="black")
