@@ -14,9 +14,9 @@ chefdetails <- topChef::chefdetails %>%
 
 ## at the end of their seasons
 
-allseasons <- weightedindex("US",1,1,1)
+allseasons <- weightedindex("US",1,20,20)
 for (season in seq(2,20,1)) {
-  allseasons <- rbind(allseasons,weightedindex("US",season,1,1))
+  allseasons <- rbind(allseasons,weightedindex("US",season,20,20))
 
 }
 
@@ -37,3 +37,16 @@ data.frame(allseasons %>%
                          select(chef,season,seasonNumber,indexWeight) %>%
                          rename(indexWeightShortSeason=indexWeight)) %>%
              arrange(desc(indexWeightFullSeason)))
+
+
+
+
+#############
+##
+temp <- weightedindex("US",1,1,0)
+for (season in seq(2,20,1)) {
+  temp <- rbind(temp,weightedindex("US",season,1,0))
+
+}
+
+
