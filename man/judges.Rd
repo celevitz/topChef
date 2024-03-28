@@ -18,6 +18,9 @@ This data frame contains the following columns:
   \item{\code{outcomeType}}{Is the challenge run as a team or as an
   individual?}
   \item{\code{guestJudge}}{Name of guest judge}
+  \item{\code{gender}}{Gender of Chef}
+  \item{\code{personOfColor}}{Flag for whether the Chef is a person of color.
+                   Will be blank if they are not}
   \item{\code{competedOnTC}}{Will have a value of Yes if they competed
   on a season of Top Chef}
   \item{\code{otherShows}}{Information about other shows that this
