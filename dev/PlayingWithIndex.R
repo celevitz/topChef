@@ -43,10 +43,19 @@ data.frame(allseasons %>%
 
 #############
 ##
-temp <- weightedindex("US",1,1,0)
-for (season in seq(2,20,1)) {
-  temp <- rbind(temp,weightedindex("US",season,1,0))
+temp <- weightedindex("US",1,2,1)
+for (season in seq(2,21,1)) {
+  temp <- rbind(temp,weightedindex("US",season,2,1))
 
 }
 
+temp %>%
+  filter(seasonNumber == 21) %>%
+  arrange(desc(indexWeight)) %>%
+  select(chef,indexWeight)
+
+temp %>%
+  filter(placement == 1) %>%
+  arrange(desc(indexWeight)) %>%
+  select(chef,seasonNumber,indexWeight)
 
