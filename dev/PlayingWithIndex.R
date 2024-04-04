@@ -3,6 +3,9 @@ library(tidyverse)
 library(openxlsx)
 library(topChef)
 
+library(devtools)
+devtools::install_github("celevitz/topChef")
+
 challengewins <- topChef::challengewins %>%
   filter(series == "US")
 
@@ -43,9 +46,9 @@ data.frame(allseasons %>%
 
 #############
 ##
-temp <- weightedindex("US",1,2,1)
+temp <- weightedindex("US",1,3,2)
 for (season in seq(2,21,1)) {
-  temp <- rbind(temp,weightedindex("US",season,2,1))
+  temp <- rbind(temp,weightedindex("US",season,3,2))
 
 }
 
@@ -57,6 +60,15 @@ ep1scores <- chefdetails %>%
                                ,chef %in% c("Amanda Turner","Kenny Nguyen") ~ -3
                                ,chef == "David Murphy" ~ -7
                                ,TRUE ~ 0))
+
+episodespecific <- ep1scores %>%
+  full_join(weightedindex("US",21,2,1) %>%
+              select (chef,indexWeight) %>%
+              rename(indexWeight2 = indexWeight) ) %>%
+  mutate(indexWeight2 = ifelse(is.na(indexWeight2),0,indexWeight2)) %>%
+  full_join(weightedindex("US",21,3,2) %>%
+              select (chef,indexWeight) %>%
+              rename(indexWeight3 = indexWeight) )
 
 temp %>%
   filter(seasonNumber == 21) %>%
