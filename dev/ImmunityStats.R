@@ -6,10 +6,10 @@ devtools::install_github("celevitz/topChef")
 
 
 resultsraw <- topChef::challengewins %>%
-  filter(series == "US")
+  filter(series == "US" & seasonNumber < 21)
 
 descriptionsraw <- topChef::challengedescriptions %>%
-  filter(series == "US")
+  filter(series == "US" & seasonNumber < 21)
 
 results <- resultsraw %>%
   left_join(descriptionsraw %>%
