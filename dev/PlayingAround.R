@@ -37,6 +37,15 @@ first2elimchalls %>%
     filter(numbereliminated > 1) %>%
     select(!numbereliminated)
 
+  trueDE <- challengewins %>%
+    filter(outcome %in% c("OUT")) %>%
+    group_by(season,seasonNumber,episode,challengeType) %>%
+    summarise(numbereliminated=n()) %>%
+    filter(numbereliminated > 1) %>%
+    ungroup() %>%
+    select(!c(numbereliminated,challengeType)) %>%
+    mutate(true="trueDE")
+
   lck <- descriptions %>%
     filter(!(is.na(lastChanceKitchenWinnerEnters)) & seasonNumber != 1) %>%
     select(season,seasonNumber,episode,lastChanceKitchenWinnerEnters) %>%
@@ -50,6 +59,16 @@ first2elimchalls %>%
     group_by(seasonNumber) %>%
     mutate(flagforlck = max(case_when(!(is.na(lastChanceKitchenWinnerEnters)) ~ 1
                                       ,TRUE ~ 0)))
+
+
+  temp2 <- trueDE %>%
+    full_join(lck) %>%
+    arrange(seasonNumber,episode) %>%
+    # flag LCK seasons
+    group_by(seasonNumber) %>%
+    mutate(flagforlck = max(case_when(!(is.na(lastChanceKitchenWinnerEnters)) ~ 1
+                                      ,TRUE ~ 0))) %>%
+    arrange(seasonNumber,episode)
 
   print(paste0("There have been ",nrow(doubleelims)," episodes with a double elimination"))
   print(paste0("There have been ",nrow(doubleelims[doubleelims$seasonNumber>=9,])," episodes with a double elimination when they have had LCK"))
@@ -72,6 +91,12 @@ first2elimchalls %>%
     select(season,seasonNumber,episode,lastChanceKitchenWinnerEnters) %>%
     rename(lckwinner=lastChanceKitchenWinnerEnters) %>%
     #mutate(lckwinner=ifelse(is.na(lckwinner),0,1)) %>%
+    print(n=40)
+
+  temp2 %>%
+    filter(flagforlck == 1) %>%
+    select(season,seasonNumber,episode,lastChanceKitchenWinnerEnters) %>%
+    rename(lckwinner=lastChanceKitchenWinnerEnters) %>%
     print(n=40)
 
   # How many chefs were in the competition when there was a double elim?
