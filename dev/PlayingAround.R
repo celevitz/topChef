@@ -74,6 +74,26 @@ first2elimchalls %>%
     #mutate(lckwinner=ifelse(is.na(lckwinner),0,1)) %>%
     print(n=40)
 
+  # How many chefs were in the competition when there was a double elim?
 
+  numberincompatde <- doubleelims %>%
+    left_join(challengewins %>%
+                filter(inCompetition == "TRUE") %>%
+                group_by(season,series,seasonNumber,episode,challengeType) %>%
+                mutate(numberincomp = n()) %>%
+                filter(outcome == "OUT")) %>%
+    ungroup() %>%
+    select(season,seasonNumber,episode,challengeType,numberincomp) %>%
+    distinct() %>%
+    arrange(seasonNumber,episode)
+
+  numberincompatde %>%
+    mutate(numberincompcat = case_when(numberincomp == 4 ~ "04"
+                           ,numberincomp %in% c(5,6,7,8) ~ "05-08"
+                          ,numberincomp %in% c(9,10,11) ~ "09-11"
+                          ,numberincomp %in% c(12) ~ "12"
+                          ,numberincomp %in% c(13,14,15,16,17) ~ "13-17")) %>%
+    group_by(numberincompcat) %>%
+    summarise(n=n())
 
 
