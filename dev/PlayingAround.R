@@ -96,4 +96,48 @@ first2elimchalls %>%
     group_by(numberincompcat) %>%
     summarise(n=n())
 
+  #### Get the index for how people were doing JUST before the elimination challenge in which they were eliminated
+  # so get the # of elim/SDQ challenges for that episode, and subtract 1. But keep # of QF same
+  doubleelims %>%
+    left_join(challengewins %>% filter(outcome == "OUT")) %>%
+    group_by(seasonNumber,episode) %>%
+    mutate(flagfortruedoubleelim = min(case_when(challengeType == "Elimination" ~ 1
+                                                 ,TRUE ~ 0))) %>%
+    select(!c(inCompetition,immune,outcome,rating)) %>%
+    filter(flagfortruedoubleelim == 1) %>%
+    arrange(seasonNumber,episode) %>% print(n=50)
+
+  ## LA season 2
+  challengewins %>% filter(seasonNumber == 2 & episode <= 5) %>% select(episode,challengeType) %>% distinct() %>% group_by(challengeType) %>% summarise(n=n())
+  weightedindex("US",2,4,5) %>% select(chef,indexWeight) %>%
+    full_join(challengewins %>% filter(episode == 5 & seasonNumber == 2 & outcome == "OUT")) %>%
+    arrange(desc(indexWeight))
+
+  challengewins %>% filter(seasonNumber == 2 & episode <= 12) %>% select(episode,challengeType) %>% distinct() %>% group_by(challengeType) %>% summarise(n=n())
+  weightedindex("US",2,11,11) %>% select(chef,indexWeight) %>%
+    full_join(challengewins %>% filter(episode == 12 & seasonNumber == 2 & outcome == "OUT")) %>%
+    arrange(desc(indexWeight))
+
+  ## new york (episodes 7 & 13)
+  challengewins %>% filter(seasonNumber == 5 & episode <= 7) %>% select(episode,challengeType) %>% distinct() %>% group_by(challengeType) %>% summarise(n=n())
+  weightedindex("US",5,7,6) %>% select(chef,indexWeight) %>%
+    full_join(challengewins %>% filter(episode == 7 & seasonNumber == 5 & outcome == "OUT")) %>%
+    arrange(desc(indexWeight))
+
+  challengewins %>% filter(seasonNumber == 5 & episode <= 13) %>% select(episode,challengeType) %>% distinct() %>% group_by(challengeType) %>% summarise(n=n())
+  weightedindex("US",5,13,12) %>% select(chef,indexWeight) %>%
+    full_join(challengewins %>% filter(episode == 13 & seasonNumber == 5 & outcome == "OUT")) %>%
+    arrange(desc(indexWeight))
+
+  ## all stars 8
+  challengewins %>% filter(seasonNumber == 8 & episode <= 6) %>% select(episode,challengeType) %>% distinct() %>% group_by(challengeType) %>% summarise(n=n())
+  weightedindex("US",8,5,5) %>% select(chef,indexWeight) %>%
+    full_join(challengewins %>% filter(episode == 6 & seasonNumber == 8 & outcome == "OUT")) %>%
+    arrange(desc(indexWeight))
+
+  ## season 11, first double - ep 3
+  challengewins %>% filter(seasonNumber == 11 & episode <= 3) %>% select(episode,challengeType) %>% distinct() %>% group_by(challengeType) %>% summarise(n=n())
+  weightedindex("US",11,3,5) %>% select(chef,indexWeight) %>%
+    full_join(challengewins %>% filter(episode == 3 & seasonNumber == 11 & outcome == "OUT")) %>%
+    arrange(desc(indexWeight))
 
