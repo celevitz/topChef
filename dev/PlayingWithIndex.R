@@ -12,6 +12,9 @@ challengewins <- topChef::challengewins %>%
 chefdetails <- topChef::chefdetails %>%
   filter(series == "US" )
 
+episodenumber <- 4
+numberofelimchalls <- 4
+numberofquickfirechalls <- 2
 
 ## Weighted index
 
@@ -74,24 +77,31 @@ for (season in seq(2,21,1)) {
                   select (chef,indexWeight) %>%
                   rename(indexWeight3 = indexWeight) ) %>%
       mutate(indexWeight3 = ifelse(is.na(indexWeight3),0,indexWeight3)) %>%
+      full_join(weightedindex("US",21,4,2) %>%
+                  select (chef,indexWeight) %>%
+                  rename(indexWeight4 = indexWeight) ) %>%
+      mutate(indexWeight4 = ifelse(is.na(indexWeight4),0,indexWeight4)) %>%
       arrange(desc(indexWeight1))  %>%
       mutate(rank1=rank(-indexWeight1,ties.method = "min")) %>%
       arrange(desc(indexWeight2)) %>%
       mutate(rank2=rank(-indexWeight2,ties.method = "min")) %>%
       arrange(desc(indexWeight3)) %>%
-      mutate(rank3=rank(-indexWeight3,ties.method = "min"))
+      mutate(rank3=rank(-indexWeight3,ties.method = "min")) %>%
+      arrange(desc(indexWeight4)) %>%
+      mutate(rank3=rank(-indexWeight4,ties.method = "min"))
 
   # make the data long form to make it easier to plot
   episodespecificlong <- episodespecific %>%
     pivot_longer(!chef,names_to = "measure",values_to = "value") %>%
     mutate(episode = gsub("rank","",gsub("indexWeight","",measure))
            ,out = ifelse(chef %in% c("Soo Ahn","David Murphy"
-                                     ,"Valentine Howell Jr.","Kenny Nguyen")
+                                     ,"Valentine Howell Jr.","Kenny Nguyen"
+                                     ,"Kaleena Bliss","Alisha Elenz")
                          ,"out","in")
            ,rank_yvalue = 16-value+1
            ,rank_yvalue = ifelse(grepl("indexWeight",measure),NA,rank_yvalue))
 
-
+  summary(episodespecificlong$value[grepl("indexWeight",episodespecificlong$measure)])
 
   # graph for the index weight by episode
     episodespecificlong %>%
@@ -100,10 +110,10 @@ for (season in seq(2,21,1)) {
       geom_text(hjust=0.5,size=4,aes(color=out)) +
       scale_color_manual(values = c("black","gray75")) +
       theme_minimal() +
-      labs(title=paste0("Top Chef 21 Weighted Index Scores Through Episode 3")
+      labs(title=paste0("Top Chef 21 Weighted Index Scores Through Episode 4")
            ,subtitle="Higher scores are better\n")+
       ylab("Index Score") + xlab("Episode") +
-      scale_y_continuous(lim=c(-15,15),breaks = seq(-15,15,5)) +
+      scale_y_continuous(lim=c(-15,20),breaks = seq(-15,20,5)) +
       #scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
       theme(panel.grid = element_blank()
             ,axis.text.x=element_text(size=12,color="black")
@@ -119,8 +129,8 @@ for (season in seq(2,21,1)) {
       geom_text(hjust=0.5,size=4,aes(color=out)) +
       scale_color_manual(values = c("black","gray75")) +
       theme_minimal() +
-      labs(title=paste0("Top Chef 21 Rank of Weighted Index Scores Through Episode 3")
-           ,subtitle="Lower ranks scores are better\n")+
+      labs(title=paste0("Top Chef 21 Rank of Weighted Index Scores Through Episode 4")
+           ,subtitle="Lower ranks scores are better so I've put them at the top of the graph\n")+
       ylab("Rank of index score (lower is better)") + xlab("Episode") +
       scale_y_continuous(lim=c(1,16),breaks = seq(1,16,1),labels=seq(16,1,-1)) +
       #scale_x_continuous(lim=c(0,20),breaks=seq(1,18,2),labels = seq(1,18,2)) +
