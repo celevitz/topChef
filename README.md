@@ -78,7 +78,7 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 647 × 17
+#> # A tibble: 648 × 17
 #>    season   seasonNumber series episode challengeType outcomeType
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>      
 #>  1 Kentucky           16 US           1 Quickfire     Team       
@@ -91,7 +91,7 @@ challengedescriptions
 #>  8 Kentucky           16 US           4 Elimination   Team       
 #>  9 Kentucky           16 US           5 Elimination   Team       
 #> 10 Kentucky           16 US           6 Elimination   Individual 
-#> # ℹ 637 more rows
+#> # ℹ 638 more rows
 #> # ℹ 11 more variables: challengeDescription <chr>, shopTime <chr>,
 #> #   shopBudget <chr>, prepTime <dbl>, cookTime <dbl>, productPlacement <chr>,
 #> #   advantage <chr>, lastChanceKitchenWinnerEnters <chr>,
@@ -105,7 +105,7 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,779 × 10
+#> # A tibble: 9,763 × 10
 #>    season   seasonNumber series episode inCompetition immune chef  challengeType
 #>    <chr>           <dbl> <chr>    <dbl> <lgl>         <lgl>  <chr> <chr>        
 #>  1 All Sta…            8 US           1 TRUE          FALSE  Ange… Quickfire    
@@ -118,7 +118,7 @@ challengewins
 #>  8 All Sta…            8 US           1 TRUE          FALSE  Fabi… Quickfire    
 #>  9 All Sta…            8 US           1 TRUE          FALSE  Jami… Quickfire    
 #> 10 All Sta…            8 US           1 TRUE          FALSE  Jenn… Quickfire    
-#> # ℹ 9,769 more rows
+#> # ℹ 9,753 more rows
 #> # ℹ 2 more variables: outcome <chr>, rating <dbl>
 ```
 
@@ -129,7 +129,7 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 763 × 11
+#> # A tibble: 765 × 11
 #>    season   seasonNumber series episode challengeType outcomeType guestJudge    
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>       <chr>         
 #>  1 Canada 6            6 Canada       2 Quickfire     Individual  Danny Bowien  
@@ -142,7 +142,7 @@ judges
 #>  8 Canada 6            6 Canada       5 Quickfire     Individual  Brandon Olsen 
 #>  9 Canada 6            6 Canada       5 Elimination   Team        Alexandra Fes…
 #> 10 Canada 6            6 Canada       6 Quickfire     Individual  Nicole Gomes  
-#> # ℹ 753 more rows
+#> # ℹ 755 more rows
 #> # ℹ 4 more variables: gender <chr>, personOfColor <chr>, competedOnTC <chr>,
 #> #   otherShows <chr>
 ```
@@ -154,7 +154,7 @@ challenge.
 
 ``` r
 rewards
-#> # A tibble: 331 × 9
+#> # A tibble: 333 × 9
 #>    season       seasonNumber series episode challengeType outcomeType rewardType
 #>    <chr>               <dbl> <chr>    <dbl> <chr>         <chr>       <chr>     
 #>  1 All Stars: …            8 US           1 Elimination   Individual  Money     
@@ -167,7 +167,7 @@ rewards
 #>  8 All Stars: …            8 US           4 Elimination   Team        Prize     
 #>  9 All Stars: …            8 US           5 Quickfire     Individual  Prize     
 #> 10 All Stars: …            8 US           6 Elimination   Team        Prize     
-#> # ℹ 321 more rows
+#> # ℹ 323 more rows
 #> # ℹ 2 more variables: reward <chr>, chef <chr>
 ```
 
@@ -177,7 +177,7 @@ A tibble containing information about each episode.
 
 ``` r
 episodeinfo 
-#> # A tibble: 361 × 8
+#> # A tibble: 370 × 8
 #>    season        seasonNumber series overallEpisodeNumber episode episodeName   
 #>    <chr>                <dbl> <chr>                 <dbl>   <dbl> <chr>         
 #>  1 Canada 6                 6 Canada                   60       1 The Next Wave 
@@ -190,7 +190,7 @@ episodeinfo
 #>  8 Canada 6                 6 Canada                   67       8 Finale Four W…
 #>  9 San Francisco            1 US                        1       1 Who Deserves …
 #> 10 San Francisco            1 US                        2       2 Food of Love  
-#> # ℹ 351 more rows
+#> # ℹ 360 more rows
 #> # ℹ 2 more variables: airDate <date>, nCompetitors <dbl>
 ```
 

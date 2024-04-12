@@ -16,8 +16,6 @@ episodenumber <- 4
 numberofelimchalls <- 4
 numberofquickfirechalls <- 2
 
-## Weighted index
-
 ## at the end of their seasons
 
 allseasons <- weightedindex("US",1,20,20)
@@ -140,4 +138,31 @@ for (season in seq(2,21,1)) {
             ,axis.ticks=element_line(color="gray15")
             ,axis.line=element_line(color="gray15")
             ,legend.position = "none")
+
+
+dev.off()
+## Where do current chefs stand among other seasons' chefs?
+
+    allseasons <- weightedindex("US",1,4,2)
+    for (season in seq(2,21,1)) {
+      allseasons <- rbind(allseasons,weightedindex("US",season,4,2))
+
+    }
+
+    allseasons <- allseasons %>%
+      select(chef,season,seasonNumber,placement,indexWeight) %>%
+      arrange(desc(indexWeight)) %>%
+      mutate(rank=rank(-indexWeight,ties.method = "min"))
+
+    row.names(allseasons) <- NULL
+
+    allseasons %>%
+      filter(rank <= 10 | seasonNumber == 21)
+
+    allseasons %>% filter(placement ==1)
+
+
+
+
+
 
