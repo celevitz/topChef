@@ -49,6 +49,20 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
                            challengewins$seasonNumber == seasonnumberofchoice,]
 
     # 1ai. combine types of challenges
+    # because there could be both a SDQ & an elimination in an episode, and I
+    # use episode as a row ID, I need to make sure that we keep those challenge
+    # results separate from the other elimination challenges in that episode
+    challengewins <- challengewins %>%
+      mutate(episodeascharacter = as.character(episode)
+             ,episodeascharacter = ifelse(nchar(episodeascharacter)==1
+                                          ,paste0("0",episodeascharacter)
+                                          ,episodeascharacter)
+        ,challID = case_when(challengeType == "Quickfire Elimination" ~ paste0(episodeascharacter,"b_qe")
+                             ,challengeType == "Sudden Death Quickfire" ~ paste0(episodeascharacter,"b_sdq")
+                             ,challengeType == "Quickfire" ~ paste0(episodeascharacter,"a_qf")
+                             ,challengeType == "Elimination" ~ paste0(episodeascharacter,"c_elim")
+                             ,TRUE ~ paste0(episodeascharacter,"a_",challengeType)))
+
     challengewins$challengeType[challengewins$challengeType %in%
                                  c("Quickfire Elimination"
                                    ,"Sudden Death Quickfire")] <- "Elimination"
@@ -71,23 +85,27 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
     challengewins$outcome[challengewins$outcome %in% c("WINNER")] <- "WIN"
 
     # 1b. need to consecutively number each challenge of each challenge type
-    challnum_temp <- unique(challengewins[challengewins$seasonNumber == seasonnumberofchoice,
-                                     c("season","seasonNumber","challengeType","episode")])
-    challnum_temp <- challnum_temp[order(challnum_temp$seasonNumber,challnum_temp$episode,desc(challnum_temp$challengeType)),]
+    challnum_temp <- unique(challengewins[, c("season","seasonNumber"
+                                              ,"challengeType","episode"
+                                              ,"episodeascharacter","challID")])
+    challnum_temp <- challnum_temp[order(challnum_temp$seasonNumber
+                                         ,challnum_temp$episode
+                                         ,challnum_temp$challID
+                                         ,desc(challnum_temp$challengeType)),]
 
       # not all challenges that we're looking at start in episode 1
       # and, some episode 1s don't have a quickfire
         # order of eliminations
-        elimorder <- data.frame(unique(challnum_temp$episode[challnum_temp$challengeType == "Elimination"])
-          ,seq(1,length(unique(challnum_temp$episode[challnum_temp$challengeType == "Elimination"])),1))
-        names(elimorder) <- c("episode","count")
+        elimorder <- unique(challnum_temp[challnum_temp$challengeType == "Elimination",c("challengeType","episode","challID")])
+        row.names(elimorder) <- NULL
+        elimorder$count <- row.names(elimorder)
         elimorder$challengeType <- "Elimination"
         elimorder$seasonNumber <- seasonnumberofchoice
 
         # order of quickfires
-        qforder <- data.frame(unique(challnum_temp$episode[challnum_temp$challengeType == "Quickfire"])
-                                ,seq(1,length(unique(challnum_temp$episode[challnum_temp$challengeType == "Quickfire"])),1))
-        names(qforder) <- c("episode","count")
+        qforder <- unique(challnum_temp[challnum_temp$challengeType == "Quickfire",c("challengeType","episode","challID")])
+        row.names(qforder) <- NULL
+        qforder$count <- row.names(qforder)
         qforder$challengeType <- "Quickfire"
         qforder$seasonNumber <- seasonnumberofchoice
 
@@ -95,32 +113,21 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
 
         # if an elimination and quickfire don't happen in ep 1
         # need to add a row of quickfire
-        # going to do this through a reshape
-        challnum <- reshape(challnum
-                            ,timevar = "challengeType"
-                            ,idvar = c("episode","seasonNumber")
-                            ,direction="wide")
+        # if the first episode of a quickfire is after the first episode of an elim,
+        # then make the count 0 until it is the episode of the first quickfire
+        firstelim_ep <- min(challnum$episode[challnum$challengeType == "Elimination"])
+        firstqf_ep <- min(challnum$episode[challnum$challengeType == "Quickfire"])
 
-            # if the first episode of a quickfire is after the first episode of an elim,
-            # then make the count 0 until it is the episode of the first quickfire
-            firstelim_ep <- min(challnum$episode[!(is.na(challnum$count.Elimination))],na.rm=TRUE)
-            firstqf_ep <- min(challnum$episode[!(is.na(challnum$count.Quickfire))],na.rm=TRUE)
-
-            if (firstelim_ep < firstqf_ep) {
-              challnum$count.Quickfire[challnum$episode <firstqf_ep] <- 0
-
-            }
-
-            challnum <- reshape(challnum
-                                ,varying = c("count.Elimination","count.Quickfire")
-                                ,timevar = "challengeType"
-                                ,v.names = "count"
-                                ,times = c("Elimination","Quickfire")
-                                ,direction = "long")
-            row.names(challnum) <- challnum$id <- NULL
-            challnum$season <- unique(challnum_temp$season)
-
-
+        for (tempcount in seq(firstelim_ep, firstqf_ep,1)) {
+          if (tempcount < firstqf_ep) {
+            newrow <- data.frame(cbind("Quickfire",tempcount
+                            ,paste0("0",as.character(tempcount),"a_qf")
+                            ,0,seasonnumberofchoice
+                          ) )
+            names(newrow) <- names(challnum)
+            challnum <- rbind(challnum,newrow )
+          }
+        }
 
     # 1bi. keep just the challenges that meet the criteria
     # update: in case the numbers are vastly different (e.g., 10 elim challs & 0 Qfs)
@@ -128,9 +135,12 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
             # count is less than or = to the number of elim challs select OR
             # count is less than or = to the # of qf challs
             # instead going to append the datasets together
-    challkeep <- rbind(challnum[(challnum$count <= numberofelimchalls &
+
+    challnum$count <- as.numeric(challnum$count)
+
+    challkeep <- rbind(challnum[challnum$count <= numberofelimchalls &
                              challnum$challengeType == "Elimination" &
-                               !(is.na(challnum$count))),]
+                               !(is.na(challnum$count)),]
                   ,challnum[(challnum$count <= numberofquickfires &
                                challnum$challengeType == "Quickfire" &
                                !(is.na(challnum$count))) ,] )
@@ -139,8 +149,8 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
      statsbynumberofchalls <- merge(challengewins,placementdata,by=c("series"
                                                ,"season","seasonNumber","chef"))
      statsbynumberofchalls <- merge(statsbynumberofchalls,challkeep,by=
-                                      c("season","seasonNumber","challengeType"
-                                        ,"episode"))
+                                      c("seasonNumber","challengeType"
+                                        ,"episode","challID"))
 
      # 2a. keep just the episodes that are at or the same # of challenges
      # that have happened
