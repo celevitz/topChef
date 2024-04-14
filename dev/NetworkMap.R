@@ -19,7 +19,7 @@ TOCchefs <- touRnamentofchampions::results %>%
 
 
 allchefs <- tcChefs %>% rbind(TOCchefs) %>%
-  filter(series %in% c("TOC","US","US Masters") &
+  filter(series %in% c("US") &
            season != "Wisconsin")
 
 
@@ -54,11 +54,24 @@ allchefs <- tcChefs %>% rbind(TOCchefs) %>%
 
 ############################################
 ## network graphs
-  ## set up data for network graphs (just for connections in here more than 1x)
+  ## set up data for network graphs
+  # (just for connections in here more than 1x, if you're doing TOC)
   links <- combined %>%
     group_by(source,target) %>%
     summarise(importance = n()) %>%
-    filter(importance >1)
+    # %>%
+    #   filter(importance >1)
+
+    # shorten the names
+    # RIGHT NOW THIS ISN"T WORKING -- check out links %>% view()
+    # mutate(tempsource = paste0(str_split(source," ")[[1]][1]," "
+    #                            ,substr(str_split(source," ")[[1]][2],1,1))
+    #        ,temptarget = paste0(str_split(target," ")[[1]][1]," "
+    #                             ,substr(str_split(target," ")[[1]][2],1,1))) %>%
+    # ungroup() %>%
+    # select(!c(source,target)) %>%
+    # rename(source=tempsource,target=temptarget)
+
 
   nodes <- data.frame(links %>% ungroup() %>%
                         group_by(source) %>%
@@ -82,7 +95,7 @@ allchefs <- tcChefs %>% rbind(TOCchefs) %>%
   V(network)$label.cex <- .5
   V(network)$size <- 3
   plot(network
-       ,edge.width = E(network)$importance
+       ,edge.width = E(network)$importance*.1
        ,vertex.color="white"
        ,layout=layout.fruchterman.reingold)
 
