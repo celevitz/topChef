@@ -162,6 +162,24 @@ dev.off()
     allseasons %>% filter(placement ==1)
 
 
+###############
+## keeping score constant at same # of challenges as in Buddha's season 19: 14 elims, 10 qfs
+    allseasons <- weightedindex("US",1,14,10)
+    for (season in seq(2,20,1)) {
+      allseasons <- rbind(allseasons,weightedindex("US",season,14,10))
+
+    }
+
+    allseasons %>%
+      select(chef,seasonNumber,placement,indexWeight) %>%
+      arrange(desc(indexWeight)) %>%
+      group_by(seasonNumber) %>%
+      mutate(stdev = sd(indexWeight,na.rm=T)) %>%
+      filter(indexWeight >=43)
+
+    allseasons %>%
+      group_by(seasonNumber) %>%
+      summarise(stdev=sd(indexWeight,na.rm=T))
 
 
 
