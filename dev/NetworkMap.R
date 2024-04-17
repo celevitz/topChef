@@ -156,7 +156,7 @@ allchefs <- tcChefs %>% rbind(TOCchefs) %>%
   plot.igraph(cp_graph
        ,layout = layout.fruchterman.reingold
        ,asp = 0
-       ,main="Top Chef Network across Season"
+       ,main="Top Chef Network across 21 Seasons"
        ,sub="IG: @carly.sue.bear /// X: @carlylevitz"
        )
 
