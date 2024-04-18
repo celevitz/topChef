@@ -175,12 +175,21 @@ dev.off()
       arrange(desc(indexWeight)) %>%
       group_by(seasonNumber) %>%
       mutate(stdev = sd(indexWeight,na.rm=T)) %>%
-      filter(indexWeight >=43)
+      filter(indexWeight >=42)
 
     allseasons %>%
       group_by(seasonNumber) %>%
       summarise(stdev=sd(indexWeight,na.rm=T))
 
 
+### 7 episodes in , ish
+    allseasons <- weightedindex("US",1,7,7)
+    for (season in seq(2,20,1)) {
+      allseasons <- rbind(allseasons,weightedindex("US",season,7,7))
 
+    }
+
+    allseasons %>%
+      group_by(seasonNumber) %>%
+      summarise(stdev=sd(indexWeight,na.rm=T))
 
