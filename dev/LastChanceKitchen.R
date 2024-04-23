@@ -56,19 +56,29 @@ lck <- topChef::challengedescriptions %>%
     group_by(season,seasonNumber,chef) %>%
     mutate(
       # first episode in
-      firstep = min(ifelse(tempvalue == "TRUE0",episode,NA),na.rm=T)
-        # Edge cases: George P & Brother Luck
-        ,firstep = ifelse(seasonNumber == 16 & chef == "Brother L.",6,firstep)
-        ,firstep = ifelse(seasonNumber == 12 & chef == "George P.",1,firstep)
+      firstep = case_when(
+        seasonNumber  == 16 & chef == "Brother L." ~ 6
+        ,seasonNumber == 12 & chef == "George P." ~ 1
+        ,TRUE ~ min(ifelse(tempvalue == "TRUE0",episode,NA),na.rm=T)
+      )
       # episode eliminated
-      ,epelim = min(ifelse(tempvalue == "TRUE1",episode,NA),na.rm=T)
-
+      ,epelim = case_when(
+        seasonNumber == 15 & chef == "Lee Anne W." ~ 5
+        ,TRUE ~ min(ifelse(tempvalue == "TRUE1",episode,NA),na.rm=T)
+      )
       # episode back in
-      ,epbackin = min(ifelse(tempvalue == "TRUE0" & episode >epelim,episode,NA),na.rm=T)
-        # Brother Luck is an edge case
-        ,epbackin = ifelse(seasonNumber == 16 & chef == "Brother L.",6,epbackin)
+      ,epbackin = case_when(
+        seasonNumber == 16 & chef == "Brother L." ~ 6
+        ,seasonNumber == 15 & chef == "Lee Anne W." ~ 5
+        ,seasonNumber == 11 & chef == "Louis M." ~ 16
+        ,TRUE ~ min(ifelse(tempvalue == "TRUE0" & episode >epelim,episode,NA),na.rm=T)
+      )
+
       # episode back out
         ,epelimagain =min(ifelse(tempvalue == "TRUE1" & episode >= epbackin,episode,NA),na.rm=T)
+        ,epelimagain = ifelse(is.infinite(epelimagain)
+                              ,max(ifelse(tempvalue == "TRUE0" & episode >= epbackin,episode,NA),na.rm=T)
+                              ,epelimagain)
       # length of first run, LCK run, and 2nd run
       ,firstrun = epelim-firstep+1
       ,lckrun=epbackin-epelim
@@ -79,13 +89,15 @@ lck <- topChef::challengedescriptions %>%
 epi %>%
   select(season,seasonNumber,chef,firstrun,lckrun,secondrun) %>%
   distinct() %>%
+  arrange(seasonNumber,chef) %>%
   print(n=20)
 
-### There are other edge cases that I need to address. Run line 79 onward
-## then look at wikipedia to see what needs to be hardcoded.
+### For seasons where someone started in LCK, need to change their LCK run
+### Lee Anne, Claudette, Brother
 
-
-
+table(epi$firstrun)
+table(epi$lckrun)
+table(epi$secondrun)
 
 
 
