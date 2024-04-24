@@ -81,7 +81,10 @@ lck <- topChef::challengedescriptions %>%
                               ,epelimagain)
       # length of first run, LCK run, and 2nd run
       ,firstrun = epelim-firstep+1
-      ,lckrun=epbackin-epelim
+      ,lckrun= case_when(
+        chef == "Claudette Z.-W." ~ 4
+        ,chef %in% c("Lee Anne W.","Brother L.") ~ 6
+        ,TRUE ~ epbackin-epelim)
       ,secondrun = epelimagain-epbackin
 
     )
@@ -95,9 +98,19 @@ epi %>%
 ### For seasons where someone started in LCK, need to change their LCK run
 ### Lee Anne, Claudette, Brother
 
-table(epi$firstrun)
-table(epi$lckrun)
-table(epi$secondrun)
+epi %>%
+  select(season,seasonNumber,chef,firstrun) %>%
+  distinct() %>%
+  group_by(firstrun) %>%
+  summarise(nchefs=n())
+
+epi %>%
+  select(season,seasonNumber,chef,lckrun) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate(averagerun=mean(lckrun)) %>%
+  ungroup() %>% group_by(averagerun,lckrun) %>%
+  summarise(nchefs=n())
 
 
 
