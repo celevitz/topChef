@@ -7,7 +7,8 @@ lck <- topChef::challengedescriptions %>%
   filter(!(is.na(lastChanceKitchenWinnerEnters)) &
            series == "US") %>%
     # the San Francisco returning doesn't count; it's cuz Cynthia quit
-    filter(seasonNumber != 1)
+    # exclude season 21 for now, since we don't know how far the two LCK folks will go
+    filter(seasonNumber != 1 & seasonNumber != 21)
 
 ## Number of episodes someone entered
   nrow(lck)
@@ -110,6 +111,14 @@ epi %>%
   ungroup() %>%
   mutate(averagerun=mean(lckrun)) %>%
   ungroup() %>% group_by(averagerun,lckrun) %>%
+  summarise(nchefs=n())
+
+epi %>%
+  select(season,seasonNumber,chef,secondrun) %>%
+  distinct() %>%
+  ungroup() %>%
+  mutate(averagerun=mean(secondrun)) %>%
+  ungroup() %>% group_by(averagerun,secondrun) %>%
   summarise(nchefs=n())
 
 
