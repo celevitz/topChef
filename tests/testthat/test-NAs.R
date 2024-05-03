@@ -1,6 +1,6 @@
 
 library(testthat)        # load testthat package
-library(topChef)         # lout my package
+library(topChef)         # load my package
 
 # 1. Check that there aren't NAs where there shouldn't be
   ## A. Chef Details
@@ -81,6 +81,47 @@ library(topChef)         # lout my package
                                        ,numberofquickfires=8)
           expect_s3_class(indexoutput,"data.frame")
         })
+
+
+## 3. In each dataset, is there only one season number associated with a season name?
+  ## A. Rewards
+        for (seasonname in unique(rewards$season)) {
+          test_that(paste("In rewards data, there is only one season # associated with",seasonname,sep=" "), {
+            expect_equal(length(unique(rewards$seasonNumber[rewards$season == seasonname])),1)
+          })
+        }
+
+  ## B. Judges
+        for (seasonname in unique(judges$season)) {
+          test_that(paste("In judges data, there is only one season # associated with",seasonname,sep=" "), {
+            expect_equal(length(unique(judges$seasonNumber[judges$season == seasonname])),1)
+          })
+        }
+  ## C. Episode info
+        for (seasonname in unique(episodeinfo$season)) {
+          test_that(paste("In episodeinfo data, there is only one season # associated with",seasonname,sep=" "), {
+            expect_equal(length(unique(episodeinfo$seasonNumber[episodeinfo$season == seasonname])),1)
+          })
+        }
+  ## D. Chef details
+        for (seasonname in unique(chefdetails$season)) {
+          test_that(paste("In chefdetails data, there is only one season # associated with",seasonname,sep=" "), {
+            expect_equal(length(unique(chefdetails$seasonNumber[chefdetails$season == seasonname])),1)
+          })
+        }
+  ## E. Challenge wins
+        for (seasonname in unique(challengewins$season)) {
+          test_that(paste("In challengewins data, there is only one season # associated with",seasonname,sep=" "), {
+            expect_equal(length(unique(challengewins$seasonNumber[challengewins$season == seasonname])),1)
+          })
+        }
+  ## F. Challenge descriptions
+        for (seasonname in unique(challengedescriptions$season)) {
+          test_that(paste("In challengedescriptions data, there is only one season # associated with",seasonname,sep=" "), {
+            expect_equal(length(unique(challengedescriptions$seasonNumber[challengedescriptions$season == seasonname])),1)
+          })
+        }
+
 
 
 
