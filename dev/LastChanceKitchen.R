@@ -121,5 +121,28 @@ epi %>%
   ungroup() %>% group_by(averagerun,secondrun) %>%
   summarise(nchefs=n())
 
+# length of second run in the main comp
+# group by when they came back into the comp
+  epi %>%
+    left_join(topChef::chefdetails) %>%
+    select(season,seasonNumber,chef,epbackin,secondrun,placement) %>%
+    distinct() %>%
+    mutate(epbackin_cat = if_else(epbackin <=8,"5 to 8","9 or later")) %>%
+    group_by(epbackin_cat) %>%
+    summarise(avg = mean(secondrun)
+              ,mdn = median(secondrun)
+              ,avgplacement=mean(placement)
+              ,mdnplacement=median(placement))
+
+
+
+
+
+
+
+
+
+
+
 
 
