@@ -1,6 +1,7 @@
 
 library(testthat)        # load testthat package
 library(topChef)         # load my package
+library(tidyverse)
 
 # 1. Check that there aren't NAs where there shouldn't be
   ## A. Chef Details
