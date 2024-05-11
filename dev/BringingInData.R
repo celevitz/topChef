@@ -17,6 +17,7 @@ challengewins <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),
   challengewins$dish <- NULL
 challengedescriptions <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3))
 rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4))
+  rewards$rewardType <- NULL
 judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
 episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
   # fix the date
