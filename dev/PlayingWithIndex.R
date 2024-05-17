@@ -12,14 +12,15 @@ challengewins <- topChef::challengewins %>%
 chefdetails <- topChef::chefdetails %>%
   filter(series == "US" )
 
-episodenumber <- 8
-numberofelimchalls <- 8
-numberofquickfirechalls <- 5
+episodenumber <- 9
+numberofelimchalls <- 9
+numberofquickfirechalls <- 6
 eliminatedchefs <- c("David Murphy"
                      ,"Valentine Howell Jr.","Kenny Nguyen"
                      ,"Charly Pierre"
                      ,"Kaleena Bliss","Alisha Elenz"
-                     ,"Rasika Venkatesa","Kevin D'Andrea")
+                     ,"Rasika Venkatesa","Kevin D'Andrea"
+                     ,"Amanda Turner","Laura Ozyilmaz")
 
 ## Stats about S21
 s21challstats <- weightedindex("US",21,numberofelimchalls,numberofquickfirechalls) %>%
@@ -111,6 +112,10 @@ for (season in seq(2,21,1)) {
                   select (chef,indexWeight) %>%
                   rename(indexWeight8 = indexWeight) ) %>%
       mutate(indexWeight8 = ifelse(is.na(indexWeight8),0,indexWeight8)) %>%
+      full_join(weightedindex("US",21,9,6) %>%
+                  select (chef,indexWeight) %>%
+                  rename(indexWeight9 = indexWeight) ) %>%
+      mutate(indexWeight9 = ifelse(is.na(indexWeight9),0,indexWeight9)) %>%
 
       arrange(desc(indexWeight1))  %>%
       mutate(rank1=rank(-indexWeight1,ties.method = "min")) %>%
@@ -127,7 +132,9 @@ for (season in seq(2,21,1)) {
       arrange(desc(indexWeight7)) %>%
       mutate(rank7=rank(-indexWeight7,ties.method = "min")) %>%
       arrange(desc(indexWeight8)) %>%
-      mutate(rank8=rank(-indexWeight8,ties.method = "min"))
+      mutate(rank8=rank(-indexWeight8,ties.method = "min")) %>%
+      arrange(desc(indexWeight9)) %>%
+      mutate(rank8=rank(-indexWeight9,ties.method = "min"))
 
   # make the data long form to make it easier to plot
   episodespecificlong <- episodespecific %>%
