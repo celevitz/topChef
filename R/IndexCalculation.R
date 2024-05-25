@@ -27,6 +27,7 @@
 #' @importFrom stats filter
 #' @importFrom stats aggregate
 #' @importFrom stats reshape
+#' @importFrom dplyr desc
 #'
 #' @export
 #'
