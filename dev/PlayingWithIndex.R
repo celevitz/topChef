@@ -116,6 +116,10 @@ for (season in seq(2,21,1)) {
                   select (chef,indexWeight) %>%
                   rename(indexWeight9 = indexWeight) ) %>%
       mutate(indexWeight9 = ifelse(is.na(indexWeight9),0,indexWeight9)) %>%
+      full_join(weightedindex("US",21,10,7) %>%
+                  select (chef,indexWeight) %>%
+                  rename(indexWeight10 = indexWeight) ) %>%
+      mutate(indexWeight10 = ifelse(is.na(indexWeight10),0,indexWeight10)) %>%
 
       arrange(desc(indexWeight1))  %>%
       mutate(rank1=rank(-indexWeight1,ties.method = "min")) %>%
@@ -132,9 +136,11 @@ for (season in seq(2,21,1)) {
       arrange(desc(indexWeight7)) %>%
       mutate(rank7=rank(-indexWeight7,ties.method = "min")) %>%
       arrange(desc(indexWeight8)) %>%
-      mutate(rank8=rank(-indexWeight8,ties.method = "min")) %>%
-      arrange(desc(indexWeight9)) %>%
-      mutate(rank8=rank(-indexWeight9,ties.method = "min"))
+      mutate(rank8=rank(-indexWeight8,ties.method = "min")) #%>%
+      #arrange(desc(indexWeight9)) %>%
+      #mutate(rank9=rank(-indexWeight9,ties.method = "min")) %>%
+      #arrange(desc(indexWeight10)) %>%
+      #mutate(rank9=rank(-indexWeight10,ties.method = "min"))
 
   # make the data long form to make it easier to plot
   episodespecificlong <- episodespecific %>%
@@ -214,7 +220,11 @@ dev.off()
     row.names(allseasons) <- NULL
 
     allseasons %>%
-      filter((rank <= 10 | seasonNumber == 21 | placement == 1) & !(chef %in% eliminatedchefs))
+      filter((rank <= 10 | seasonNumber == 21 | placement == 1 |
+                chef %in% c("Sara B.","Justin S.","Shota N.")) &
+               !(chef %in% eliminatedchefs)) %>%
+      select(!season) %>%
+    relocate(rank,.before=chef)
 
     allseasons %>% filter(placement ==1)
 
