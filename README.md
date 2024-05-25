@@ -9,6 +9,12 @@ Canada. It includes Chef information, challenge descriptions, challenge
 winners, episode information, guest judge names, and reward/prize
 information.
 
+### In the works:
+
+- Adding or updating description data for challenges
+- Adding in dish for every chef in every challenge
+- Confessional counts
+
 ## 2. Installation
 
 ``` r
@@ -62,7 +68,7 @@ chefdetails
 #>  4 Lee An… Lee … <NA>     New … New …    28 San F…            1 US             4
 #>  5 Stephe… Step… <NA>     Las … Neva…    24 San F…            1 US             5
 #>  6 Miguel… Migu… <NA>     New … New …    27 San F…            1 US             6
-#>  7 Andrea… Andr… <NA>     New … New …    38 San F…            1 US             7
+#>  7 Andrea… Andr… <NA>     New … New …    37 San F…            1 US             7
 #>  8 Lisa P… Lisa… <NA>     Los … Cali…    45 San F…            1 US             8
 #>  9 Candic… Cand… <NA>     Pasa… Cali…    23 San F…            1 US             9
 #> 10 Brian … Bria… <NA>     Los … Cali…    37 San F…            1 US            10
@@ -78,7 +84,7 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 648 × 17
+#> # A tibble: 657 × 17
 #>    season   seasonNumber series episode challengeType outcomeType
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>      
 #>  1 Kentucky           16 US           1 Quickfire     Team       
@@ -91,7 +97,7 @@ challengedescriptions
 #>  8 Kentucky           16 US           4 Elimination   Team       
 #>  9 Kentucky           16 US           5 Elimination   Team       
 #> 10 Kentucky           16 US           6 Elimination   Individual 
-#> # ℹ 638 more rows
+#> # ℹ 647 more rows
 #> # ℹ 11 more variables: challengeDescription <chr>, shopTime <chr>,
 #> #   shopBudget <chr>, prepTime <dbl>, cookTime <dbl>, productPlacement <chr>,
 #> #   advantage <chr>, lastChanceKitchenWinnerEnters <chr>,
@@ -105,7 +111,7 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,763 × 10
+#> # A tibble: 9,907 × 10
 #>    season   seasonNumber series episode inCompetition immune chef  challengeType
 #>    <chr>           <dbl> <chr>    <dbl> <lgl>         <lgl>  <chr> <chr>        
 #>  1 All Sta…            8 US           1 TRUE          FALSE  Ange… Quickfire    
@@ -118,7 +124,7 @@ challengewins
 #>  8 All Sta…            8 US           1 TRUE          FALSE  Fabi… Quickfire    
 #>  9 All Sta…            8 US           1 TRUE          FALSE  Jami… Quickfire    
 #> 10 All Sta…            8 US           1 TRUE          FALSE  Jenn… Quickfire    
-#> # ℹ 9,753 more rows
+#> # ℹ 9,897 more rows
 #> # ℹ 2 more variables: outcome <chr>, rating <dbl>
 ```
 
@@ -129,7 +135,7 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 765 × 11
+#> # A tibble: 775 × 11
 #>    season   seasonNumber series episode challengeType outcomeType guestJudge    
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>       <chr>         
 #>  1 Canada 6            6 Canada       2 Quickfire     Individual  Danny Bowien  
@@ -142,7 +148,7 @@ judges
 #>  8 Canada 6            6 Canada       5 Quickfire     Individual  Brandon Olsen 
 #>  9 Canada 6            6 Canada       5 Elimination   Team        Alexandra Fes…
 #> 10 Canada 6            6 Canada       6 Quickfire     Individual  Nicole Gomes  
-#> # ℹ 755 more rows
+#> # ℹ 765 more rows
 #> # ℹ 4 more variables: gender <chr>, personOfColor <chr>, competedOnTC <chr>,
 #> #   otherShows <chr>
 ```
@@ -154,7 +160,7 @@ challenge.
 
 ``` r
 rewards
-#> # A tibble: 333 × 9
+#> # A tibble: 339 × 9
 #>    season       seasonNumber series episode challengeType outcomeType rewardType
 #>    <chr>               <dbl> <chr>    <dbl> <chr>         <chr>       <chr>     
 #>  1 All Stars: …            8 US           1 Elimination   Individual  Money     
@@ -167,7 +173,7 @@ rewards
 #>  8 All Stars: …            8 US           4 Elimination   Team        Prize     
 #>  9 All Stars: …            8 US           5 Quickfire     Individual  Prize     
 #> 10 All Stars: …            8 US           6 Elimination   Team        Prize     
-#> # ℹ 323 more rows
+#> # ℹ 329 more rows
 #> # ℹ 2 more variables: reward <chr>, chef <chr>
 ```
 

@@ -18,6 +18,11 @@ knitr::opts_chunk$set(
 
 topChef is a collection of data sets detailing events across all seasons of Top Chef US and Top Chef Masters US and one season of Top Chef Canada. It includes Chef information, challenge descriptions, challenge winners, episode information, guest judge names, and reward/prize information.
 
+### In the works:
+* Adding or updating description data for challenges
+* Adding in dish for every chef in every challenge
+* Confessional counts
+
 ## 2. Installation
 
 ```r

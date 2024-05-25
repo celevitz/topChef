@@ -6,7 +6,7 @@ library(tidyverse)
 # 1. Check that there aren't NAs where there shouldn't be
   ## A. Chef Details
     # NAs are okay in: hometown, city, state, age, poc, occupation,
-    # and placement in season 20
+    # and placement in season 21
       for (varname in c("name","chef","season","seasonNumber","series"
                         ,"gender")) {
 
@@ -16,7 +16,7 @@ library(tidyverse)
 
       }
       test_that("Everyone has a placement",
-                {expect_equal(all(!(is.na(chefdetails$placement))),TRUE)})
+                {expect_equal(all(!(is.na(chefdetails$placement[chefdetails$seasonNumber!=21]))),TRUE)})
 
   ## B. Challenge descriptions
       # NAs are okay in challenge description (this will change over time as
