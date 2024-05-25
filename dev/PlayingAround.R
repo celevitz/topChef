@@ -166,3 +166,83 @@ first2elimchalls %>%
     full_join(challengewins %>% filter(episode == 3 & seasonNumber == 11 & outcome == "OUT")) %>%
     arrange(desc(indexWeight))
 
+#############################################
+## number of group challenges before RW
+
+  RWepnumber <- challengedescriptions %>%
+    filter(((grepl("restaurant wars",tolower(challengeDescription ) ) |
+               grepl("restaurants wars",tolower(challengeDescription ) )) &
+             outcomeType == "Team" &
+             series == "US")) %>%
+    group_by(seasonNumber) %>%
+    # taking the minimum episode because some seasons had two episodes of RW
+    summarise(rwep = min(episode))
+
+  challengesbeforeRW <- challengewins %>%
+    filter(series == "US" & challengeType %in% c("Elimination","Quickfire","Quickfire Elimination","Sudden Death Quickfire")) %>%
+    left_join(challengedescriptions %>%
+                select(series,season,seasonNumber,episode,challengeType,outcomeType)) %>%
+    right_join(RWepnumber) %>%
+    select(series,season,seasonNumber,episode,challengeType,outcomeType,rwep) %>%
+    distinct() %>%
+    filter(episode < rwep & series == "US") %>%
+    ungroup() %>%
+    group_by(seasonNumber,season,outcomeType,challengeType) %>%
+    summarise(n=n()) %>%
+    filter(!(is.na(outcomeType))) %>%
+    pivot_wider(names_from=outcomeType,values_from=n) %>%
+    mutate(Individual = ifelse(is.na(Individual),0,Individual)
+           ,Team = ifelse(is.na(Team),0,Team)
+           ,percentbeforeRW = Team/(Team+Individual))
+
+  challengesbeforeRW %>%
+    filter(challengeType == "Elimination") %>%
+    print(n=50)
+
+  summary( challengesbeforeRW %>%
+             filter(challengeType == "Elimination") %>%
+             ungroup() %>%
+             select(percentbeforeRW))
+
+
+  challengesthruep9 <- challengewins %>%
+    filter(series == "US" & challengeType %in% c("Elimination","Quickfire","Quickfire Elimination","Sudden Death Quickfire")) %>%
+    full_join(challengedescriptions %>%
+                select(series,season,seasonNumber,episode,challengeType,outcomeType)) %>%
+    select(series,season,seasonNumber,episode,challengeType,outcomeType) %>%
+    distinct() %>%
+    filter(episode <=9 & series == "US") %>%
+    ungroup() %>%
+    group_by(seasonNumber,season,outcomeType,challengeType) %>%
+    summarise(n=n()) %>%
+    filter(!(is.na(outcomeType))) %>%
+    pivot_wider(names_from=outcomeType,values_from=n) %>%
+    mutate(Individual = ifelse(is.na(Individual),0,Individual)
+           ,Team = ifelse(is.na(Team),0,Team)
+           ,percentthru9 = Team/(Team+Individual))
+
+  challengesthruep9 %>%
+    filter(challengeType == "Elimination") %>%
+    print(n=50)
+
+  summary( challengesthruep9 %>%
+             filter(challengeType == "Elimination") %>%
+             ungroup() %>%
+             select(percentthru9))
+
+
+  challengesthruep9 %>%
+    filter(challengeType == "Elimination") %>%
+    select(seasonNumber,season,percentthru9) %>%
+    full_join(challengesbeforeRW %>%
+                filter(challengeType == "Elimination") %>%
+                select(seasonNumber,season,percentbeforeRW) ) %>%
+    print(n=21)
+
+  # The data are listed as follows: season #, % of elimination challenges that were team challenges through episode 9, # of elimination challenges that were team challenges prior to restaurant wars. S1: 33%, 33%. S2: 44%, 44%. S3: 43%, 43%. S4: 78%, 75%. S5: 44%, 38%. S6: 44%, 38%. S7: 44%, 38%. S8: 56%, 67%. S9: 71%, 71%. S10: 50%, 44%. S11: 56%, 50%. S12: 44%, 50%. S13: 44%, 38%. S14: 75%, 83%. S15: 56%, 43%. S16: 56%, 67%. S17: 56%, 57%. S18: 44%, 43%. S19: 56%, 57%. S20: 56%, 50%. S21: 56%, 57%.
+
+
+
+
+
+

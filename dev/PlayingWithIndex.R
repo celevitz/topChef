@@ -218,6 +218,14 @@ dev.off()
 
     allseasons %>% filter(placement ==1)
 
+    ## what were the standard deviations of the scores for each season?
+    allseasons %>%
+      group_by(seasonNumber,season) %>%
+      summarise(mean=mean(indexWeight)
+                ,median=median(indexWeight)
+                ,stdev = sd(indexWeight)) %>%
+      print(n=21)
+
 
 ###############
 ## keeping score constant at same # of challenges as in Buddha's season 19: 14 elims, 10 qfs
