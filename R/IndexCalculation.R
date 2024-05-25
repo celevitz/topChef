@@ -52,16 +52,19 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
     # because there could be both a SDQ & an elimination in an episode, and I
     # use episode as a row ID, I need to make sure that we keep those challenge
     # results separate from the other elimination challenges in that episode
-    challengewins <- challengewins %>%
-      mutate(episodeascharacter = as.character(episode)
-             ,episodeascharacter = ifelse(nchar(episodeascharacter)==1
-                                          ,paste0("0",episodeascharacter)
-                                          ,episodeascharacter)
-        ,challID = case_when(challengeType == "Quickfire Elimination" ~ paste0(episodeascharacter,"b_qe")
-                             ,challengeType == "Sudden Death Quickfire" ~ paste0(episodeascharacter,"b_sdq")
-                             ,challengeType == "Quickfire" ~ paste0(episodeascharacter,"a_qf")
-                             ,challengeType == "Elimination" ~ paste0(episodeascharacter,"c_elim")
-                             ,TRUE ~ paste0(episodeascharacter,"a_",challengeType)))
+    challengewins$episodeascharacter <- as.character(challengewins$episode)
+    challengewins$episodeascharacter[nchar(challengewins$episodeascharacter)==1] <-
+      paste0("0",challengewins$episodeascharacter[nchar(challengewins$episodeascharacter)==1])
+
+    challengewins$challID <- paste0(challengewins$episodeascharacter,"a_",challengewins$challengeType)
+    challengewins$challID[challengewins$challengeType == "Quickfire Elimination"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Quickfire Elimination"] ,"b_qe")
+    challengewins$challID[challengewins$challengeType == "Sudden Death Quickfire"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Sudden Death Quickfire"] ,"b_sdq")
+    challengewins$challID[challengewins$challengeType == "Quickfire"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Quickfire"] ,"a_qf")
+    challengewins$challID[challengewins$challengeType == "Elimination"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Elimination"] ,"c_elim")
 
     challengewins$challengeType[challengewins$challengeType %in%
                                  c("Quickfire Elimination"
