@@ -12,15 +12,16 @@ challengewins <- topChef::challengewins %>%
 chefdetails <- topChef::chefdetails %>%
   filter(series == "US" )
 
-episodenumber <- 9
-numberofelimchalls <- 9
-numberofquickfirechalls <- 6
+episodenumber <- 10
+numberofelimchalls <- 10
+numberofquickfirechalls <- 7
 eliminatedchefs <- c("David Murphy"
                      ,"Valentine Howell Jr.","Kenny Nguyen"
                      ,"Charly Pierre"
                      ,"Kaleena Bliss","Alisha Elenz"
                      ,"Rasika Venkatesa","Kevin D'Andrea"
-                     ,"Amanda Turner","Laura Ozyilmaz")
+                     ,"Amanda Turner","Laura Ozyilmaz"
+                     ,"Soo Ahn")
 
 ## Stats about S21
 s21challstats <- weightedindex("US",21,numberofelimchalls,numberofquickfirechalls) %>%
@@ -235,6 +236,28 @@ dev.off()
                 ,median=median(indexWeight)
                 ,stdev = sd(indexWeight)) %>%
       print(n=21)
+
+
+##################
+## what's the SD of scores for seasons with LCK
+    temp <- weightedindex("US",1,numberofelimchalls,numberofquickfirechalls)
+    for (season in seq(2,21,1)) {
+      temp <- rbind(temp,weightedindex("US",season,numberofelimchalls,numberofquickfirechalls))
+
+    }
+
+    temp %>%
+      mutate(typeofseason = case_when(seasonNumber %in% c(21)~"Season 21"
+                                      ,seasonNumber %in% c(15,16, 17, 19,20)~"Two reentries"
+                                      , seasonNumber %in% c(9,10,11,12,13,14)~ "One reentry"
+                                      ,TRUE ~ "No LCK") )%>%
+      group_by(typeofseason) %>%
+      summarise(SD = sd(indexWeight)
+                ,min=min(indexWeight)
+                ,max=max(indexWeight)
+                ,range=max-min
+                #,variance=var(indexWeight)
+                )
 
 
 ###############
