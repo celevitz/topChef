@@ -20,6 +20,7 @@ results$cran_summary()
 usethis::use_cran_comments()
 devtools::check_win_devel()
 devtools::document()
+roxygen2::roxygenise()
 # Update News
 usethis::use_news_md()
 # Update description
