@@ -96,5 +96,77 @@ challoutcomes <- topChef::challengewins %>%
     arrange(WIN)
 
 
+##############################################################
+## Measures of variance of final fours
+  # Instead of using the index, do it manually
+  # This is because it won't be the same # of challenges for each season
+
+  variances <- topChef::challengewins %>%
+    right_join(topChef::episodeinfo %>%
+                 filter(series == "US" & nCompetitors >= 5 &
+                          !(is.na(nCompetitors)))) %>%
+    select(series,season,seasonNumber,challengeType,episode,challengeType
+           ,chef,outcome) %>%
+    # keep just the final fours
+    right_join(finalfours %>% select(!placement)) %>%
+    # remove the reunions and qualifying challenges
+    filter(!(is.na(challengeType)) )
+
+  # A. Consolidate challenge types
+  variances$challengeType[variances$challengeType %in%
+                                c("Quickfire Elimination"
+                                  ,"Sudden Death Quickfire")] <- "Elimination"
+
+  # B. Exclude the uncommon challenge types
+  variances <- variances[!(variances$challengeType %in%
+                                     c("Battle of the Sous Chefs"
+                                       ,"Qualifying Challenge")),]
+
+  # C.  clean up outcomes: consolidate
+  variances$outcome[variances$outcome %in% c("High","HiGH")] <-
+    "HIGH"
+  variances$outcome[grepl("LOW",variances$outcome)] <- "LOW"
+  variances$outcome[variances$outcome %in%
+                          c("DISQUALIFIED","RUNNER-UP","WITHDREW") |
+                          grepl("OUT",variances$outcome) ] <- "OUT"
+  variances$outcome[variances$outcome %in% c("DIDN'T COMPETE") |
+                          grepl("N/A",variances$outcome) |
+                          grepl("QUALIFIED",variances$outcome) ] <- "IN"
+  variances$outcome[variances$outcome %in% c("WINNER")] <- "WIN"
+
+  # D. Calculate points
+  variances$points <- 0
+  variances$points[variances$challengeType == "Quickfire" & variances$outcome == "WIN"] <- 4
+  variances$points[variances$challengeType == "Quickfire" & variances$outcome == "HIGH"] <- 2
+  variances$points[variances$challengeType == "Quickfire" & variances$outcome == "LOW"] <- -2
+
+  variances$points[variances$challengeType == "Elimination" & variances$outcome == "WIN"] <- 7
+  variances$points[variances$challengeType == "Elimination" & variances$outcome == "HIGH"] <- 3
+  variances$points[variances$challengeType == "Elimination" & variances$outcome == "LOW"] <- -3
+  variances$points[variances$challengeType == "Elimination" & variances$outcome == "OUT"] <- -7
+
+  variances <- variances %>%
+    group_by(series,season,seasonNumber,chef) %>%
+    summarise(points=sum(points)) %>%
+    ungroup() %>%
+    group_by(series,season,seasonNumber) %>%
+    summarise(minimum=min(points),mean=mean(points)
+              ,maximum=max(points),stdev=sd(points))
+
+  # E. Look at the data
+    variances %>%
+      arrange(stdev,mean) %>%
+      print(n=21)
+
+    summary(variances$minimum)
+    summary(variances$mean)
+    summary(variances$maximum)
+    summary(variances$stdev)
+
+
+
+
+
+
 
 

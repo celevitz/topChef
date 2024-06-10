@@ -15,6 +15,7 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 chefdetails <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=1))
 challengewins <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=2))
   challengewins$dish <- NULL
+  challengewins$notes <- NULL
 challengedescriptions <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3))
 rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4))
   rewards$rewardCategory <- NULL
