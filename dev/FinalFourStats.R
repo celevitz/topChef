@@ -163,6 +163,27 @@ challoutcomes <- topChef::challengewins %>%
     summary(variances$maximum)
     summary(variances$stdev)
 
+  ## Check for if the scores are related to the length of the season prior to F4
+    numberofepisodespriortoF4 <- topChef::challengewins %>%
+      # keep just the episodes prior to final four
+      right_join(topChef::episodeinfo %>%
+                   filter(series == "US" & nCompetitors >= 5 &
+                            !(is.na(nCompetitors)))) %>%
+      # remove the reunions and qualifying challenges
+      filter(!(is.na(challengeType)) & challengeType != "Qualifying Challenge") %>%
+      # how many episodes does this count as?
+      select(season,seasonNumber,series,episode) %>%
+      group_by(season,seasonNumber,series) %>%
+      distinct() %>%
+      summarise(numberofepisodesbeforeF4= n())
+
+    variances %>%
+      left_join(numberofepisodespriortoF4) %>%
+      ungroup() %>%
+      mutate(season=paste0("S",seasonNumber,": ",season)) %>%
+      select(!c(series,seasonNumber)) %>%
+      arrange(stdev,numberofepisodesbeforeF4) %>%
+      print(n=21)
 
 
 
