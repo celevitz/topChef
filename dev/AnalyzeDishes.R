@@ -20,7 +20,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 # don't know what it's supposed to be: fettulini chateaubrinoodle englclam
 #                                        glace glambe hroll ong
     dishesraw$dish <- gsub("suace","sauce",
-      gsub("tartar","tartare",
+      gsub("tartar ","tartare",
       gsub("tahni","tahini",
       gsub("souop","soup",
       gsub("kim chee","kimchi",
@@ -269,6 +269,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     disheswide$sauce[grepl("pistou",disheswide$dish)] <- "pistou"
     disheswide$sauce[grepl("ponzo",disheswide$dish)] <- "ponzo"
     disheswide$sauce[grepl("sambal",disheswide$dish)] <- "sambal"
+    disheswide$sauce[grepl("aioli",disheswide$dish) |
+                       grepl("mayo",disheswide$dish)] <- "aioli/mayo"
     disheswide$sauce[grepl("sauce",disheswide$dish) &
                        is.na(disheswide$dish)] <- "sauce"
 
@@ -278,7 +280,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   ## and when people just put a dish into the shell but don't use it
     shellfishes <- c("abalone","clam","cockle","conch","crab"
                      ,"crawfish","crayfish" ,"crustacean","scallop","geoduck"
-                     ,"hama","lobster","oyster")
+                     ,"hama","lobster","oyster","shrimp")
 
     disheswide$shellfish <- 0
     for (sf in shellfishes) {
@@ -528,7 +530,7 @@ cleandishes <- disheswide %>%
       group_by(series,dish) %>%
       summarise(numberofseasonsusedin = n()) %>%
       arrange(desc(numberofseasonsusedin))
-#
+
 #   # number of episodes a word is used in
     wordinepisodes <- cleandisheslong %>%
       select(series,season,seasonNumber,episode,dish) %>%
@@ -536,6 +538,15 @@ cleandishes <- disheswide %>%
       group_by(series,dish) %>%
       summarise(numberofepisodesusedin = n()) %>%
       arrange(desc(numberofepisodesusedin))
+
+#   # Number of episodes within each season
+    wordinseasonnumberofepis <- cleandisheslong %>%
+      select(series,season,seasonNumber,episode,dish) %>%
+      distinct() %>%
+      group_by(series,season,dish) %>%
+      summarise(numberofepisodesusedin = n()) %>%
+      arrange(desc(numberofepisodesusedin)) %>%
+      pivot_wider(names_from=season,values_from=numberofepisodesusedin)
 
 
 
