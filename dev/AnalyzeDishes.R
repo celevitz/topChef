@@ -57,7 +57,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
                   ,"cognac","grissini","guinness","gran marnier"
                   ,"liqueur","merlot","mezcal"
                   ,"mojito","moscato","pernod","rum"
-                  ,"sambuca","sherry","wine")
+                  ,"sambuca","sherry","vermouth","wine")
     disheswide$alcohol <- 0
     for (a in alcohols) {
       disheswide$alcohol[grepl(a,disheswide$dish)  ] <- 1
@@ -164,7 +164,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Game meet (including pheasant, goose)
     games <- c("alligator","bison","boar","elk","frog","goat","goose","kangaroo"
-               ,"lamb","pheasant","ostrich")
+               ,"lamb","pheasant","ostrich","squab")
     disheswide$game <- 0
     for (g in games) {
       disheswide$game[grepl(g,disheswide$dish)  ] <- 1
@@ -223,7 +223,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Pasta & noodles
     pastas <- c("agnolotti","fettuccini","spaghetti"," mac "
                 ,"gnocchi","gnudi","lasagna","linguine","macaroni","cannellonis"
-                ,"cappellini","fettulini","orecchiette","noodle")
+                ,"cappellini","fettulini","orecchiette","pappardelle","noodle")
 
     disheswide$pasta <- 0
     for (p in pastas) {
@@ -272,6 +272,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     disheswide$sauce[grepl("beurre blanc",disheswide$dish)] <- "beurre blanc"
     disheswide$sauce[grepl("cream sauce",disheswide$dish)] <- "cream sauce"
     disheswide$sauce[grepl("mornay",disheswide$dish)] <- "mornay"
+    disheswide$sauce[grepl(" mole",disheswide$dish)] <- "mole"
     disheswide$sauce[grepl("pesto",disheswide$dish)] <- "pesto"
     disheswide$sauce[grepl("pipian",disheswide$dish)] <- "pipian"
     disheswide$sauce[grepl("pistou",disheswide$dish)] <- "pistou"
@@ -298,7 +299,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Soups, broths, brodos
     soups <- c("avgolemono","bisque","brodo","broth","chowder","gazpacho"
-               ,"gumbo")
+               ,"gumbo","pozole")
     disheswide$soup <- 0
     for (s in soups) {
       disheswide$soup[grepl(s,disheswide$dish)  ] <- 1
@@ -332,7 +333,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # What do I think are the trendy things?
     trends <- c("confit","conserva","consomme","deconstructed","emulsion"
-                ,"espuma","foam","gel","mousse","risotto")
+                ,"espuma","foam","gel","mousse","risotto","scallop"
+                ,"aguachile","croquette","sous vide","tartare")
     disheswide$trend <- 0
     for (t in trends) {
       disheswide$trend[grepl(t,disheswide$dish)  ] <- 1
@@ -346,30 +348,6 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 cleandishes <- disheswide %>%
   select(!c(outcome,challengeType))
 
-  # Get rid of things like "with" "and"
-  # need to figure out how to remove backslashes
-    cleandishes$dish <- gsub(" including "," ",
-      gsub(" en "," ",
-      gsub(" an "," ",
-      gsub("\\:","",
-      gsub("\\.","",
-      gsub("\\;","",
-      gsub(" the "," ",
-      gsub("not shown","",
-      gsub("\\)","",
-      gsub("\\(","",
-      gsub(" on "," ",
-      gsub("n/a","",
-      gsub(" of "," ",
-      gsub(" a "," ",
-      gsub(" in "," ",
-      gsub(", "," ",
-      gsub(" with "," ",
-      gsub(" wtih "," ",
-      gsub("& ","",
-      gsub("and ","",cleandishes$dish
-           ))))))))))))))))))))
-
   # for things that are often together (e.g., ____ chip), combine them
   # remove plurals
   # combine things like flambee/flambeed
@@ -381,7 +359,8 @@ cleandishes <- disheswide %>%
                        gsub("hazelnuts","hazelnut",
                        gsub("pecans","pecan",
                        gsub("peanuts","peanut",
-                      cleandishes$dish)))))
+                       gsub("nuts","nut",
+                      cleandishes$dish))))))
 
     # meat
     cleandishes$dish <-gsub("flank steak","flank-stead",
@@ -426,7 +405,8 @@ cleandishes <- disheswide %>%
                         gsub("purees","puree",
                         gsub("sous vide","sous-vide",
                         gsub("angel hair","angel-hair",
-                       cleandishes$dish))))))))))))))))))
+                        gsub("sauces","sauce",
+                       cleandishes$dish)))))))))))))))))))
 
     # desserts
       cleandishes$dish <- gsub("bread pudding","bread-pudding",
@@ -504,8 +484,10 @@ cleandishes <- disheswide %>%
                 gsub("endives","endive",
                 gsub("endives","endive",
                 gsub(" figs"," fig",
-                gsub("green bean","green-bean"
-               ,cleandishes$dish)))))))))))))))))))
+                gsub("green bean","green-bean",
+                gsub("herbs","herb",
+                gsub("herbes fines","herb"
+               ,cleandishes$dish)))))))))))))))))))))
 
         cleandishes$dish <- gsub("aji amarillo","aji-amarillo",
                 gsub("capers","caper",
@@ -534,6 +516,7 @@ cleandishes <- disheswide %>%
                       gsub("collards","collard-greens",
                       gsub("celeriac root","celeriac-root",
                       gsub("cranberries","cranberry",
+                      gsub("olive oil","olive-oil",
                       gsub("plums","plum",
                       gsub("plantains","plantains",
                       gsub("scotch bonnet","scotch-bonnet",
@@ -542,7 +525,7 @@ cleandishes <- disheswide %>%
                       gsub("tomatoes","tomato",
                       gsub("tomatos","tomato",
                       gsub(" wood "," wood-",
-                     cleandishes$dish))))))))))))))
+                     cleandishes$dish)))))))))))))))
 
     # colors
     cleandishes$dish <- gsub("black pepper","black-pepper",
@@ -558,6 +541,7 @@ cleandishes <- disheswide %>%
                       gsub("black sesame","black-sesame",
                       gsub("red snapper","red-snapper",
                       gsub("red miso","red-miso",
+                      gsub("red pepper","red-pepper",
                       gsub("white truffle","white-truffle",
                       gsub("white pepper","white-pepper",
                       gsub("white miso","white-miso",
@@ -566,7 +550,7 @@ cleandishes <- disheswide %>%
                       gsub("green goddess","green-goddess",
                       gsub("green olive","green-olive",
       cleandishes$dish
-      ))))))))))))))))))))
+      )))))))))))))))))))))
 
     # sauces
     cleandishes$dish <- gsub("bechamel sauce","bechamel-sauce",
@@ -576,7 +560,29 @@ cleandishes <- disheswide %>%
             gsub("fish sauce","fish-sauce",
             cleandishes$dish
             )))))
-
+    # Get rid of things like "with" "and"
+    # need to figure out how to remove backslashes
+        cleandishes$dish <- gsub(" including "," ",
+                            gsub(" en "," ",
+                            gsub(" an "," ",
+                            gsub("\\:","",
+                            gsub("\\.","",
+                            gsub("\\;","",
+                            gsub(" the "," ",
+                            gsub("not shown","",
+                            gsub("\\)","",
+                            gsub("\\(","",
+                            gsub(" on "," ",
+                            gsub("n/a","",
+                            gsub(" of "," ",
+                            gsub(" a "," ",
+                            gsub(" in "," ",
+                            gsub(", "," ",
+                            gsub(" with "," ",
+                            gsub(" wtih "," ",
+                            gsub("& ","",
+                            gsub("and ","",cleandishes$dish
+                            ))))))))))))))))))))
 
 
 ## Prep the data for analysis
@@ -632,9 +638,56 @@ cleandishes <- disheswide %>%
 
 ## General type of food
   #     # Dishes wide
-        cleandisheslong %>%
-          pivot_longer(!c(series,season,seasonNumber,episode,chef,dish)
-                       ,names_to = "category")
+        # cleandisheslong %>%
+        #   pivot_longer(!c(series,season,seasonNumber,episode,chef,dish)
+        #                ,names_to = "category")
+
+## Season 21
+  s21 <- cleandisheslong %>%
+    filter(seasonNumber == 21)
+
+  s21 %>%
+    group_by(dish) %>%
+    summarise(n=n()) %>%
+    arrange(desc(n)) %>%
+    print(n=100)
+
+
+  sort(unique(s21$dish))
+
+  # trends
+    trendynumbers <- disheswide %>%
+      filter(trend == 1 & seasonNumber %in% c(1,2,21)) %>%
+      select(seasonNumber,episode,chef,dish)
+
+    for (t in trends) {
+      trendynumbers[,t] <- 0
+      trendynumbers[grepl(t,trendynumbers$dish),t] <- 1
+    }
+
+
+    trendynumbers <- trendynumbers %>%
+      select(!dish) %>%
+      pivot_longer(!c(seasonNumber,episode,chef)
+                   ,names_to = "trend"
+                   ,values_to = "yesno") %>%
+      group_by(seasonNumber,trend) %>%
+      summarise(numberofdishes=sum(yesno)) %>%
+      pivot_wider(names_from =seasonNumber,values_from = numberofdishes)
+
+    table(disheswide$seasonNumber[disheswide$noheat == 1])
+    table(disheswide$seasonNumber[disheswide$duotrio == 1])
+
+      # compared to total # of dishes
+        totaldishes <- disheswide %>%
+          filter(seasonNumber %in% c(1,2,21)) %>%
+          group_by(seasonNumber) %>%
+          summarise(n=n())
+
+      # aguachile, confit, croquette, duo/trio, emulsion, foam, gel, mousse
+        #, No heat , risotto, scallop
+
+
 
 
 
