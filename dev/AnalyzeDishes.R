@@ -196,7 +196,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     }
 
   # No heat was used
-    noheatdishes <- c("aguachile","carpaccio","crudo","ceviche","crudites"
+    noheatdishes <- c("aguachile","carpaccio","crudo","ceviche","crudite"
                       ,"futomake","nigiri","poke","sashimi")
     disheswide$noheat <- 0
     for (nh in noheatdishes) {
