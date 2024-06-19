@@ -5,6 +5,7 @@ rm(list=ls())
 library(tidyverse)
 library(stringr)
 library(topChef)
+library(openxlsx)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -52,10 +53,11 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Alcohol
     alcohols <- c("amaretto","baileys","beer","bourbon"
-                  ,"brandy","brut","cachaca","champagne"
+                  ,"brandy","brut","cachaca","champagne","chartreuse"
                   ,"cognac","grissini","guinness","gran marnier"
                   ,"liqueur","merlot","mezcal"
-                  ,"mojito","moscato","pernod","sambuca","wine")
+                  ,"mojito","moscato","pernod","rum"
+                  ,"sambuca","sherry","wine")
     disheswide$alcohol <- 0
     for (a in alcohols) {
       disheswide$alcohol[grepl(a,disheswide$dish)  ] <- 1
@@ -88,9 +90,10 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Cheese
     cheeses <- c("asiago","cheddar","cheese","chevre","bechamel","brie"
-                 ,"camembert","feta","fromage","gouda"
+                 ,"burrata","camembert","dunbarton blue","feta","fromage"
+                 ,"gouda","gorgonzola"
                  ,"mozzarella","d'ambert","halloumi","manchego","mascarpone"
-                 ,"parmesan","pecorino")
+                 ,"mornay","parmesan","pecorino")
 
     disheswide$cheese <- 0
     for (c in cheeses) {
@@ -100,7 +103,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Citrus
   ## issue with searching for lemon is lemongrass
     citruses <- c("lime","lemon","grapefruit","orange","tangelo","satsuma"
-                  ,"nectarine","yuzu")
+                  ,"nectarine","yuzu","citrus")
     disheswide$citrus <- 0
     for (c in citruses) {
       disheswide$citrus[grepl(c,disheswide$dish)  ] <- 1
@@ -108,7 +111,9 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     #disheswide$citrus[disheswide$dish == "lemongrass"] <- 0
 
   # Dessert
-    desserts <- c("ice cream","cannoli","gelato","haupia","poundcake","sorbet")
+    # a few times cannolis are savory
+    desserts <- c("ice cream","cannoli","gelato","haupia","poundcake"
+                  ,"sorbet","granita")
     disheswide$dessert <- 0
     for (d in desserts) {
       disheswide$dessert[grepl(d,disheswide$dish)  ] <- 1
@@ -166,14 +171,15 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     }
 
   # Grains
-    grains <- c("couscous","rice","congee","bulgar","wheatberr")
+    grains <- c("couscous","rice","congee","bulgar","wheatberr","farro"
+                ,"barley","cornmeal","corn-meal","grits","oatmeal")
     disheswide$grain <- 0
     for (g in grains) {
       disheswide$grain[grepl(g,disheswide$dish)  ] <- 1
     }
 
   # Greens
-    greens <- c("cabbage","chard","kale","dandelion","kombu","collard-greens"
+    greens <- c("cabbage","chard","kale","dandelion","kombu","collard"
                 ,"lettuce","micro-greens","nori","sea-bean")
     disheswide$green <- 0
     for (g in greens) {
@@ -183,7 +189,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Herbs
     herbs <- c("cilantro","parsley","dill","caraway","herb","juniper","mint"
                ,"thyme","rosemary","cumin","oregano","lavendar"
-               ,"gremolata")
+               ,"gremolata","basil","chimichurri")
     disheswide$herb <- 0
     for (h in herbs) {
       disheswide$herb[grepl(h,disheswide$dish)  ] <- 1
@@ -191,14 +197,14 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # No heat was used
     noheatdishes <- c("aguachile","carpaccio","crudo","ceviche","crudites"
-                      ,"futomake","poke","sashimi")
+                      ,"futomake","nigiri","poke","sashimi")
     disheswide$noheat <- 0
     for (nh in noheatdishes) {
       disheswide$noheat[grepl(nh,disheswide$dish)  ] <- 1
     }
 
   # Nuts & legumes
-    nuts <- c("cannellini","macadamia","nut","edamame"
+    nuts <- c("cannellini","macadamia","nut","edamame","pistachio"
               ,"peanut","pecan","chickpea","garbanzo","lentil","pepita"
               ,"almond")
     disheswide$nut <- 0
@@ -215,7 +221,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     }
 
   # Pasta & noodles
-    pastas <- c("agnolotti","fettuccini","spaghetti"
+    pastas <- c("agnolotti","fettuccini","spaghetti"," mac "
                 ,"gnocchi","gnudi","lasagna","linguine","macaroni","cannellonis"
                 ,"cappellini","fettulini","orecchiette","noodle")
 
@@ -226,7 +232,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Peppers/chilis
     peppers <- c("scotch-bonnet","aji-amarillo","calabrian","guajillo","chili"
-                 ,"chile","habanero","jalapeno","jalapeño","poblano","pepper")
+                 ,"chile","habanero","jalapeno","jalapeño","poblano","pepper"
+                 ,"hatch ","shishito","serrano","fresno")
     disheswide$pepper <- 0
     for (p in peppers) {
       disheswide$pepper[grepl(p,disheswide$dish)  ] <- 1
@@ -264,10 +271,12 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     disheswide$sauce[grepl("bechamel sauce",disheswide$dish)] <- "bechamel sauce"
     disheswide$sauce[grepl("beurre blanc",disheswide$dish)] <- "beurre blanc"
     disheswide$sauce[grepl("cream sauce",disheswide$dish)] <- "cream sauce"
+    disheswide$sauce[grepl("mornay",disheswide$dish)] <- "mornay"
     disheswide$sauce[grepl("pesto",disheswide$dish)] <- "pesto"
     disheswide$sauce[grepl("pipian",disheswide$dish)] <- "pipian"
     disheswide$sauce[grepl("pistou",disheswide$dish)] <- "pistou"
     disheswide$sauce[grepl("ponzo",disheswide$dish)] <- "ponzo"
+    disheswide$sauce[grepl("ponzu",disheswide$dish)] <- "ponzu"
     disheswide$sauce[grepl("sambal",disheswide$dish)] <- "sambal"
     disheswide$sauce[grepl("aioli",disheswide$dish) |
                        grepl("mayo",disheswide$dish)] <- "aioli/mayo"
@@ -280,7 +289,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   ## and when people just put a dish into the shell but don't use it
     shellfishes <- c("abalone","clam","cockle","conch","crab"
                      ,"crawfish","crayfish" ,"crustacean","scallop","geoduck"
-                     ,"hama","lobster","oyster","shrimp")
+                     ,"hama","lobster","oyster","shrimp","prawn")
 
     disheswide$shellfish <- 0
     for (sf in shellfishes) {
@@ -297,7 +306,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Starch (vegetables)
     starches <- c("beet","squash","corn","potato","lotus","pomme"
-                  ,"plantain","platano")
+                  ,"plantain","platano","yucca")
     disheswide$starch <- 0
     for (s in starches) {
       disheswide$starch[grepl(s,disheswide$dish)  ] <- 1
@@ -311,9 +320,10 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     }
 
   # Vegetables (other)
-    veggies <- c("celery","celeriac-root","mushroom"
+    veggies <- c("celery","celeriac-root","mushroom","daikon","radish"
                  ,"coleslaw","cucumber","green-beans","avocado","eggplant"
-                 ,"maitake","pea","pea-shoot","okra","artichoke","sunchoke")
+                 ,"maitake","pea","pea-shoot","okra","artichoke","sunchoke"
+                 ,"parsnip","zucchini")
 
     disheswide$vegetable <- 0
     for (v in veggies) {
@@ -364,60 +374,106 @@ cleandishes <- disheswide %>%
   # remove plurals
   # combine things like flambee/flambeed
   # have to split up the gsubs cuz it got too long
-    cleandishes$dish <-
-        gsub(" almonds "," almond ",
-        gsub(" anchovies "," anchovy ",
-        gsub("apples","apple",
-        gsub(" artichokes"," artichoke",
-        gsub(" acorn squash"," acorn-squash",
-        gsub(" a la "," a-la ",
-        gsub("au jus","au-jus",
-        gsub(" balls","-balls",
-        gsub(" ball","-ball",
-        gsub("bok choy","bok-choy",
-        gsub("banana foster","banana-foster",
-        gsub("bananas foster","bananas-foster",
-        gsub(" butternut squash"," butternut-squash",
-        gsub(" bananas"," banana",
-        gsub(" bell pepper"," bell-pepper",
-        gsub(" bell-peppers"," bell-pepper",
-        gsub(" biscuits"," biscuit",
-        gsub(" beets"," beet ",
-        gsub(" cakes"," cake",
-        gsub(" carrots"," carrot",
-        gsub(" chanterelles"," chanterelle",
-        gsub(" cherries"," cherry",
-        gsub(" cheeses"," cheese",
-        gsub(" clams"," clam",
-        gsub(" cockles"," cockle",
-        gsub(" cookies"," cookie",
-        gsub(" cornichons"," cornichon",
-        gsub(" crabs"," crab",
-        gsub("croquettes","croquette",
-        gsub("croutons","crouton",
-        gsub("crumbles","crumble",
-        gsub("cucumbers","cucumber",
-        gsub(" creme fraiche"," creme-fraiche",
-        gsub(" chip","-chip",
-        gsub(" desserts"," dessert",
-        gsub("diver-scallops","diver-scallop",
-        gsub("deep fried","deep-fried",
-        gsub("diver scallop","diver-scallop",
-        gsub("dover sole","dover-sole",
-        gsub("dungeness crab","dungeness-crab",
-        gsub("endives","endive",
-        gsub("endives","endive",
-        gsub(" eels"," eel",
-        gsub(" eggs"," egg",
-        gsub(" dogs"," dog",
-        gsub(" feet","-feet",
-        gsub(" figs"," fig",
-        gsub("funnel cake"," funnel-cake",
-        gsub("green bean","green-bean"
-     ,cleandishes$dish)))))))))))))))))))))))))))))))))))))))))))))))))
+
+    # Nuts
+    cleandishes$dish <-gsub(" almonds "," almond ",
+                       gsub("pistachios","pistachio",
+                       gsub("hazelnuts","hazelnut",
+                       gsub("pecans","pecan",
+                       gsub("peanuts","peanut",
+                      cleandishes$dish)))))
+
+    # meat
+    cleandishes$dish <-gsub("flank steak","flank-stead",
+                        gsub("rib eye","rib-eye",
+                        gsub("au jus","au-jus",
+                        gsub("coq au vin","coq-au-vin",
+                        gsub("au vin","au-vin",
+                        gsub(" balls","-balls",
+                        gsub(" ball","-ball",
+                        gsub(" eggs"," egg",
+                        gsub(" dogs"," dog",
+                        gsub(" feet","-feet",
+                        gsub("foie gras","foie-gras" ,
+                        gsub("foie gras","foie-gras" ,
+                        gsub("filet mignon","filet-mignon",
+                        gsub("hotdogs","hotdog",
+                        gsub("kidneys","kidney",
+                        gsub(" leg ","-leg ",
+                        gsub("legs","leg",
+                        gsub("meatballs","meatball",
+                        gsub(" pork bell"," pork-bell",
+                        gsub("pork bell","pork-bell",
+                        gsub("short rib","short-rib",
+                      cleandishes$dish)))))))))))))))))))))
+
+    # pastry, baked stuff, cooking methods
+    cleandishes$dish <- gsub(" cakes"," cake",
+                        gsub("croquettes","croquette",
+                        gsub("croutons","crouton",
+                        gsub("crumbles","crumble",
+                        gsub("deep fried","deep-fried",
+                        gsub(" biscuits"," biscuit",
+                        gsub(" chip","-chip",
+                        gsub("empanadas","empanada",
+                        gsub("enchiladas","enchilada",
+                        gsub("petite fours","petite-fours",
+                        gsub("flambe","flambeed",
+                        gsub("foamed","foam",
+                        gsub("glazed","glaze",
+                        gsub("hoe cake","hoe-cake",
+                        gsub("seeds","seed",
+                        gsub("purees","puree",
+                        gsub("sous vide","sous-vide",
+                        gsub("angel hair","angel-hair",
+                       cleandishes$dish))))))))))))))))))
+
+    # desserts
+      cleandishes$dish <- gsub("bread pudding","bread-pudding",
+                          gsub("panna cotta","panna-cotta",
+                          gsub("ice cream","ice-cream",
+                          gsub("funnel cake","funnel-cake",
+                          gsub(" desserts"," dessert",
+                          gsub("banana foster","banana-foster",
+                          gsub("bananas foster","bananas-foster",
+                          gsub(" cookies"," cookie",
+                          gsub("french toast","french-toast",
+                          gsub("pastry cream","pastry-cream",
+                          gsub("milk chocolate","milk-chocolate",
+                          gsub("dark chocolate","dark-chocolate",
+                          gsub("white chocolate","white-chocolate",
+                          gsub("rice pudding","rice-pudding",
+                          gsub("whipped cream","whipped-cream",
+                          gsub("whipping cream","whipping-cream",
+                          gsub("clotted cream","clotted-cream",
+                          gsub(" creme fraiche"," creme-fraiche",
+                         cleandishes$dish))))))))))))))))))
+
+    # seafood
+      cleandishes$dish <-gsub(" anchovies "," anchovy ",
+                              gsub("alaskan cod","alaskan-cod",
+                              gsub(" crabs"," crab",
+                              gsub(" eels"," eel",
+                              gsub("diver-scallops","diver-scallop",
+                              gsub("deep fried","deep-fried",
+                              gsub("diver scallop","diver-scallop",
+                              gsub("dover sole","dover-sole",
+                              gsub("dungeness crab","dungeness-crab",
+                              gsub(" clams"," clam",
+                              gsub(" cockles"," cockle",
+                              gsub("manila clam","manila-clam",
+                              gsub("mussels","mussel",
+                              gsub("king salmon","king-salmon",
+                              gsub("king crab","king-crab",
+                              gsub("rainbow trout","rainbow-trout",
+                              gsub(" sea bass"," sea-bass",
+                              gsub(" sea bream"," sea-bream",
+                              gsub("scallops","scallop",
+                              cleandishes$dish)))))))))))))))))))
 
     # Mushrooms
-      cleandishes$dish <- gsub("button mushroom","button-mushroom",
+      cleandishes$dish <- gsub(" chanterelles"," chanterelle",
+                          gsub("button mushroom","button-mushroom",
                           gsub("chanterelle mushroom","chanterelle-mushroom",
                           gsub("cremini mushroom","cremini-mushroom",
                           gsub("maitake mushroom","maitake-mushroom",
@@ -425,78 +481,103 @@ cleandishes <- disheswide %>%
                           gsub("oyster mushroom","oyster-mushroom",
                           gsub("portobello mushroom","portobello-mushroom",
                           gsub("shitake mushroom","shitake-mushroom",
+                          gsub("mushrooms","mushroom",
                           cleandishes$dish
-                          ))))))))
+                          ))))))))))
 
-    cleandishes$dish <- gsub("empanadas","empanada",
-            gsub("aji amarillo","aji-amarillo",
-            gsub("bread pudding","bread-pudding",
-            gsub("capers","caper",
-            gsub("chiles","chile",
-            gsub("chives","chive",
-            gsub("enchiladas","enchilada",
-            gsub("filet mignon","filet-mignon",
-            gsub("flambe","flambeed",
-            gsub("foamed","foam",
-            gsub("foie gras","foie-gras" ,
-            gsub("foie gras","foie-gras" ,
-            gsub("fruits","fruit",
-            gsub("french toast","french-toast",
-            gsub("glazed","glaze",
-            gsub("grapes","grape",
-            gsub("hazelnuts","hazelnut",
-            gsub("heads","head",
-            gsub("hearts","heart",
-            gsub("hoe cake","hoe-cake",
-            gsub("hotdogs","hotdog",
-            gsub(" ice cream"," ice-cream",
-            gsub("kidneys","kidney",
-            gsub("kim chee","kimchi",
-            gsub("kimchee","kimchi",
-            gsub(" leg ","-leg ",
-            gsub("legs","leg",
-            gsub("leeks","leek",
-            gsub("leaves","leaf",
-            gsub("lentils","lentil",
-            gsub("manila clam","manila-clam",
-            gsub("gran marnier","gran-marnier",
-            gsub("meatballs","meatball",
-            gsub("mojitos","mojito",
-            gsub("mushrooms","mushroom",
-            gsub("mussels","mussel",
-            gsub("napa cabbage","napa-cabbage",
-            gsub("alaskan cod","alaskan-cod",
-            gsub("panna cotta","panna-cotta",
-            gsub("peaches"," peach",
-            gsub(" pork bell"," pork-bell",
-            gsub("petite fours","petite-fours",
+      # produce
+      cleandishes$dish <- gsub("apples","apple",
+                gsub(" artichokes"," artichoke",
+                gsub(" acorn squash"," acorn-squash",
+                gsub(" a la "," a-la ",
+                gsub("bok choy","bok-choy",
+                gsub(" butternut squash"," butternut-squash",
+                gsub(" bananas"," banana",
+                gsub(" bell pepper"," bell-pepper",
+                gsub(" bell-peppers"," bell-pepper",
+                gsub(" beets"," beet ",
+                gsub(" carrots"," carrot",
+                gsub(" cherries"," cherry",
+                gsub(" cheeses"," cheese",
+                gsub(" cornichons"," cornichon",
+                gsub("cucumbers","cucumber",
+                gsub("endives","endive",
+                gsub("endives","endive",
+                gsub(" figs"," fig",
+                gsub("green bean","green-bean"
+               ,cleandishes$dish)))))))))))))))))))
 
-            cleandishes$dish
-            ))))))))))))))))))))))))))))))))))))))))))
+        cleandishes$dish <- gsub("aji amarillo","aji-amarillo",
+                gsub("capers","caper",
+                gsub("chiles","chile",
+                gsub("chives","chive",
+                gsub("fruits","fruit",
+                gsub("grapes","grape",
+                gsub("heads","head",
+                gsub("hearts","heart",
+                gsub("kim chee","kimchi",
+                gsub("kimchee","kimchi",
+                gsub("leeks","leek",
+                gsub("leaves","leaf",
+                gsub("lentils","lentil",
+                gsub("gran marnier","gran-marnier",
+                gsub("mojitos","mojito",
+                gsub("napa cabbage","napa-cabbage",
+                gsub("peaches"," peach",
+                gsub("anana lea","anana-lea",
+                gsub("bamboo shoot","bamboo-shoot",
+               cleandishes$dish)))))))))))))))))))
 
-    cleandishes$dish <- gsub("kalamata olive","kalamata-olive",
-                      gsub("king salmon","king-salmon",
-                      gsub("king crab","king-crab",
+        cleandishes$dish <- gsub("kalamata olive","kalamata-olive",
                       gsub("mandarin orange","mandarin-orange",
                       gsub("collard greens","collard-greens",
+                      gsub("collards","collard-greens",
                       gsub("celeriac root","celeriac-root",
                       gsub("cranberries","cranberry",
                       gsub("plums","plum",
-                      gsub("pistachios","pistachio",
                       gsub("plantains","plantains",
-                      gsub("pecans","pecan",
-                      gsub("scallops","scallop",
-                      gsub("peanuts","peanut",
-                      gsub("rainbow trout","rainbow-trout",
                       gsub("scotch bonnet","scotch-bonnet",
-                      gsub(" sea bass"," sea-bass",
-                      gsub(" sea bream"," sea-bream",
                       gsub("sea beans","sea-bean",
                       gsub(" sweet potato"," sweet-potato",
+                      gsub("tomatoes","tomato",
+                      gsub("tomatos","tomato",
                       gsub(" wood "," wood-",
+                     cleandishes$dish))))))))))))))
+
+    # colors
+    cleandishes$dish <- gsub("black pepper","black-pepper",
+                      gsub("black chicken","black-chicken",
+                      gsub("black garlic","black-garlic",
+                      gsub("black forest","black-forest",
+                      gsub("black truffle","black-truffle",
+                      gsub("black bass","black-bass",
+                      gsub("black tea","black-tea",
+                      gsub("black olive","black-olive",
+                      gsub("black bean","black-bean",
+                      gsub("black rice","black-rce",
+                      gsub("black sesame","black-sesame",
+                      gsub("red snapper","red-snapper",
+                      gsub("red miso","red-miso",
+                      gsub("white truffle","white-truffle",
+                      gsub("white pepper","white-pepper",
+                      gsub("white miso","white-miso",
                       gsub("white fish","white-fish",
+                      gsub("green chartreuse","green-chartreuse",
+                      gsub("green goddess","green-goddess",
+                      gsub("green olive","green-olive",
       cleandishes$dish
-      )))))))))))))))))))))
+      ))))))))))))))))))))
+
+    # sauces
+    cleandishes$dish <- gsub("bechamel sauce","bechamel-sauce",
+            gsub("beurre blanc","beurre-blanc",
+            gsub("cream sauce","cream-sauce",
+            gsub("soy sauce","soy-sauce",
+            gsub("fish sauce","fish-sauce",
+            cleandishes$dish
+            )))))
+
+
 
 ## Prep the data for analysis
   # reshape the data
@@ -517,36 +598,43 @@ cleandishes <- disheswide %>%
 
 
 # ## Summary analyses
-#   # Number of times a word shows up
-    wordtimes <- cleandisheslong %>%
-      group_by(series,dish) %>%
-      summarise(totaltimesused=n()) %>%
-      arrange(desc(totaltimesused))
+## Specific word
+    #   # Number of times a word shows up
+        wordtimes <- cleandisheslong %>%
+          group_by(series,dish) %>%
+          summarise(totaltimesused=n()) %>%
+          arrange(desc(totaltimesused))
 
-#   # number of seasons in which a word shows up
-    wordinseason <- cleandisheslong %>%
-      select(series,season,seasonNumber,dish) %>%
-      distinct() %>%
-      group_by(series,dish) %>%
-      summarise(numberofseasonsusedin = n()) %>%
-      arrange(desc(numberofseasonsusedin))
+    #   # number of seasons in which a word shows up
+        wordinseason <- cleandisheslong %>%
+          select(series,season,seasonNumber,dish) %>%
+          distinct() %>%
+          group_by(series,dish) %>%
+          summarise(numberofseasonsusedin = n()) %>%
+          arrange(desc(numberofseasonsusedin))
 
-#   # number of episodes a word is used in
-    wordinepisodes <- cleandisheslong %>%
-      select(series,season,seasonNumber,episode,dish) %>%
-      distinct() %>%
-      group_by(series,dish) %>%
-      summarise(numberofepisodesusedin = n()) %>%
-      arrange(desc(numberofepisodesusedin))
+    #   # number of episodes a word is used in
+        wordinepisodes <- cleandisheslong %>%
+          select(series,season,seasonNumber,episode,dish) %>%
+          distinct() %>%
+          group_by(series,dish) %>%
+          summarise(numberofepisodesusedin = n()) %>%
+          arrange(desc(numberofepisodesusedin))
 
-#   # Number of episodes within each season
-    wordinseasonnumberofepis <- cleandisheslong %>%
-      select(series,season,seasonNumber,episode,dish) %>%
-      distinct() %>%
-      group_by(series,season,dish) %>%
-      summarise(numberofepisodesusedin = n()) %>%
-      arrange(desc(numberofepisodesusedin)) %>%
-      pivot_wider(names_from=season,values_from=numberofepisodesusedin)
+    #   # Number of episodes within each season
+        wordinseasonnumberofepis <- cleandisheslong %>%
+          select(series,season,seasonNumber,episode,dish) %>%
+          distinct() %>%
+          group_by(series,season,dish) %>%
+          summarise(numberofepisodesusedin = n()) %>%
+          arrange(desc(numberofepisodesusedin)) %>%
+          pivot_wider(names_from=season,values_from=numberofepisodesusedin)
+
+## General type of food
+  #     # Dishes wide
+        cleandisheslong %>%
+          pivot_longer(!c(series,season,seasonNumber,episode,chef,dish)
+                       ,names_to = "category")
 
 
 
