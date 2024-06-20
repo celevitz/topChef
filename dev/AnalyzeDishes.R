@@ -58,8 +58,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
                   ,"brandy","brut","cachaca","champagne","chartreuse"
                   ,"cognac","grissini","guinness","gran marnier"
                   ,"liqueur","merlot","mezcal"
-                  ,"mojito","moscato","pernod","rum"
-                  ,"sambuca","sherry","vermouth","wine")
+                  ,"mojito","moscato","pernod","rum","sake"
+                  ,"sambuca","sherry","shaoxing","vermouth","wine")
     disheswide$alcohol <- 0
     for (a in alcohols) {
       disheswide$alcohol[grepl(a,disheswide$dish)  ] <- 1
@@ -115,8 +115,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Dessert
     # a few times cannolis are savory
     desserts <- c("ice cream","cannoli","gelato","haupia","poundcake"
-                  ,"sorbet","granita","upside down cake","upside-down cake"
-                  ,"dessert")
+                  ,"sorbet","sable","granita","upside down cake"
+                  ,"upside-down cake","dessert")
     disheswide$dessert <- 0
     for (d in desserts) {
       disheswide$dessert[grepl(d,disheswide$dish)  ] <- 1
@@ -161,7 +161,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
                 ,"pear","pomegranate","plum","pineapple"," berry ","cranberr"
                 ,"strawberr","raspberr","blackberr","boisonberr","blueberr"
                 ,"aronia berr","huckleberr","gooseberr","lingonberr","berries"
-                ,"quince")
+                ,"quince","berry","kiwi","nopal")
     disheswide$fruit <- 0
     for (f in fruits) {
       disheswide$fruit[grepl(f,disheswide$dish)  ] <- 1
@@ -169,7 +169,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Game meet (including pheasant, goose)
     games <- c("alligator","bison","boar","elk","frog","goat","goose","kangaroo"
-               ,"lamb","pheasant","ostrich","squab")
+               ,"lamb","pheasant","ostrich","squab","quail")
     disheswide$game <- 0
     for (g in games) {
       disheswide$game[grepl(g,disheswide$dish)  ] <- 1
@@ -228,7 +228,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Pasta & noodles
     pastas <- c("agnolotti","fettuccini","spaghetti"," mac "
                 ,"gnocchi","gnudi","lasagna","linguine","macaroni","cannellonis"
-                ,"cappellini","fettulini","orecchiette","pappardelle","noodle")
+                ,"cappellini","fettulini","orecchiette","pappardelle","noodle"
+                ,"udon","ramen")
 
     disheswide$pasta <- 0
     for (p in pastas) {
@@ -273,7 +274,9 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Sauce types
     disheswide$sauce <- NA
     disheswide$sauce[grepl("bolognese",disheswide$dish)] <- "bolognese"
-    disheswide$sauce[grepl("bechamel sauce",disheswide$dish)] <- "bechamel sauce"
+  disheswide$sauce[grepl("bechamel sauce",disheswide$dish)] <- "bechamel sauce"
+    disheswide$sauce[grepl("bernaise",disheswide$dish) |
+                       grepl("bearnaise",disheswide$dish)  ] <- "bearnaise"
     disheswide$sauce[grepl("beurre blanc",disheswide$dish)] <- "beurre blanc"
     disheswide$sauce[grepl("cream sauce",disheswide$dish)] <- "cream sauce"
     disheswide$sauce[grepl("creme anglais",disheswide$dish)] <- "creme anglais"
@@ -285,6 +288,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     disheswide$sauce[grepl("ponzo",disheswide$dish)] <- "ponzo"
     disheswide$sauce[grepl("ponzu",disheswide$dish)] <- "ponzu"
     disheswide$sauce[grepl("sambal",disheswide$dish)] <- "sambal"
+    disheswide$sauce[grepl("veloute",disheswide$dish)] <- "veloute"
     disheswide$sauce[grepl("aioli",disheswide$dish) |
                        grepl("mayo",disheswide$dish)] <- "aioli/mayo"
     disheswide$sauce[grepl("sauce",disheswide$dish) &
@@ -296,7 +300,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   ## and when people just put a dish into the shell but don't use it
     shellfishes <- c("abalone","clam","cockle","conch","crab"
                      ,"crawfish","crayfish" ,"crustacean","scallop","geoduck"
-                     ,"hama","lobster","oyster","shrimp","prawn")
+                     ,"hama","lobster","langoustine","oyster","shrimp","prawn")
 
     disheswide$shellfish <- 0
     for (sf in shellfishes) {
@@ -304,8 +308,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     }
 
   # Soups, broths, brodos
-    soups <- c("avgolemono","bisque","brodo","broth","chowder","gazpacho"
-               ,"gumbo","pozole")
+    soups <- c("avgolemono","bisque","brodo","broth","chowder","dashi"
+               ,"gazpacho","gumbo","pozole")
     disheswide$soup <- 0
     for (s in soups) {
       disheswide$soup[grepl(s,disheswide$dish)  ] <- 1
@@ -327,9 +331,9 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     }
 
   # Vegetables (other)
-    veggies <- c("celery","celeriac-root","mushroom","daikon","radish"
+    veggies <- c("celery","celeriac root","mushroom","daikon","radish"
                  ,"coleslaw","cucumber","green-beans","avocado","eggplant"
-                 ,"maitake","pea","pea-shoot","okra","artichoke","sunchoke"
+                 ,"maitake","pea","pea shoot","okra","artichoke","sunchoke"
                  ,"parsnip","zucchini")
 
     disheswide$vegetable <- 0
