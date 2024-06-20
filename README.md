@@ -15,6 +15,30 @@ information.
 - Adding in dish for every chef in every challenge
 - Confessional counts
 
+### Difference between version 0.1.0 and upcoming 0.2.0:
+
+- Edits to ‘chefdetails’: added occupation category and added data for
+  season 21
+- Edits to ‘challengedescriptions’: added data for season 21. Updated
+  historical data if it was missing, particularly for seasons 1-3
+- Edits to ‘challengewins’: added data for season 21. Updated historical
+  data, particularly the quickfire challenges to have low/high data. So
+  far, the edits have only been for seasons 1-3
+- Edits to ‘judges’: added data for season 21 and added variables for
+  gender and whether the judge was a person of color.
+- Edits to ‘rewards’: added data for season 21, and added a variable for
+  categorizing reward types.
+- Edits to ‘episodeinfo’: added data for season 21
+- Made tests more rigorous
+- Edits to index function: 1) simplified it to not use tidy, and instead
+  pull in from dplyr; 2) fixed an error that was making the index pull
+  in data for all challenges prior to a specific number of challenges
+  instead of pulling in JUST the specific number of each type of
+  challenge; 3) updated description to say that you cannot have 0 as an
+  input; 4) fix an error that was leading to people getting an incorrect
+  amount of points in episodes where there was an elimination challenge
+  AND a (sudden death quickfire challenge OR a quickfire elimination).
+
 ## 2. Installation
 
 ``` r
@@ -62,16 +86,16 @@ chefdetails
 #> # A tibble: 432 × 14
 #>    name    chef  hometown city  state   age season seasonNumber series placement
 #>    <chr>   <chr> <chr>    <chr> <chr> <dbl> <chr>         <dbl> <chr>      <dbl>
-#>  1 Harold… Haro… <NA>     New … New …    28 San F…            1 US             1
-#>  2 Tiffan… Tiff… <NA>     Las … Neva…    28 San F…            1 US             2
-#>  3 Dave M… Dave… <NA>     Long… Cali…    40 San F…            1 US             3
-#>  4 Lee An… Lee … <NA>     New … New …    28 San F…            1 US             4
-#>  5 Stephe… Step… <NA>     Las … Neva…    24 San F…            1 US             5
-#>  6 Miguel… Migu… <NA>     New … New …    27 San F…            1 US             6
-#>  7 Andrea… Andr… <NA>     New … New …    37 San F…            1 US             7
-#>  8 Lisa P… Lisa… <NA>     Los … Cali…    45 San F…            1 US             8
-#>  9 Candic… Cand… <NA>     Pasa… Cali…    23 San F…            1 US             9
-#> 10 Brian … Bria… <NA>     Los … Cali…    37 San F…            1 US            10
+#>  1 Ross L… Ross… <NA>     St. … Newf…    31 Canad…            6 Canada         1
+#>  2 Mark S… Mark… <NA>     Vanc… Brit…    29 Canad…            6 Canada         2
+#>  3 Jinhee… Jinh… <NA>     Calg… Albe…    38 Canad…            6 Canada         3
+#>  4 JP Mir… JP M. <NA>     Mont… Queb…    30 Canad…            6 Canada         3
+#>  5 Nathan… Nath… <NA>     Sask… Sask…    35 Canad…            6 Canada         5
+#>  6 Darren… Darr… <NA>     Mont… Queb…    27 Canad…            6 Canada         6
+#>  7 Jesse … Jess… <NA>     Sask… Sask…    29 Canad…            6 Canada         7
+#>  8 Matt S… Matt… <NA>     Toro… Onta…    34 Canad…            6 Canada         7
+#>  9 Elia H… Elia… <NA>     Toro… Onta…    37 Canad…            6 Canada         9
+#> 10 Ivana … Ivan… <NA>     Toro… Onta…    33 Canad…            6 Canada        10
 #> # ℹ 422 more rows
 #> # ℹ 4 more variables: personOfColor <chr>, occupation <chr>, gender <chr>,
 #> #   occupation_category <chr>
@@ -84,7 +108,7 @@ compete in.
 
 ``` r
 challengedescriptions 
-#> # A tibble: 657 × 17
+#> # A tibble: 666 × 17
 #>    season   seasonNumber series episode challengeType outcomeType
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>      
 #>  1 Kentucky           16 US           1 Quickfire     Team       
@@ -97,7 +121,7 @@ challengedescriptions
 #>  8 Kentucky           16 US           4 Elimination   Team       
 #>  9 Kentucky           16 US           5 Elimination   Team       
 #> 10 Kentucky           16 US           6 Elimination   Individual 
-#> # ℹ 647 more rows
+#> # ℹ 656 more rows
 #> # ℹ 11 more variables: challengeDescription <chr>, shopTime <chr>,
 #> #   shopBudget <chr>, prepTime <dbl>, cookTime <dbl>, productPlacement <chr>,
 #> #   advantage <chr>, lastChanceKitchenWinnerEnters <chr>,
@@ -111,7 +135,7 @@ A tibble containing win and loss data for each chef in each episode.
 
 ``` r
 challengewins
-#> # A tibble: 9,907 × 10
+#> # A tibble: 10,053 × 10
 #>    season   seasonNumber series episode inCompetition immune chef  challengeType
 #>    <chr>           <dbl> <chr>    <dbl> <lgl>         <lgl>  <chr> <chr>        
 #>  1 All Sta…            8 US           1 TRUE          FALSE  Ange… Quickfire    
@@ -124,7 +148,7 @@ challengewins
 #>  8 All Sta…            8 US           1 TRUE          FALSE  Fabi… Quickfire    
 #>  9 All Sta…            8 US           1 TRUE          FALSE  Jami… Quickfire    
 #> 10 All Sta…            8 US           1 TRUE          FALSE  Jenn… Quickfire    
-#> # ℹ 9,897 more rows
+#> # ℹ 10,043 more rows
 #> # ℹ 2 more variables: outcome <chr>, rating <dbl>
 ```
 
@@ -135,7 +159,7 @@ challenge.
 
 ``` r
 judges 
-#> # A tibble: 775 × 11
+#> # A tibble: 784 × 11
 #>    season   seasonNumber series episode challengeType outcomeType guestJudge    
 #>    <chr>           <dbl> <chr>    <dbl> <chr>         <chr>       <chr>         
 #>  1 Canada 6            6 Canada       2 Quickfire     Individual  Danny Bowien  
@@ -148,7 +172,7 @@ judges
 #>  8 Canada 6            6 Canada       5 Quickfire     Individual  Brandon Olsen 
 #>  9 Canada 6            6 Canada       5 Elimination   Team        Alexandra Fes…
 #> 10 Canada 6            6 Canada       6 Quickfire     Individual  Nicole Gomes  
-#> # ℹ 765 more rows
+#> # ℹ 774 more rows
 #> # ℹ 4 more variables: gender <chr>, personOfColor <chr>, competedOnTC <chr>,
 #> #   otherShows <chr>
 ```
@@ -160,7 +184,7 @@ challenge.
 
 ``` r
 rewards
-#> # A tibble: 339 × 9
+#> # A tibble: 345 × 9
 #>    season       seasonNumber series episode challengeType outcomeType rewardType
 #>    <chr>               <dbl> <chr>    <dbl> <chr>         <chr>       <chr>     
 #>  1 All Stars: …            8 US           1 Elimination   Individual  Money     
@@ -173,7 +197,7 @@ rewards
 #>  8 All Stars: …            8 US           4 Elimination   Team        Prize     
 #>  9 All Stars: …            8 US           5 Quickfire     Individual  Prize     
 #> 10 All Stars: …            8 US           6 Elimination   Team        Prize     
-#> # ℹ 329 more rows
+#> # ℹ 335 more rows
 #> # ℹ 2 more variables: reward <chr>, chef <chr>
 ```
 
@@ -183,7 +207,7 @@ A tibble containing information about each episode.
 
 ``` r
 episodeinfo 
-#> # A tibble: 370 × 8
+#> # A tibble: 372 × 8
 #>    season        seasonNumber series overallEpisodeNumber episode episodeName   
 #>    <chr>                <dbl> <chr>                 <dbl>   <dbl> <chr>         
 #>  1 Canada 6                 6 Canada                   60       1 The Next Wave 
@@ -196,7 +220,7 @@ episodeinfo
 #>  8 Canada 6                 6 Canada                   67       8 Finale Four W…
 #>  9 San Francisco            1 US                        1       1 Who Deserves …
 #> 10 San Francisco            1 US                        2       2 Food of Love  
-#> # ℹ 360 more rows
+#> # ℹ 362 more rows
 #> # ℹ 2 more variables: airDate <date>, nCompetitors <dbl>
 ```
 
