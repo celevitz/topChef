@@ -12,15 +12,21 @@ library(tidyverse)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
-chefdetails <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=1))
-challengewins <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=2))
+chefdetails <- as_tibble(read.xlsx(paste(directory
+                                         ,"TopChefData.xlsx",sep=""),sheet=1))
+challengewins <- as_tibble(read.xlsx(paste(directory
+                                           ,"TopChefData.xlsx",sep=""),sheet=2))
   challengewins$dish <- NULL
   challengewins$notes <- NULL
-challengedescriptions <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=3))
-rewards <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=4))
+challengedescriptions <- as_tibble(read.xlsx(paste(directory
+                                         ,"TopChefData.xlsx",sep=""),sheet=3))
+rewards <- as_tibble(read.xlsx(paste(directory
+                                     ,"TopChefData.xlsx",sep=""),sheet=4))
   rewards$rewardCategory <- NULL
-judges <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=5))
-episodeinfo <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=6))
+judges <- as_tibble(read.xlsx(paste(directory
+                                    ,"TopChefData.xlsx",sep=""),sheet=5))
+episodeinfo <- as_tibble(read.xlsx(paste(directory
+                                         ,"TopChefData.xlsx",sep=""),sheet=6))
   # fix the date
   episodeinfo$airDate <- as.Date(as.numeric(episodeinfo$airDate)
                                   , origin = "1899-12-30")
@@ -83,20 +89,25 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
     chefdetails <- chefdetails %>%
       mutate(occupation_category = case_when(
         occupation %in% c( "Bartender","Chef Educator","Chef/Artist/Father"
-                           ,"Culinary Director","Consultant/Cooking School Owner"
-                           ,"Director of Food & Beverage","Head of Development"
-                           ,"Owner","Pitmaster/Owner"
-                           ,"President","Principal","Vice President of Culinary Arts") ~ "Other"
+                         ,"Culinary Director","Consultant/Cooking School Owner"
+                         ,"Director of Food & Beverage","Head of Development"
+                         ,"Owner","Pitmaster/Owner"
+                         ,"President","Principal"
+                         ,"Vice President of Culinary Arts") ~ "Other"
        ,occupation %in% c("Chef","Chef/Consultant","Head Chef") ~ "Chef"
        ,occupation == "Chef de Cuisine" ~ "Chef de Cuisine"
        ,occupation %in% c("Executive Chef","Exeecutive Chef"
                           ,"Executive Chef/Culinary Director"
                           ,"Executive Chef/General Manager"
-                          ,"Executive Chef/Restaurant Consultant") ~ "Executive Chef"
+                    ,"Executive Chef/Restaurant Consultant") ~ "Executive Chef"
        ,occupation %in% c("Chef/Co-founder","Chef/Co-owner","Chef/Co-Owner"
-                          ,"Chef/Founder","Chef/Owner","Chef/Partner","Chef/Patron"
-                          ,"Chef/Proprieter","Executive Chef/Co-Partner","Executive Chef/Owner","Executive Chef/Partner","Executive Chef/Proprietor") ~ "Executive Chef and Owner/Partner/Founder"
-       ,occupation %in% c("Consultant/Private Caterer","Private Chef","Private Chef/Consultant") ~ "Private chef"
+                      ,"Chef/Founder","Chef/Owner","Chef/Partner","Chef/Patron"
+                        ,"Chef/Proprieter","Executive Chef/Co-Partner"
+                        ,"Executive Chef/Owner","Executive Chef/Partner"
+                        ,"Executive Chef/Proprietor") ~
+                                "Executive Chef and Owner/Partner/Founder"
+       ,occupation %in% c("Consultant/Private Caterer","Private Chef"
+                          ,"Private Chef/Consultant") ~ "Private chef"
        ,occupation %in% c("Executive Sous Chef","Sous Chef") ~ "Sous Chef"))
 
 
