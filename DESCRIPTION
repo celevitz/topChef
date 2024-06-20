@@ -23,7 +23,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    gt (>= 0.9.0),
     magrittr (>= 2.0.0),
     ggplot2 (>= 3.4.0)
 Config/testthat/edition: 3
