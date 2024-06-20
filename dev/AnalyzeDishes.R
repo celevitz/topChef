@@ -6,14 +6,16 @@ library(tidyverse)
 library(stringr)
 library(topChef)
 library(openxlsx)
+library(ggplot2)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
 dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
                               ,sheet=2)) %>%
   filter(inCompetition == TRUE & !(is.na(dish))) %>%
-  select(series,season,seasonNumber,episode,chef,challengeType,dish,outcome) %>%
-  mutate(dish = tolower(dish))
+  select(series,season,seasonNumber,episode,chef,challengeType
+         ,dish,outcome,notes) %>%
+  mutate(dish = tolower(dish),notes=tolower(notes))
 
 
 # spelling mistakes:
@@ -74,7 +76,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     bakedthingies <- c("arayes","beignet","biscuit","bread pudding","cornbread"
                        ,"donut","doughnut","empanada","foccacia","frittata"
                        ,"fritter","meringue","muffin","cobbler","phyllo"
-                       ,"quiche")
+                       ,"quiche","croquette")
     disheswide$baked <- 0
     for (b in bakedthingies) {
       disheswide$baked[grepl(b,disheswide$dish)  ] <- 1
@@ -113,10 +115,12 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Dessert
     # a few times cannolis are savory
     desserts <- c("ice cream","cannoli","gelato","haupia","poundcake"
-                  ,"sorbet","granita")
+                  ,"sorbet","granita","upside down cake","upside-down cake"
+                  ,"dessert")
     disheswide$dessert <- 0
     for (d in desserts) {
       disheswide$dessert[grepl(d,disheswide$dish)  ] <- 1
+      disheswide$dessert[grepl(d,disheswide$notes)  ] <- 1
     }
 
   # Dish includes a drink
@@ -124,6 +128,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     disheswide$drink <- 0
     for (d in drinks) {
       disheswide$drink[grepl(d,disheswide$dish)  ] <- 1
+      disheswide$drink[grepl(d,disheswide$notes)  ] <- 1
     }
 
   # Duo or trio
@@ -139,8 +144,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
             ,"branzino","calamari","sardine"
             ,"catfish","caviar","cod","dorade","dory","eel","escolar","flounder"
             ,"futomake","gravalax","grouper","halibut","hamachi","ikura"
-            ,"lionfish","mackerel","monkfish","dover-sole","octopus","perch"
-            ,"rainbow-trout","king-salmon","sea-bass","snapper","squid"
+            ,"lionfish","mackerel","monkfish","dover sole","octopus","perch"
+            ,"rainbow-trout","king salmon","sea bass","snapper","squid"
             ,"trout","tuna","opah","opakapaka","poke","poi","sashimi","salmon"
             ,"osetra","walleye")
 
@@ -180,7 +185,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Greens
     greens <- c("cabbage","chard","kale","dandelion","kombu","collard"
-                ,"lettuce","micro-greens","nori","sea-bean")
+                ,"lettuce","micro-greens","nori","sea bean","seaweed")
     disheswide$green <- 0
     for (g in greens) {
       disheswide$green[grepl(g,disheswide$dish)  ] <- 1
@@ -197,7 +202,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # No heat was used
     noheatdishes <- c("aguachile","carpaccio","crudo","ceviche","crudite"
-                      ,"futomake","nigiri","poke","sashimi")
+                      ,"futomake","leche de tigre","nigiri","poke","sashimi")
     disheswide$noheat <- 0
     for (nh in noheatdishes) {
       disheswide$noheat[grepl(nh,disheswide$dish)  ] <- 1
@@ -271,6 +276,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     disheswide$sauce[grepl("bechamel sauce",disheswide$dish)] <- "bechamel sauce"
     disheswide$sauce[grepl("beurre blanc",disheswide$dish)] <- "beurre blanc"
     disheswide$sauce[grepl("cream sauce",disheswide$dish)] <- "cream sauce"
+    disheswide$sauce[grepl("creme anglais",disheswide$dish)] <- "creme anglais"
     disheswide$sauce[grepl("mornay",disheswide$dish)] <- "mornay"
     disheswide$sauce[grepl(" mole",disheswide$dish)] <- "mole"
     disheswide$sauce[grepl("pesto",disheswide$dish)] <- "pesto"
@@ -334,10 +340,11 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # What do I think are the trendy things?
     trends <- c("confit","conserva","consomme","deconstructed","emulsion"
                 ,"espuma","foam","gel","mousse","risotto","scallop"
-                ,"aguachile","croquette","sous vide","tartare")
-    disheswide$trend <- 0
+                ,"ceviche","aguachile","croquette","sous vide","tartare")
+    disheswide$trend <- NA
     for (t in trends) {
-      disheswide$trend[grepl(t,disheswide$dish)  ] <- 1
+      disheswide$trend[grepl(t,disheswide$dish)  ] <- t
+      disheswide$trend[grepl(t,disheswide$notes)  ] <- t
     }
 
 ###############################################################################
@@ -346,7 +353,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
 ## Clean the dish data:
 cleandishes <- disheswide %>%
-  select(!c(outcome,challengeType))
+  select(!c(outcome,challengeType,notes))
 
   # for things that are often together (e.g., ____ chip), combine them
   # remove plurals
@@ -355,12 +362,13 @@ cleandishes <- disheswide %>%
 
     # Nuts
     cleandishes$dish <-gsub(" almonds "," almond ",
+                       gsub("almonds ","almond ",
                        gsub("pistachios","pistachio",
                        gsub("hazelnuts","hazelnut",
                        gsub("pecans","pecan",
                        gsub("peanuts","peanut",
                        gsub("nuts","nut",
-                      cleandishes$dish))))))
+                      cleandishes$dish)))))))
 
     # meat
     cleandishes$dish <-gsub("flank steak","flank-stead",
@@ -388,6 +396,7 @@ cleandishes <- disheswide %>%
 
     # pastry, baked stuff, cooking methods
     cleandishes$dish <- gsub(" cakes"," cake",
+                        gsub("chips","chip",
                         gsub("croquettes","croquette",
                         gsub("croutons","crouton",
                         gsub("crumbles","crumble",
@@ -396,17 +405,20 @@ cleandishes <- disheswide %>%
                         gsub(" chip","-chip",
                         gsub("empanadas","empanada",
                         gsub("enchiladas","enchilada",
+                        gsub("leche de tigre","leche-de-tigre",
                         gsub("petite fours","petite-fours",
                         gsub("flambe","flambeed",
+                        gsub("fritters","fritter",
                         gsub("foamed","foam",
                         gsub("glazed","glaze",
                         gsub("hoe cake","hoe-cake",
                         gsub("seeds","seed",
+                        gsub("pizzas","pizza",
                         gsub("purees","puree",
                         gsub("sous vide","sous-vide",
                         gsub("angel hair","angel-hair",
                         gsub("sauces","sauce",
-                       cleandishes$dish)))))))))))))))))))
+                       cleandishes$dish)))))))))))))))))))))))
 
     # desserts
       cleandishes$dish <- gsub("bread pudding","bread-pudding",
@@ -426,14 +438,18 @@ cleandishes <- disheswide %>%
                           gsub("whipped cream","whipped-cream",
                           gsub("whipping cream","whipping-cream",
                           gsub("clotted cream","clotted-cream",
-                          gsub(" creme fraiche"," creme-fraiche",
-                         cleandishes$dish))))))))))))))))))
+                          gsub("condensed milk","condensed-milk",
+                          gsub("creme fraiche","creme-fraiche",
+                          gsub("creme anglaise","creme-anglaise",
+                         cleandishes$dish))))))))))))))))))))
 
     # seafood
       cleandishes$dish <-gsub(" anchovies "," anchovy ",
+                              gsub("angulas","angula",
                               gsub("alaskan cod","alaskan-cod",
                               gsub(" crabs"," crab",
                               gsub(" eels"," eel",
+                              gsub("eels","eel",
                               gsub("diver-scallops","diver-scallop",
                               gsub("deep fried","deep-fried",
                               gsub("diver scallop","diver-scallop",
@@ -449,7 +465,7 @@ cleandishes <- disheswide %>%
                               gsub(" sea bass"," sea-bass",
                               gsub(" sea bream"," sea-bream",
                               gsub("scallops","scallop",
-                              cleandishes$dish)))))))))))))))))))
+                              cleandishes$dish)))))))))))))))))))))
 
     # Mushrooms
       cleandishes$dish <- gsub(" chanterelles"," chanterelle",
@@ -474,7 +490,8 @@ cleandishes <- disheswide %>%
                 gsub(" butternut squash"," butternut-squash",
                 gsub(" bananas"," banana",
                 gsub(" bell pepper"," bell-pepper",
-                gsub(" bell-peppers"," bell-pepper",
+                gsub(" bell peppers"," bell-pepper",
+                gsub("bell-peppers","bell-pepper",
                 gsub(" beets"," beet ",
                 gsub(" carrots"," carrot",
                 gsub(" cherries"," cherry",
@@ -487,7 +504,7 @@ cleandishes <- disheswide %>%
                 gsub("green bean","green-bean",
                 gsub("herbs","herb",
                 gsub("herbes fines","herb"
-               ,cleandishes$dish)))))))))))))))))))))
+               ,cleandishes$dish))))))))))))))))))))))
 
         cleandishes$dish <- gsub("aji amarillo","aji-amarillo",
                 gsub("capers","caper",
@@ -497,6 +514,7 @@ cleandishes <- disheswide %>%
                 gsub("grapes","grape",
                 gsub("heads","head",
                 gsub("hearts","heart",
+                gsub("hops","hop",
                 gsub("kim chee","kimchi",
                 gsub("kimchee","kimchi",
                 gsub("leeks","leek",
@@ -508,24 +526,26 @@ cleandishes <- disheswide %>%
                 gsub("peaches"," peach",
                 gsub("anana lea","anana-lea",
                 gsub("bamboo shoot","bamboo-shoot",
-               cleandishes$dish)))))))))))))))))))
+               cleandishes$dish))))))))))))))))))))
 
         cleandishes$dish <- gsub("kalamata olive","kalamata-olive",
                       gsub("mandarin orange","mandarin-orange",
                       gsub("collard greens","collard-greens",
                       gsub("collards","collard-greens",
                       gsub("celeriac root","celeriac-root",
+                      gsub("kernels","kernel",
                       gsub("cranberries","cranberry",
+                      gsub("raspberries","raspberry",
                       gsub("olive oil","olive-oil",
                       gsub("plums","plum",
                       gsub("plantains","plantains",
                       gsub("scotch bonnet","scotch-bonnet",
                       gsub("sea beans","sea-bean",
                       gsub(" sweet potato"," sweet-potato",
-                      gsub("tomatoes","tomato",
-                      gsub("tomatos","tomato",
+                      gsub("omatoes","omato",
+                      gsub("omatos","omato",
                       gsub(" wood "," wood-",
-                     cleandishes$dish)))))))))))))))
+                     cleandishes$dish)))))))))))))))))
 
     # colors
     cleandishes$dish <- gsub("black pepper","black-pepper",
@@ -601,7 +621,10 @@ cleandishes <- disheswide %>%
                starch == 0 & tea == 0 & vegetable == 0 & is.na(trend)) %>%
       select(dish) %>%
       distinct()
-
+  # clean the data
+    cleandisheslong <- cleandisheslong %>%
+      filter(!(dish %in% c("-","3","1","10","+","15","15-minute","2","20"
+                           ,"30","4","40","5","a"," ")) & !(is.na(dish)))
 
 # ## Summary analyses
 ## Specific word
@@ -636,6 +659,33 @@ cleandishes <- disheswide %>%
           arrange(desc(numberofepisodesusedin)) %>%
           pivot_wider(names_from=season,values_from=numberofepisodesusedin)
 
+    #   # first time a word shows up
+        firstappearance <- cleandisheslong %>%
+          group_by(dish) %>%
+          left_join(topChef::episodeinfo %>%
+                  select(series,seasonNumber,episode,overallEpisodeNumber)) %>%
+          mutate(minep = min(overallEpisodeNumber)) %>%
+          filter(minep == overallEpisodeNumber) %>%
+          select(season,seasonNumber,episode,dish) %>%
+          distinct()
+##############################################################################
+## Trends of words
+    # Time trend
+        timetrend <- cleandisheslong %>%
+          group_by(seasonNumber,dish) %>%
+          summarise(n=n()) %>%
+          # how many times does this actually show up?
+          ungroup() %>% group_by(dish) %>%
+          mutate(N=sum(n)) %>%
+          arrange(seasonNumber,desc(N),dish) %>%
+          filter(dish != "") %>%
+          pivot_wider(names_from=seasonNumber,values_from=n)
+
+
+        timetrend %>%
+          ggplot(aes(x=seasonNumber,y=n)) +
+          geom_point()
+
 ## General type of food
   #     # Dishes wide
         # cleandisheslong %>%
@@ -657,7 +707,7 @@ cleandishes <- disheswide %>%
 
   # trends
     trendynumbers <- disheswide %>%
-      filter(trend == 1 & seasonNumber %in% c(1,2,21)) %>%
+      filter(!is.na(trend) & seasonNumber %in% c(1,2,21)) %>%
       select(seasonNumber,episode,chef,dish)
 
     for (t in trends) {
