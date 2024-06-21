@@ -6,6 +6,7 @@ library(stringr)
 library(topChef)
 library(openxlsx)
 library(ggplot2)
+library(tidyverse)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -64,20 +65,32 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
       print("Number of chefs whose dishes had word/s of interest by season")
       print(table(chefs$seasonNumber))
 
-      ## win vs not or something?
+      ## outcomes of dishes with the word/s of interest
+      print("Outcomes of dishes with the word/s of interest")
+      print(table(basicdata$outcome))
 }
 
-wordorwordsofinterest <- c("aguachile","carpaccio","crudo","ceviche","crudite"
-                         ,"futomake","leche de tigre","nigiri","poke","sashimi")
+
 seriesname <- "US"
-wordtrend("US",wordorwordsofinterest)
+wordtrend("US",c("aguachile","carpaccio","crudo","ceviche","crudite"
+                 ,"futomake","leche de tigre","nigiri","poke","sashimi"))
 
-
-
-
-
-
-
+wordtrend("US",c("risotto"))
+wordtrend("US",c("duo","trio","3-ways","3 ways","2 ways","2-ways","three ways"
+                 ,"two ways","dual"))
+wordtrend("US",c("foam","gel","mousse","snow"))
+wordtrend("US",c("compressed"))
+wordtrend("US",c("sous vide"))
+wordtrend("US",c("dashi"))
+wordtrend("US",c("plantain"))
+wordtrend("US",c("pickle","pikliz"))
+wordtrend("US",c("sunchoke","jerusalem artichoke"))
+wordtrend("US",c("tuile"))
+wordtrend("US",c("scallop"))
+wordtrend("US",c("bacon"))
+wordtrend("US",c("foie gras"))
+wordtrend("US",c("beet"))
+wordtrend("US",c("gazpacho"))
 
 
 
