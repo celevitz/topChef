@@ -169,7 +169,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Game meet (including pheasant, goose)
     games <- c("alligator","bison","boar","elk","frog","goat","goose","kangaroo"
-               ,"lamb","pheasant","ostrich","squab","quail")
+               ,"lamb","pheasant","ostrich","squab","quail","antelope")
     disheswide$game <- 0
     for (g in games) {
       disheswide$game[grepl(g,disheswide$dish)  ] <- 1
@@ -219,7 +219,8 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
 
   # Offal
   # issue with looking for heart - things like "artichoke heart"
-    offals <- c("kidney","liver","sweetbread","sweetbreads","heart","tongue")
+    offals <- c("kidney","liver","sweetbread","sweetbreads","heart","tongue"
+                ,"lengua")
     disheswide$offal <- 0
     for (o in offals) {
       disheswide$offal[grepl(o,disheswide$dish)  ] <- 1
@@ -229,7 +230,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
     pastas <- c("agnolotti","fettuccini","spaghetti"," mac "
                 ,"gnocchi","gnudi","lasagna","linguine","macaroni","cannellonis"
                 ,"cappellini","fettulini","orecchiette","pappardelle","noodle"
-                ,"udon","ramen")
+                ,"udon","ramen","tortellini","ravioli","raviolo")
 
     disheswide$pasta <- 0
     for (p in pastas) {
