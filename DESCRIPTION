@@ -5,7 +5,7 @@ Version: 0.2.0
 Authors@R: person("Levitz", "Carly E", email = "celevitz@gmail.com"
                 , role = c("cre","aut","cph")
                 ,comment = c(ORCID = "0000-0003-3094-411X"))
-Author: Levitz Carly E [aut,cre]
+Author: Levitz Carly E [cre,aut,cph]
 Maintainer: Levitz Carly E <celevitz@gmail.com>
 Description: Several datasets which describe the chef contestants in Top Chef, 
     the challenges that they compete in, and the results of those challenges. 
