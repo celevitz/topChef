@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Levitz Carly E \email{celevitz@gmail.com} [copyright holder]
+\strong{Maintainer}: Levitz Carly E \email{celevitz@gmail.com} (\href{https://orcid.org/0000-0003-3094-411X}{ORCID}) [copyright holder]
 
 }
 \keyword{internal}
