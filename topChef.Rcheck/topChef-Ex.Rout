@@ -1,0 +1,343 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "topChef"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> library('topChef')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("challengedescriptions")
+> ### * challengedescriptions
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: challengedescriptions
+> ### Title: challengedescriptions
+> ### Aliases: challengedescriptions
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> challengedescriptions %>%
++    group_by(series,season,outcomeType) %>%
++    summarise(n=n()) %>%
++    pivot_wider(names_from=outcomeType,values_from=n)
+`summarise()` has grouped output by 'series', 'season'. You can override using
+the `.groups` argument.
+# A tibble: 27 × 4
+# Groups:   series, season [27]
+   series season              Individual  Team
+   <chr>  <chr>                    <int> <int>
+ 1 Canada Canada 6                    14     2
+ 2 US     All Stars: New York         22     8
+ 3 US     All-Stars L.A.              18     6
+ 4 US     Boston                      21     6
+ 5 US     California                  20     6
+ 6 US     Charleston                  17     7
+ 7 US     Chicago                     18     9
+ 8 US     Colorado                    19     6
+ 9 US     D.C.                        21     6
+10 US     Houston                     17     7
+# ℹ 17 more rows
+> 
+> 
+> 
+> cleanEx()
+
+detaching ‘package:tidyr’, ‘package:dplyr’
+
+> nameEx("challengewins")
+> ### * challengewins
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: challengewins
+> ### Title: challengewins
+> ### Aliases: challengewins
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> challengewins %>%
++   group_by(outcome) %>%
++   summarise(n=n())
+# A tibble: 13 × 2
+   outcome            n
+   <chr>          <int>
+ 1 BUBBLE             2
+ 2 DIDN'T COMPETE     7
+ 3 DISQUALIFIED       1
+ 4 HIGH             894
+ 5 IN              2599
+ 6 LOW             1110
+ 7 OUT              378
+ 8 QUALIFIED         34
+ 9 RUNNER-UP         41
+10 WIN              743
+11 WINNER            27
+12 WITHDREW           4
+13 <NA>            4213
+> 
+> 
+> 
+> cleanEx()
+
+detaching ‘package:tidyr’, ‘package:dplyr’
+
+> nameEx("chefdetails")
+> ### * chefdetails
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: chefdetails
+> ### Title: chefdetails
+> ### Aliases: chefdetails
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> chefdetails %>%
++   filter(season == "World All Stars")
+# A tibble: 16 × 14
+   name    chef  hometown city  state   age season seasonNumber series placement
+   <chr>   <chr> <chr>    <chr> <chr> <dbl> <chr>         <dbl> <chr>      <dbl>
+ 1 Kah-wa… Budd… Port Do… Broo… New …    NA World…           20 US             1
+ 2 Gabrie… Gabr… Iztapal… Madr… Spain    NA World…           20 US             2
+ 3 Sara B… Sara… Paducah  Padu… Kent…    NA World…           20 US             2
+ 4 Ali Gh… Ali … Irbid, … Amman Jord…    NA World…           20 US             4
+ 5 Tom Go… Tom … Mainz, … <NA>  Germ…    NA World…           20 US             5
+ 6 Amar S… Amar… Dominic… Sant… Cali…    NA World…           20 US             6
+ 7 Victoi… Vict… Brazzav… Milan Italy    NA World…           20 US             7
+ 8 Nicole… Nico… Richmon… Vanc… Brit…    NA World…           20 US             8
+ 9 Charbe… Char… Beirut,… Lake… Flor…    25 World…           20 US             9
+10 Dale M… Dale… Saskato… Sask… Sask…    NA World…           20 US            10
+11 Sylwia… Sylw… Lublin,… Lubl… Pola…    NA World…           20 US            11
+12 Begona… Bego… Valenci… Vale… Spain    NA World…           20 US            12
+13 Lucian… Luci… Salvado… Lond… Engl…    NA World…           20 US            13
+14 May Ph… May … Chiang … Bang… Thai…    NA World…           20 US            14
+15 Dawn B… Dawn… Philade… Hous… Texas    NA World…           20 US            15
+16 Samuel… Samu… Soucell… Ange… Fran…    NA World…           20 US            16
+# ℹ 4 more variables: personOfColor <chr>, occupation <chr>, gender <chr>,
+#   occupation_category <chr>
+> 
+> 
+> 
+> cleanEx()
+
+detaching ‘package:tidyr’, ‘package:dplyr’
+
+> nameEx("episodeinfo")
+> ### * episodeinfo
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: episodeinfo
+> ### Title: episodeinfo
+> ### Aliases: episodeinfo
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> episodeinfo %>% filter(season=="World All Stars")
+# A tibble: 14 × 8
+   season          seasonNumber series overallEpisodeNumber episode episodeName 
+   <chr>                  <dbl> <chr>                 <dbl>   <dbl> <chr>       
+ 1 World All Stars           20 US                      289       1 London Call…
+ 2 World All Stars           20 US                      290       2 Rice Rice, …
+ 3 World All Stars           20 US                      291       3 Cheeky Pint…
+ 4 World All Stars           20 US                      292       4 Spurred Lin…
+ 5 World All Stars           20 US                      293       5 Holiday Vac…
+ 6 World All Stars           20 US                      294       6 Top Chef is…
+ 7 World All Stars           20 US                      295       7 Hands Off   
+ 8 World All Stars           20 US                      296       8 Street Food…
+ 9 World All Stars           20 US                      297       9 Restaurant …
+10 World All Stars           20 US                      298      10 Thali Time  
+11 World All Stars           20 US                      299      11 Battle of t…
+12 World All Stars           20 US                      300      12 Goodbye, Lo…
+13 World All Stars           20 US                      301      13 Champions i…
+14 World All Stars           20 US                      302      14 Fin.        
+# ℹ 2 more variables: airDate <date>, nCompetitors <dbl>
+> 
+> 
+> 
+> cleanEx()
+
+detaching ‘package:tidyr’, ‘package:dplyr’
+
+> nameEx("judges")
+> ### * judges
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: judges
+> ### Title: judges
+> ### Aliases: judges
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> judges %>%
++   filter(guestJudge == "Eric Ripert") %>%
++   group_by(challengeType) %>%
++   summarise(n=n())
+# A tibble: 2 × 2
+  challengeType     n
+  <chr>         <int>
+1 Elimination      13
+2 Quickfire         5
+> 
+> 
+> 
+> cleanEx()
+
+detaching ‘package:tidyr’, ‘package:dplyr’
+
+> nameEx("rewards")
+> ### * rewards
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: rewards
+> ### Title: rewards
+> ### Aliases: rewards
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> library(dplyr)
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+> library(tidyr)
+> rewards %>%
++   filter(rewardType == "Money") %>%
++   mutate(reward=as.numeric(reward)) %>%
++   group_by(season) %>%
++   summarise(total=sum(reward))
+# A tibble: 22 × 2
+   season               total
+   <chr>                <dbl>
+ 1 All Stars: New York 135000
+ 2 All-Stars L.A.       75000
+ 3 Boston               30000
+ 4 California           25000
+ 5 Canada 6             23000
+ 6 Charleston           20000
+ 7 Colorado             60000
+ 8 D.C.                 90000
+ 9 Houston              80000
+10 Kentucky             50000
+# ℹ 12 more rows
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cleanEx()
+
+detaching ‘package:tidyr’, ‘package:dplyr’
+
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  0.355 0.02 0.376 0 0 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')
