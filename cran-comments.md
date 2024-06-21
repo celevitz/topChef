@@ -1,12 +1,12 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note
+0 errors | 0 warnings | 0 notes
 
-* This is a new release.
-
-Based on feedback from CRAN submission reviewer, I renamed a section of my
-readme to better reflect content. I also removed the print() command from within
-my function.
+* Note from submitter: I could not install miktext since it isn't available 
+for the version of R that I have (4.4.0). Same with pdflatex. Additionally, I 
+have reviewed the items under the spellcheck and am comfortable with the words
+as they are listed. Most of them are the names of the datasets, and the others
+are package names or content-specific words that make sense.
 
 ## Test environments
 - R-hub windows-x86_64-devel (r-devel)
@@ -31,7 +31,7 @@ my function.
     'lastMiKTeXException'
     
     Note from submitter: I could not install miktext since it isn't available 
-    for the version of R that I have (4.2.3). Same with pdflatex.
+    for the version of R that I have (4.4.0). Same with pdflatex.
 
 ❯ On ubuntu-gcc-release (r-release)
   checking CRAN incoming feasibility ... [6s/13s] NOTE
