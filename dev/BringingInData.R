@@ -37,7 +37,7 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory
 #  gsub("ö",as.character(iconv("ö","UTF-8","latin1","Unicode"))
 #       ,chefdetails$name[grepl("ö",chefdetails$name)])
 #
-#   chefdetails$name[stri_enc_mark(chefdetails$name) == "UTF-8"]
+#   chefdetails$name[(chefdetails$name) == "UTF-8"]
 #   chefdetails$chef[stri_enc_mark(chefdetails$chef) == "UTF-8"]
 #   chefdetails$occupation[stri_enc_mark(chefdetails$occupation) == "UTF-8"]
 #   chefdetails$hometown[stri_enc_mark(chefdetails$hometown) == "UTF-8"]
@@ -46,11 +46,11 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory
 #   episodeinfo$episode_name[stri_enc_mark(episodeinfo$episode_name) == "UTF-8"]
 #   judges$guestjudge[stri_enc_mark(judges$guestjudge) == "UTF-8"]
 #   challengewins$chef[stri_enc_mark(challengewins$chef) == "UTF-8"]
-   # challengedescriptions$shop.budget[stri_enc_mark(challengedescriptions$shop.budget) == "UTF-8"]
-   # challengedescriptions$shop.time[stri_enc_mark(challengedescriptions$shop.time) == "UTF-8"]
-   # challengedescriptions$product.placement[stri_enc_mark(challengedescriptions$product.placement) == "UTF-8"]
-   # challengedescriptions$Last.Chance.Kitchen.winner.enters[stri_enc_mark(challengedescriptions$Last.Chance.Kitchen.winner.enters) == "UTF-8"]
-   # challengedescriptions$advantage[stri_enc_mark(challengedescriptions$advantage) == "UTF-8"]
+# challengedescriptions$shop.budget[stri_enc_mark(challengedescriptions$shop.budget) == "UTF-8"]
+# challengedescriptions$shop.time[stri_enc_mark(challengedescriptions$shop.time) == "UTF-8"]
+# challengedescriptions$product.placement[stri_enc_mark(challengedescriptions$product.placement) == "UTF-8"]
+# challengedescriptions$Last.Chance.Kitchen.winner.enters[stri_enc_mark(challengedescriptions$Last.Chance.Kitchen.winner.enters) == "UTF-8"]
+# challengedescriptions$advantage[stri_enc_mark(challengedescriptions$advantage) == "UTF-8"]
 #   rewards$reward[stri_enc_mark(rewards$reward) == "UTF-8"]
 #   rewards$chef[stri_enc_mark(rewards$chef) == "UTF-8"]
 #   asc <- function(x) { strtoi(charToRaw(x),16L)}
