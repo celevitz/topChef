@@ -14,6 +14,7 @@ rm(list=ls())
 
 library(tidyverse)
 library(topChef)
+library(ggplot2)
 
 finalfours <- topChef::chefdetails %>%
   filter(series=="US" &
@@ -185,6 +186,53 @@ challoutcomes <- topChef::challengewins %>%
       arrange(stdev,numberofepisodesbeforeF4) %>%
       print(n=21)
 
+
+################################################################################
+## How do winners compare to the rest of the final fours, at the end of the season?
+  # Chose 17 challenges as the number for the index function, cuz that's more than the most in a season
+
+    final4stats <- weightedindex("US",1,17,17)
+    for (season in seq(2,21,1)) {
+      final4stats <- rbind(final4stats,weightedindex("US",season,17,17))
+
+    }
+
+    final4stats <- final4stats %>%
+      # keep just the final 4s
+      filter(placement <= 4) %>%
+      # get win/high percents & low/out percents
+      mutate(winhigh = (Elimination.HIGH+Quickfire.HIGH+Elimination.WIN+
+                          Quickfire.WIN)/
+                       (Elimination.HIGH+Quickfire.HIGH+Elimination.WIN+
+                          Quickfire.WIN + Elimination.LOW + Quickfire.LOW +
+                          Elimination.OUT)
+             ,lowout =  (Elimination.LOW+Quickfire.LOW+Elimination.OUT)/
+               (Elimination.HIGH+Quickfire.HIGH+Elimination.WIN+
+                  Quickfire.WIN + Elimination.LOW + Quickfire.LOW +
+                  Elimination.OUT)
+             ,win = (Elimination.WIN+ Quickfire.WIN)/
+               (Elimination.HIGH+Quickfire.HIGH+Elimination.WIN+
+                  Quickfire.WIN + Elimination.LOW + Quickfire.LOW +
+                  Elimination.OUT)
+             ,high = (Elimination.HIGH+Quickfire.HIGH)/
+               (Elimination.HIGH+Quickfire.HIGH+Elimination.WIN+
+                  Quickfire.WIN + Elimination.LOW + Quickfire.LOW +
+                  Elimination.OUT)
+             ,placement=as.character(placement))
+
+
+
+  final4stats %>%
+    ggplot(aes(x=win,y=high,color=placement,shape=placement)) +
+    geom_point()
+
+  final4stats %>%
+    ggplot(aes(x=win,y=winhigh,color=placement,shape=placement)) +
+    geom_point()
+
+  cor(final4stats$win,final4stats$high)
+  cor.test(final4stats$win,final4stats$high)
+  cor.test(final4stats$winhigh,final4stats$win)
 
 
 
