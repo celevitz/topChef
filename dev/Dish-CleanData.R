@@ -72,7 +72,8 @@ cleandishes$dish
 # places
 cleandishes$dish <-gsub("new york","new-york",
 gsub("new zealand","new-zealand",
-cleandishes$dish))
+gsub("new england","new-england",
+cleandishes$dish)))
 
 # Nuts
 cleandishes$dish <-gsub("almonds","almond",
@@ -92,26 +93,31 @@ gsub("au vin","au-vin",
 gsub("burnt ends","burnt-ends",
 gsub(" balls","-balls",
 gsub(" ball","-ball",
+gsub("blood sausage","blood-sausage",
 gsub("eggs","egg",
 gsub("dogs","dog",
 gsub(" feet","-feet",
 gsub("foie gras","foie-gras" ,
 gsub("filet mignon","filet-mignon",
+gsub("flank steak","flank-steak",
 gsub("guineafowl","guinea-fowl",
 gsub("guinea fowl","guinea-fowl",
 gsub("kidneys","kidney",
 gsub(" leg","-leg",
 gsub("legs","leg",
 gsub("meatballs","meatball",
+gsub("patty melt","patty-melt",
+gsub("petite filet","petite-filet",
 gsub(" pork bell"," pork-bell",
 gsub("pork bell","pork-bell",
 gsub("short rib","short-rib",
 gsub("top round","top-round",
-cleandishes$dish)))))))))))))))))))))))
+cleandishes$dish)))))))))))))))))))))))))))
 
 
 # kinda random stuff
 cleandishes$dish <- gsub("chips","chip",
+gsub("balsamic vinegar","balsamic-vinegar",
 gsub("corn cake","corn-cake",
 gsub("croquettes","croquette",
 gsub("croutons","crouton",
@@ -138,7 +144,7 @@ gsub("angel hair","angel-hair",
 gsub("stir fr","stir-fr",
 gsub("sauces","sauce",
 gsub("wild rice","wild-rice",
-cleandishes$dish)))))))))))))))))))))))))))
+cleandishes$dish))))))))))))))))))))))))))))
 
 # desserts
 cleandishes$dish <- gsub("bread pudding","bread-pudding",
@@ -168,9 +174,11 @@ gsub("dark chocolate","dark-chocolate",
 gsub("white chocolate","white-chocolate",
 gsub("muffins","muffin",
 gsub("rice pudding","rice-pudding",
+gsub("sour cream","sour-cream",
+gsub("tarte tatin","tarte-tatin",
 gsub("whipped cream","whipped-cream",
 gsub("whipping cream","whipping-cream",
-cleandishes$dish)))))))))))))))))))))))))))))
+cleandishes$dish)))))))))))))))))))))))))))))))
 
 # seafood
 cleandishes$dish <-gsub("anchovies","anchovy",
@@ -192,9 +200,10 @@ gsub("king crab","king-crab",
 gsub("rainbow trout","rainbow-trout",
 gsub("sea bass","sea-bass",
 gsub("sea bream","sea-bream",
+gsub("sea eel","sea-eel",
 gsub("scallops","scallop",
 gsub("squid ink","squid-ink",
-cleandishes$dish)))))))))))))))))))))
+cleandishes$dish))))))))))))))))))))))
 
 # Mushrooms
 cleandishes$dish <- gsub(" chanterelles"," chanterelle",
@@ -238,13 +247,16 @@ gsub("endives","endive",
 gsub("endives","endive",
 gsub("figs","fig",
 gsub("green bean","green-bean",
+gsub("green onion","green-onion",
 gsub("herbs","herb",
 gsub("herbes fines","herb",
 gsub("lotus root","lotus-root",
+gsub("onions","onion",
 gsub("taro root","taro-root",
-cleandishes$dish))))))))))))))))))))))))))))
+cleandishes$dish))))))))))))))))))))))))))))))
 
 cleandishes$dish <- gsub("aji amarillo","aji-amarillo",
+gsub("baby potat","baby-potat",
 gsub("brussel sprout","brussels-sprout",
 gsub("brussels sprout","brussels-sprout",
 gsub("bok choy","bok-choy",
@@ -267,11 +279,13 @@ gsub("gran marnier","gran-marnier",
 gsub("mojitos","mojito",
 gsub("napa cabbage","napa-cabbage",
 gsub("peaches"," peach",
+gsub("pico de gallo","pico-de-gallo",
 gsub("bamboo shoot","bamboo-shoot",
 gsub("scallions","scallion",
 gsub("sprouts","sprout",
 gsub("shallots","shallot",
-cleandishes$dish)))))))))))))))))))))))))))
+gsub("sweet chili","sweet-chili",
+cleandishes$dish))))))))))))))))))))))))))))))
 
 cleandishes$dish <- gsub("kalamata olive","kalamata-olive",
 gsub("asian pear","asian-pear",
@@ -311,6 +325,7 @@ gsub("black bean","black-bean",
 gsub("black rice","black-rce",
 gsub("black sesame","black-sesame",
 gsub("blood orange","blood-orange",
+gsub("blue crab","blue-crab",
 gsub("oranges","orange",
 gsub("red snapper","red-snapper",
 gsub("red miso","red-miso",
@@ -324,7 +339,7 @@ gsub("green goddess","green-goddess",
 gsub("green olive","green-olive",
 gsub("mole negro","mole-negro",
 cleandishes$dish
-)))))))))))))))))))))))))
+))))))))))))))))))))))))))
 
 # sauces
 cleandishes$dish <- gsub("bechamel sauce","bechamel-sauce",
@@ -342,7 +357,7 @@ cleandisheslong <- cleandishes %>%
   separate_longer_delim(dish, delim = " ") %>%
   # remove non-dishes
   filter(!(dish %in% c("1","10","14","15","15minute","2","20","3","30","4"
-                       ,"40","5","a","","my","myself","-"
+                       ,"40","5","a","","my","myself","-","aka"
                        ,"including","en","an","the","not","shown","on","n/a"
                        ,"of","in","with","wtih","and"
                        ,"everything","but")))

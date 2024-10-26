@@ -115,7 +115,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
   # Dessert
     # a few times cannolis are savory
     desserts <- c("ice cream","cannoli","gelato","haupia","poundcake"
-                  ,"sorbet","sable","granita","upside down cake"
+                  ,"sorbet","sable","granita","upside down cake","pie"
                   ,"upside-down cake","dessert","sable","granita")
     disheswide$dessert <- 0
     for (d in desserts) {
