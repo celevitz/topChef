@@ -24,7 +24,7 @@ placement %>%
   mutate(percent = POC/(POC+white)*100) %>%
   print(n=21)
 
-confs <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=7)) %>%
+confs <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep=""),sheet=9)) %>%
   left_join(placement) %>%
   filter(inCompetition == TRUE) %>%
   mutate(aftersecondallstars = ifelse(seasonNumber>=18,"after","17orbefore"))

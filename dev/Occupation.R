@@ -34,14 +34,14 @@ occupations %>%
   arrange(occupation) %>%
   distinct()
 
-
 # occupations
 occupationsovertime <- occupations %>%
   group_by(series,seasonNumber) %>%
   mutate(id=paste0(name,seasonNumber,series)
          ,chefsperseason=n()) %>%
   select(!c(name,chef,season,placement,occupation)) %>%
-  pivot_longer(!c(id,seasonNumber,series,chefsperseason),names_to="occupationcategory",values_to="value") %>%
+  pivot_longer(!c(id,seasonNumber,series,chefsperseason)
+               ,names_to="occupationcategory",values_to="value") %>%
   filter(!(is.na(value))) %>%
   group_by(series,seasonNumber,chefsperseason,occupationcategory) %>%
   summarise(n=n()) %>%
@@ -71,4 +71,11 @@ consolidated %>%
   geom_point() +
   geom_line() +
   scale_shape_manual(values=seq(1:11))
+
+## Get a table to put into Word
+data.frame(consolidated %>%
+  filter(series == "US") %>%
+  arrange(occupationcategory,percent,n)
+)
+
 
