@@ -124,6 +124,9 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
       select(series,chef,name) %>% distinct() %>%
       summarise(n=n()) %>% filter(n>1)
 
+    # rewards: each row is a single chef
+    rewards %>% filter(grepl(",",chef))
+
 
 ## save things as RDA
 
