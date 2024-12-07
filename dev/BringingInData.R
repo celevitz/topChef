@@ -110,6 +110,20 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
                           ,"Private Chef/Consultant") ~ "Private chef"
        ,occupation %in% c("Executive Sous Chef","Sous Chef") ~ "Sous Chef"))
 
+## Do some data validation
+    # Challenge wins
+    table(challengewins$inCompetition,challengewins$outcome)
+    table(challengewins$inCompetition,challengewins$immune)
+    challengewins %>% group_by(series,season,chef) %>%
+      filter(outcome %in% "OUT") %>%
+      summarise(n=n()) %>%
+      filter(n<1)
+
+    # chef details
+    chefdetails %>% group_by(series,chef) %>%
+      select(series,chef,name) %>% distinct() %>%
+      summarise(n=n()) %>% filter(n>1)
+
 
 ## save things as RDA
 
