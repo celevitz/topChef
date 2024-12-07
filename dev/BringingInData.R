@@ -121,4 +121,23 @@ save(judges, file = "data/judges.rda")
 save(episodeinfo, file = "data/episodeinfo.rda")
 
 
+## save as CSV for my own use later
+write.csv(chefdetails
+          ,paste0(directory,"/topChef/Top Chef - Chef details.csv")
+          ,row.names=FALSE)
+write.csv(challengewins
+          ,paste0(directory,"topChef/Top Chef - Challenge wins.csv")
+          ,row.names=FALSE)
+write.csv(challengedescriptions
+          ,paste0(directory,"/topChef/Top Chef - Challenge descriptions.csv")
+          ,row.names=FALSE)
+write.csv(rewards
+          ,paste0(directory,"/topChef/Top Chef - Rewards.csv")
+          ,row.names=FALSE)
+write.csv(judges
+          ,paste0(directory,"/topChef/Top Chef - Guest judges.csv")
+          ,row.names=FALSE)
+write.csv(episodeinfo
+          ,paste0(directory,"/topChef/Top Chef - Episode information.csv")
+          ,row.names=FALSE)
 
