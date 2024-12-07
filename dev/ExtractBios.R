@@ -85,3 +85,10 @@ table(is.na(bios$biotext))
 
 write.csv(bios,paste(directory,"topChef/TopChefBios.csv"),row.names=F)
 
+##### Second step
+bios <- read.csv("/Users/carlylevitz/Documents/Data/topChef/TopChefBios.csv"
+                 ,header = TRUE)
+
+
+
+

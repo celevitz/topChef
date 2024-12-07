@@ -78,7 +78,7 @@ wordtrend("US",c("aguachile","carpaccio","crudo","ceviche","crudite"
 wordtrend("US",c("risotto"))
 wordtrend("US",c("duo","trio","3-ways","3 ways","2 ways","2-ways","three ways"
                  ,"two ways","dual"))
-wordtrend("US",c("foam","gel","mousse","snow"))
+wordtrend("US",c("foam","gel","mousse","snow","espuma"))
 wordtrend("US",c("compressed"))
 wordtrend("US",c("sous vide"))
 wordtrend("US",c("dashi"))
