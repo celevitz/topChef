@@ -23,7 +23,7 @@ challengedescriptions <- as_tibble(read.xlsx(paste(directory
 rewards <- as_tibble(read.xlsx(paste(directory
                                      ,"TopChefData.xlsx",sep=""),sheet=4))
   # drop the advantages
-  rewards <- rewards %>% filter(rewardCategory != "advantage")
+  rewards <- rewards %>% filter(!(rewardCategory %in% "advantage"))
   rewards$rewardCategory <- NULL
 judges <- as_tibble(read.xlsx(paste(directory
                                     ,"TopChefData.xlsx",sep=""),sheet=5))
