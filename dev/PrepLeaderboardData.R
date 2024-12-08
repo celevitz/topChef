@@ -143,16 +143,67 @@ challengewins <- challengewins_raw %>%
     mutate(EliminationWinRate=EliminationWon/EliminationCompetedIn
            ,QuickfireWinRate = QuickfireWon/QuickfireCompetedIn)
 
-## advantages???
-
-## keep only the US ones
-
-
-
+## advantages??
   alldata <- chefdetails %>%
     left_join(challengestats) %>%
-    left_join(rewards)
+    left_join(rewards) %>%
+    filter(series %in% "US")
+
+  # overall win rate
+  for (var in names(alldata)[8:length(alldata)]) {
+    alldata[is.na(alldata[,var]),var] <- 0
+  }
+
+  alldata <- alldata %>%
+    mutate(OverallWinRate = (EliminationWon + QuickfireWon)/(EliminationCompetedIn+QuickfireCompetedIn))
 
 write.csv(alldata
-          ,paste0(directory,"Top Chef - Data for Data Wrapper.csv")
+          ,paste0(directory,"Top Chef - Full Individual Stats.csv")
           ,row.names=FALSE)
+
+
+
+### GOATs
+  goats <- alldata %>%
+    filter((OverallWinRate>=.26 |
+             EliminationTop >= 7 |
+             episodeswon >=2) & EliminationCompetedIn > 3
+             ) %>%
+    arrange(desc(OverallWinRate),desc(EliminationTop)) %>%
+    select(!c(series,chefkey,chef,EliminationWonIndiv,QuickfireWonIndiv
+              ,QuickfireTop,EliminationBottom,QuickfireBottom
+              ,immunities,rewardswon,moneywon
+              ,EliminationWon,QuickfireWon))
+
+  goats <- goats[,c("name","season","seasonnumberasstring","placement"
+                    ,"OverallWinRate","EliminationWinRate","EliminationCompetedIn"
+                    ,"EliminationTop","QuickfireWinRate","QuickfireCompetedIn"
+                    ,"episodeswon")]
+
+
+  write.csv(goats
+            ,paste0(directory,"Top Chef - GOATs.csv")
+            ,row.names=FALSE)
+
+### Winners
+  winners <- alldata %>%
+    filter(placement==1) %>%
+    arrange(desc(EliminationWon),desc(QuickfireWon)) %>%
+    mutate(individualwinrate = EliminationWonIndiv/EliminationWon) %>%
+    select(!c(series,season,chefkey,chef,placement,QuickfireWonIndiv
+              ,rewardswon,immunities,EliminationWonIndiv))
+
+  winners <- winners[,c("name","seasonnumberasstring"
+                        ,"EliminationWon","individualwinrate","EliminationTop"
+                        ,"EliminationBottom","EliminationCompetedIn"
+                        ,"QuickfireWon","QuickfireTop","QuickfireBottom"
+                        ,"QuickfireCompetedIn","OverallWinRate"
+                        ,"EliminationWinRate","QuickfireWinRate"
+                        ,"episodeswon","moneywon")]
+  write.csv(winners
+            ,paste0(directory,"Top Chef - Winners.csv")
+            ,row.names=FALSE)
+
+
+
+
