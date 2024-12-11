@@ -102,6 +102,23 @@ challenges %>%
   ungroup() %>% group_by(outcomeType) %>%
   summarise(averageplacement = mean(placement,na.rm=T))
 
+## Straight-up elimination challenges
+challenges %>%
+  filter(series == "US" ) %>%
+  left_join(challengedescriptions %>% select(season,seasonNumber,series,episode
+                                             ,challengeType,outcomeType)) %>%
+  # First Elimination challenge
+  filter(challengeType %in% c("Elimination")) %>%
+  group_by(season) %>%
+  mutate(episodeflag = min(episode,na.rm=T)) %>%
+  # keep just the winners from that episode
+  filter(outcome %in% "WIN" & episodeflag == episode) %>%
+  left_join(chefs %>% select(season,seasonNumber,series,chef,placement)) %>%
+  select(season,seasonNumber,chef,placement,outcomeType) %>%
+  distinct() %>%
+  ungroup() %>% group_by(outcomeType) %>%
+  summarise(averageplacement = mean(placement,na.rm=T))
+
 ####################################################################
 statsbynumberofchalls <- challenges %>%
   filter(seasonNumber == 21) %>%
