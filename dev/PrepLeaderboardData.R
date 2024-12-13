@@ -14,6 +14,7 @@ challengewins_raw <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 challengedescriptions_raw<- read.csv(paste0(directory
                                     ,"Top Chef - Challenge descriptions.csv"))
 rewards_raw<- read.csv(paste0(directory,"Top Chef - Rewards.csv"))
+rewards_raw <- rewards_raw %>% filter(series == "US")
 judges_raw<- read.csv(paste0(directory,"Top Chef - Guest judges.csv"))
 episodeinfo_raw<-read.csv(paste0(directory,"Top Chef - Episode information.csv"))
 
@@ -25,7 +26,8 @@ chefdetails <- chefdetails_raw %>%
                                        ,paste0("0",as.character(seasonNumber))
                                        ,as.character(seasonNumber))
     ,chefkey = paste(series,seasonnumberasstring,season,name,sep="-")) %>%
-  select(name,series,season,seasonnumberasstring,chefkey,chef,placement)
+  select(name,series,season,seasonnumberasstring,chefkey,chef,placement) %>%
+  filter(series == "US")
 
 challengewins <- challengewins_raw %>%
   full_join(challengedescriptions_raw %>%
@@ -51,7 +53,8 @@ challengewins <- challengewins_raw %>%
   full_join(chefdetails %>%
              select(series,season,seasonnumberasstring,name,chef,chefkey)) %>%
   filter(inCompetition == TRUE &
-           challengeTypeCondensed %in% c("Elimination","Quickfire")) %>%
+           challengeTypeCondensed %in% c("Elimination","Quickfire") &
+          series == "US") %>%
   select(!c(series,season,seasonNumber,inCompetition,challengeType,rating))
 
 ## count how many rewards total and then Keep just the $ and that
@@ -72,6 +75,8 @@ challengewins <- challengewins_raw %>%
     select(!c(b,c)) %>%
     mutate(money = as.numeric(gsub(",","",gsub("\\$","",money)))) %>%
     summarise(moneywon=sum(money))
+
+## Number of individual elimination challenges
 
 ## Challenge statistics
   challengestats <- chefdetails %>% left_join(
@@ -99,6 +104,14 @@ challengewins <- challengewins_raw %>%
       summarise(won=n()) %>%
       pivot_wider(names_from=challengeTypeCondensed,values_from=won) %>%
       rename(EliminationWonIndiv=Elimination,QuickfireWonIndiv=Quickfire)
+    ) %>% left_join(
+    # number individual elimination challenges competed in
+      challengewins %>%
+        filter(outcomeType == "Individual" &
+                 challengeTypeCondensed == "Elimination" &
+                 !(outcome %in% c("DIDN'T COMPETE"))) %>%
+        group_by(chefkey) %>%
+        summarise(numberindividualelimchalls=n())
     ) %>% left_join(
     # number top
     challengewins %>%
@@ -144,6 +157,8 @@ challengewins <- challengewins_raw %>%
            ,QuickfireWinRate = QuickfireWon/QuickfireCompetedIn)
 
 ## advantages??
+  # not yet coded
+## Bring all data together
   alldata <- chefdetails %>%
     left_join(challengestats) %>%
     left_join(rewards) %>%
@@ -189,12 +204,14 @@ write.csv(alldata
   winners <- alldata %>%
     filter(placement==1) %>%
     arrange(desc(EliminationWon),desc(QuickfireWon)) %>%
-    mutate(individualwinrate = EliminationWonIndiv/EliminationWon) %>%
+    mutate(individualwinrate = EliminationWonIndiv/EliminationWon
+           ,indivwinrateoutofindivchalls = EliminationWonIndiv/numberindividualelimchalls) %>%
     select(!c(series,season,chefkey,chef,placement,QuickfireWonIndiv
               ,rewardswon,immunities,EliminationWonIndiv))
 
   winners <- winners[,c("name","seasonnumberasstring"
-                        ,"EliminationWon","individualwinrate","EliminationTop"
+                        ,"EliminationWon","individualwinrate"
+                        ,"indivwinrateoutofindivchalls","EliminationTop"
                         ,"EliminationBottom","EliminationCompetedIn"
                         ,"QuickfireWon","QuickfireTop","QuickfireBottom"
                         ,"QuickfireCompetedIn","OverallWinRate"
