@@ -222,5 +222,27 @@ write.csv(alldata
             ,row.names=FALSE)
 
 
+## How many people were in more than 1 season?
+  chefdetails_raw %>%
+    group_by(name) %>%
+    filter(series == "US") %>%
+    summarise(firstseason=min(seasonNumber)
+              ,n=n()) %>%
+    filter(n>1) %>%
+    arrange(firstseason,name) %>%
+    print(n=50)
+  # which season produced the most multi-season chefs?
+  chefdetails_raw %>%
+    group_by(name) %>%
+    filter(series == "US") %>%
+    summarise(firstseason=min(seasonNumber)
+              ,n=n()) %>%
+    filter(n>1) %>%
+    ungroup() %>%
+    group_by(firstseason) %>%
+    summarise(n=n())
+
+
+
 
 
