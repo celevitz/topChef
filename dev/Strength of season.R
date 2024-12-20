@@ -229,7 +229,8 @@ numberofquickfires <- 5
   # Standard deviation of scores at this point
   allseasonsSD <- allseasons %>%
     group_by(series,season,seasonNumber) %>%
-    summarise(stdev = sd(indexWeight,na.rm=T)) %>%
+    summarise(stdev = sd(indexWeight,na.rm=T)
+              ,median = median(indexWeight,na.rm=T)) %>%
     arrange(stdev)
 
   # Number of people with elimination wins

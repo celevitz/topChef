@@ -195,6 +195,17 @@ write.csv(alldata
                     ,"EliminationTop","QuickfireWinRate","QuickfireCompetedIn"
                     ,"episodeswon")]
 
+  goats <- goats %>%
+    group_by(name,season,seasonnumberasstring) %>%
+    mutate(temp1 = ifelse(OverallWinRate >=.26,1,0)
+           ,temp2 = ifelse(EliminationTop >= 7,1,0)
+           ,temp3 = ifelse(episodeswon >=2,1,0)
+           ,numbercriteriamet = sum(temp1,temp2,temp3)) %>%
+    select(!c(temp1,temp2,temp3))
+
+  goats %>% filter(numbercriteriamet == 2) %>% select(name,season,OverallWinRate,EliminationTop,episodeswon,numbercriteriamet) %>% view()
+  goats %>% filter(numbercriteriamet == 3) %>% select(name,season,OverallWinRate,EliminationTop,episodeswon,numbercriteriamet) %>% view()
+
 
   write.csv(goats
             ,paste0(directory,"Top Chef - GOATs.csv")
