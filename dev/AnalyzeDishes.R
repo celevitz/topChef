@@ -516,7 +516,7 @@ cleandishes <- disheswide %>%
                 gsub("herbs","herb",
                 gsub("herbes fines","herb",
                 gsub("lotus root","lotus-root",
-                gsub("taro root","taro-root",
+                gsub("taro root","taro-root"
                ,cleandishes$dish))))))))))))))))))))))))))
 
         cleandishes$dish <- gsub("aji amarillo","aji-amarillo",
