@@ -119,33 +119,71 @@ challenges %>%
   ungroup() %>% group_by(outcomeType) %>%
   summarise(averageplacement = mean(placement,na.rm=T))
 
-####################################################################
-statsbynumberofchalls <- challenges %>%
-  filter(seasonNumber == 21) %>%
-  group_by(chef,challengeType,outcome) %>%
-  filter(!(is.na(outcome))) %>%
-  summarise(n=n()) %>%
-  pivot_wider(names_from = outcome, values_from = n) %>%
-  mutate(IN = ifelse(is.na(IN) ,0,IN)
-         ,LOW = ifelse(is.na(LOW),0,LOW)
-         ,HIGH = ifelse(is.na(HIGH),0,HIGH)
-         ,OUT = ifelse(is.na(OUT),0,OUT)
-         ,WIN = ifelse(is.na(WIN),0,WIN)) %>%
-  pivot_wider(names_from = challengeType,values_from = c("IN","LOW","HIGH","OUT","WIN")) %>%
-  ungroup()
+## Episode-specific information for people who won first elim challenge
+firstelimwinners <- challenges %>%
+  filter(series == "US") %>%
+  # First Elimination challenge
+  filter(challengeType %in% c("Elimination","Quickfire Elimination","Sudden Death Quickfire")) %>%
+  group_by(season) %>%
+  mutate(episodeflag = min(episode,na.rm=T)) %>%
+  # keep just the winners from that episode
+  filter(outcome %in% "WIN" & episodeflag == episode) %>%
+  select(season,seasonNumber,series,chef,episodeflag) %>%
+  distinct()
+
+trajectory <- firstelimwinners %>%
+  left_join(challenges) %>%
+  filter(#immune %in% TRUE |
+           outcome %in% c("WIN","WINNER","RUNNER-UP","OUT"
+                          ,"DISQUALIFIED","WITHDREW")) %>%
+  select(!c(rating,inCompetition)) %>%
+  mutate(outcome = ifelse(outcome %in% "WINNER","WIN",outcome)
+         ,outcome = ifelse(outcome %in% "RUNNER-UP","OUT",outcome)
+         ,seasonNumberAsString=case_when(
+           seasonNumber < 10~paste0("0",as.character(seasonNumber))
+           ,seasonNumber >=10 ~ as.character(seasonNumber))
+         ,challengeType = ifelse(challengeType %in% c("Quickfire Elimination"
+                                                      ,"Quickfire elimination"
+                                          ,"Sudden Death Quickfire")
+                           ,"Elimination",challengeType)
+           ,id=paste0(seasonNumberAsString,chef)) %>%
+  group_by(id) %>%
+  # order things by when they were eliminated
+  mutate(episodeout = max(episode,na.rm=T)) %>%
+  arrange(desc(episodeout),desc(episode),id)
+
+trajectory %>%
+  ggplot(aes(x=episode,y=id,shape=challengeType,color=outcome)) +
+  geom_point(alpha=.5) +
+  theme_minimal()
+
+## Just the first elim chall win to when they were out of the game
+  trajectory %>%
+    ungroup() %>%
+    select(season,seasonNumberAsString,chef,episodeflag,episodeout) %>%
+    distinct() %>%
+    mutate(lengthofrun=episodeout-episodeflag+1) %>%
+    arrange(desc(lengthofrun),seasonNumberAsString) %>%
+    select(!lengthofrun) %>%
+    ## Add on the final episode number
+    left_join(
+      challenges %>%
+        filter(outcome %in% "WINNER" & series %in% "US") %>%
+        select(season,episode) %>%
+        rename(finalepisode=episode)
+    ) %>%
+    print(n=30)
 
 
-statsbynumberofchalls$score <- statsbynumberofchalls$WIN_Elimination*7+
-  statsbynumberofchalls$HIGH_Elimination*3 -
-  statsbynumberofchalls$LOW_Elimination*3-
-  statsbynumberofchalls$OUT_Elimination*7
-# +
-#   statsbynumberofchalls$WIN_Quickfire*4+
-#   statsbynumberofchalls$HIGH_Quickfire*2-
-#   statsbynumberofchalls$LOW_Quickfire*2
-#
-statsbynumberofchalls %>%
-  select(chef,score) %>%
-  arrange(desc(score))
+
+
+
+
+
+
+
+
+
+
 
 
