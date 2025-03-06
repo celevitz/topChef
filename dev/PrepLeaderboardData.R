@@ -216,18 +216,26 @@ write.csv(alldata
     filter(placement==1) %>%
     arrange(desc(EliminationWon),desc(QuickfireWon)) %>%
     mutate(individualwinrate = EliminationWonIndiv/EliminationWon
-           ,indivwinrateoutofindivchalls = EliminationWonIndiv/numberindividualelimchalls) %>%
+           ,indivwinrateoutofindivchalls = EliminationWonIndiv/numberindividualelimchalls
+           ,elimTopRate=EliminationTop/EliminationCompetedIn
+           ,elimBottomRate=EliminationBottom/EliminationCompetedIn
+           ,quickfireTopRate = QuickfireTop/QuickfireCompetedIn
+           ,quickfireBottomRate = QuickfireBottom/QuickfireCompetedIn) %>%
     select(!c(series,season,chefkey,chef,placement,QuickfireWonIndiv
               ,rewardswon,immunities,EliminationWonIndiv))
 
   winners <- winners[,c("name","seasonnumberasstring"
-                        ,"EliminationWon","individualwinrate"
-                        ,"indivwinrateoutofindivchalls","EliminationTop"
+                        ,"EliminationWon","individualwinrate","EliminationTop"
                         ,"EliminationBottom","EliminationCompetedIn"
                         ,"QuickfireWon","QuickfireTop","QuickfireBottom"
                         ,"QuickfireCompetedIn","OverallWinRate"
-                        ,"EliminationWinRate","QuickfireWinRate"
+                        ,"EliminationWinRate","indivwinrateoutofindivchalls"
+                        ,"QuickfireWinRate"
+                        ,"elimTopRate","elimBottomRate"
+                        ,"quickfireTopRate","quickfireBottomRate"
                         ,"episodeswon","moneywon")]
+
+
   write.csv(winners
             ,paste0(directory,"Top Chef - Winners.csv")
             ,row.names=FALSE)
