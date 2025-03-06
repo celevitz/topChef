@@ -13,6 +13,12 @@ directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 challengewins_raw <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 challengedescriptions_raw<- read.csv(paste0(directory
                                             ,"Top Chef - Challenge descriptions.csv"))
+  # Make this for just the individual challenges
+   # challengewins_raw <- challengewins_raw %>%
+   #   left_join(challengedescriptions_raw %>%
+   #               select(series,season,seasonNumber,episode,outcomeType) ) %>%
+   #   filter(outcomeType == "Individual")
+
 chefdetails_raw <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
 
 ####################################################################################
@@ -41,7 +47,7 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
           paste0("0",challengewins$episodeascharacter[nchar(challengewins$episodeascharacter)==1])
 
         challengewins$challID <- paste0(challengewins$episodeascharacter,"a_",challengewins$challengeType)
-        challengewins$challID[challengewins$challengeType == "Quickfire Elimination"] <-
+        challengewins$challID[challengewins$challengeType %in% c( "Quickfire Elimination","Quickfire elimination")] <-
           paste0(challengewins$episodeascharacter[challengewins$challengeType == "Quickfire Elimination"] ,"b_qe")
         challengewins$challID[challengewins$challengeType == "Sudden Death Quickfire"] <-
           paste0(challengewins$episodeascharacter[challengewins$challengeType == "Sudden Death Quickfire"] ,"b_sdq")
@@ -51,7 +57,7 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
           paste0(challengewins$episodeascharacter[challengewins$challengeType == "Elimination"] ,"c_elim")
 
         challengewins$challengeType[challengewins$challengeType %in%
-                                      c("Quickfire Elimination"
+                                      c("Quickfire Elimination","Quickfire elimination"
                                         ,"Sudden Death Quickfire")] <- "Elimination"
 
       # 1aii. Exclude the uncommon challenge types
@@ -218,33 +224,138 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
 
 ####################################################################################
 ### Look at different stats about the index scores at this point
-numberofelimchalls <- 5
-numberofquickfires <- 5
-  allseasons <- weightedindex("US",1,numberofelimchalls,numberofquickfires)
-  for (season in seq(2,21,1)) {
-    allseasons <- rbind(allseasons,weightedindex("US",season,numberofelimchalls,numberofquickfires))
 
-  }
+## Average number of elim and qf challenges in each season
+challengedescriptions_raw %>%
+  mutate(challengeType = ifelse(challengeType %in% c("Quickfire Elimination"
+                                                     ,"Quickfire elimination"
+                                                     ,"Sudden Death Quickfire")
+                                ,"Elimination",challengeType)) %>%
+  group_by(series,season,seasonNumber,challengeType) %>%
+  summarise(n=n()) %>%
+  ungroup() %>%
+  group_by(challengeType) %>%
+  summarise(average=floor(mean(n)))
 
-  # Standard deviation of scores at this point
-  allseasonsSD <- allseasons %>%
+
+
+    # Scores at the average number of elims and QFs in a season
+    numberofelimchalls <- 13
+    numberofquickfires <- 10
+      allseasonsE13Q10 <- weightedindex("US",1,numberofelimchalls,numberofquickfires)
+      for (season in seq(2,21,1)) {
+        allseasonsE13Q10 <- rbind(allseasonsE13Q10,weightedindex("US",season,numberofelimchalls,numberofquickfires))
+
+      }
+      allseasonsE13Q10 <- allseasonsE13Q10 %>%
+        select(chef,season,seasonNumber,series,placement,indexWeight) %>%
+        rename(e13q10=indexWeight)
+
+    # Scores at 5 elims and 5 qfs into a season
+    numberofelimchalls <- 5
+    numberofquickfires <- 5
+      allseasonsE5Q5 <- weightedindex("US",1,numberofelimchalls,numberofquickfires)
+      for (season in seq(2,21,1)) {
+        allseasonsE5Q5 <- rbind(allseasonsE5Q5,weightedindex("US",season,numberofelimchalls,numberofquickfires))
+
+      }
+      allseasonsE5Q5 <- allseasonsE5Q5 %>%
+        select(chef,season,seasonNumber,series,placement,indexWeight) %>%
+        rename(e5q5=indexWeight)
+
+    # scores at 3 elims and 3 qfs into a season
+    numberofelimchalls <- 3
+    numberofquickfires <- 3
+      allseasonsE3Q3 <- weightedindex("US",1,numberofelimchalls,numberofquickfires)
+      for (season in seq(2,21,1)) {
+        allseasonsE3Q3 <- rbind(allseasonsE3Q3,weightedindex("US",season,numberofelimchalls,numberofquickfires))
+
+      }
+      allseasonsE3Q3 <- allseasonsE3Q3 %>%
+        select(chef,season,seasonNumber,series,placement,indexWeight) %>%
+        rename(e3q3=indexWeight)
+
+
+# Standard deviation of scores at various points
+  allseasonsSD <- allseasonsE13Q10 %>%
     group_by(series,season,seasonNumber) %>%
-    summarise(stdev = sd(indexWeight,na.rm=T)
-              ,median = median(indexWeight,na.rm=T)) %>%
-    arrange(stdev)
+    summarise(stdeve13q13 = sd(e13q10,na.rm=T)) %>%
+    arrange(stdeve13q13) %>%
+    full_join(
+      allseasonsE5Q5 %>%
+        group_by(series,season,seasonNumber) %>%
+        summarise(stdeve5q5 = sd(e5q5,na.rm=T))
+    ) %>%
+    full_join(
+      allseasonsE3Q3 %>%
+        group_by(series,season,seasonNumber) %>%
+        summarise(stdeve3q3 = sd(e3q3,na.rm=T))
+    )
 
-  # Number of people with elimination wins
-  allseasonselimwins <- allseasons %>%
-    filter(Elimination.WIN > 0) %>%
-    group_by(series,season,seasonNumber) %>%
-    summarise(numberofchefswonelim=n()) %>%
-    arrange(numberofchefswonelim)
+# In which quartile does each season fall?
+  # 13 elims, 10 Qfs
+    allseasonsSD$E13Q10quartile[allseasonsSD$stdeve13q13 <
+                                  quantile(allseasonsSD$stdeve13q13,.25)] <- 1
+    allseasonsSD$E13Q10quartile[allseasonsSD$stdeve13q13 >=
+                                  quantile(allseasonsSD$stdeve13q13,.25) &
+                                  allseasonsSD$stdeve13q13 <
+                                    quantile(allseasonsSD$stdeve13q13,.5)] <- 2
+    allseasonsSD$E13Q10quartile[allseasonsSD$stdeve13q13 >=
+                                  quantile(allseasonsSD$stdeve13q13,.5) &
+                                  allseasonsSD$stdeve13q13 <
+                                  quantile(allseasonsSD$stdeve13q13,.75)] <- 3
+    allseasonsSD$E13Q10quartile[allseasonsSD$stdeve13q13 >=
+                                  quantile(allseasonsSD$stdeve13q13,.75)] <- 4
 
-allseasonvar <- allseasonsSD %>%
-  full_join(allseasonselimwins)
-#
-# plot(allseasonvar$numberofchefswonelim,allseasonvar$stdev)
-# points(allseasonvar$numberofchefswonelim,allseasonvar$stdev)
-#
+  # 5 elims, 5 Qfs
+    allseasonsSD$E05Q05quartile[allseasonsSD$stdeve5q5 <
+                                  quantile(allseasonsSD$stdeve5q5,.25)] <- 1
+    allseasonsSD$E05Q05quartile[allseasonsSD$stdeve5q5 >=
+                                  quantile(allseasonsSD$stdeve5q5,.25) &
+                                  allseasonsSD$stdeve5q5 <
+                                  quantile(allseasonsSD$stdeve5q5,.5)] <- 2
+    allseasonsSD$E05Q05quartile[allseasonsSD$stdeve5q5 >=
+                                  quantile(allseasonsSD$stdeve5q5,.5) &
+                                  allseasonsSD$stdeve5q5 <
+                                  quantile(allseasonsSD$stdeve5q5,.75)] <- 3
+    allseasonsSD$E05Q05quartile[allseasonsSD$stdeve5q5 >=
+                                  quantile(allseasonsSD$stdeve5q5,.75)] <- 4
+
+
+  # 3 elims, 3 Qfs
+    allseasonsSD$E03Q03quartile[allseasonsSD$stdeve3q3 <
+                                quantile(allseasonsSD$stdeve3q3,.25)] <- 1
+    allseasonsSD$E03Q03quartile[allseasonsSD$stdeve3q3 >=
+                                quantile(allseasonsSD$stdeve3q3,.25) &
+                                allseasonsSD$stdeve3q3 <
+                                quantile(allseasonsSD$stdeve3q3,.5)] <- 2
+    allseasonsSD$E03Q03quartile[allseasonsSD$stdeve3q3 >=
+                                quantile(allseasonsSD$stdeve3q3,.5) &
+                                allseasonsSD$stdeve3q3 <
+                                quantile(allseasonsSD$stdeve3q3,.75)] <- 3
+    allseasonsSD$E03Q03quartile[allseasonsSD$stdeve3q3 >=
+                                quantile(allseasonsSD$stdeve3q3,.75)] <- 4
+
+# Is each season consistent in terms of what quartile they fall into?
+    allseasonsSD %>%
+      arrange(E13Q10quartile,E03Q03quartile,E05Q05quartile) %>%
+      mutate(averagequartile = (E13Q10quartile+E03Q03quartile+E05Q05quartile)/3) %>%
+      arrange(averagequartile) %>%
+      print(n=21)
+
+    allseasonsSD %>%
+      ungroup() %>%
+      select(season,E13Q10quartile,E03Q03quartile,E05Q05quartile) %>%
+      mutate(averagequartile = (E13Q10quartile+E03Q03quartile+E05Q05quartile)/3) %>%
+      pivot_longer(!c(season,averagequartile)
+                   ,names_to="partofseason",values_to = "quartile") %>%
+      ggplot(aes(x=partofseason,y=quartile)) +
+      facet_wrap(~season) +
+      geom_point(aes(x=partofseason,y=averagequartile),col="slategray",shape=3) +
+      geom_point()
+
+
+
+
 
 
