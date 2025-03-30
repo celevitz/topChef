@@ -11,6 +11,9 @@ directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 # Bring in data
 chefs <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
 challenges <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
+episodeinfo <- read.csv(paste0(directory,"Top Chef - Episode information.csv"))
+episodeinfo <- episodeinfo %>%
+  select(!c(overallEpisodeNumber,episodeName,airDate))
 
   wonepisode <- challenges %>%
     filter(outcome %in% "WIN" & series == "US") %>%
@@ -33,6 +36,12 @@ challenges <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     print(n=50)
 
 ## Stats
+  # Chef gender balance at start of seasons
+  chefs %>%
+    filter(series == "US") %>%
+    group_by(gender) %>%
+    summarise(n=n())
+
   # Number of people
   dim(wonepisode)
 
@@ -75,7 +84,26 @@ challenges <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     summarise(n=n()
               ,averageplacement=mean(placement))
 
+## How many chefs were in the competition when they won the episode
+  nchefsincomp <- challenges %>%
+    filter(outcome %in% "WIN" & series == "US") %>%
+    group_by(series,season,seasonNumber,chef,episode) %>%
+    summarise(numberofchallswoninepisode = n()) %>%
+    filter(numberofchallswoninepisode > 1) %>%
+    left_join(episodeinfo) %>%
+    ungroup() %>%
+    group_by(nCompetitors) %>%
+    summarise(n=n())
 
+  ## Who won early episodes?
+    challenges %>%
+      filter(outcome %in% "WIN" & series == "US") %>%
+      group_by(series,season,seasonNumber,chef,episode) %>%
+      summarise(numberofchallswoninepisode = n()) %>%
+      filter(numberofchallswoninepisode > 1) %>%
+      left_join(episodeinfo) %>%
+      filter(nCompetitors >= 14) %>%
+      arrange(desc(nCompetitors),seasonNumber,chef)
 
 
 

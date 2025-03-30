@@ -73,7 +73,8 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
 
 seriesname <- "US"
 wordtrend("US",c("aguachile","carpaccio","crudo","ceviche","crudite"
-                 ,"futomake","leche de tigre","nigiri","poke","sashimi"))
+                 ,"futomake","leche de tigre","nigiri","poke","sashimi"
+                 ,"negitoro"))
 
 wordtrend("US",c("risotto"))
 wordtrend("US",c("duo","trio","3-ways","3 ways","2 ways","2-ways","three ways"
@@ -91,6 +92,7 @@ wordtrend("US",c("bacon"))
 wordtrend("US",c("foie gras"))
 wordtrend("US",c("beet"))
 wordtrend("US",c("gazpacho"))
+wordtrend("US",c("confit"))
 
 
 
