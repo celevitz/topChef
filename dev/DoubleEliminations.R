@@ -8,6 +8,12 @@ directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 challenges <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 challengedescriptions <- read.csv(paste0(directory
                                    ,"Top Chef - Challenge descriptions.csv"))
+numchefsinepisode <- challenges %>%
+  filter(inCompetition == TRUE) %>%
+  select(season,seasonNumber,series,episode,chef) %>%
+  distinct() %>%
+  group_by(season,seasonNumber,series,episode) %>%
+  summarise(nchefs = n())
 
 # Flag the episodes in which more than one person was eliminated, but could be across diff challs
 episodeswithmorethan1personeliminated <- challenges %>%
@@ -29,6 +35,9 @@ episodeswithDE <- challenges %>%
   filter(flagformorethanonepersoneliminatedinchall>1 & series == "US") %>%
   select(!c(flagformorethanonepersoneliminatedinchall,series)) %>%
   arrange(seasonNumber,episode) %>%
+  left_join(numchefsinepisode %>%
+              filter(series == "US") %>%
+              select(!series)) %>%
   rename(episodewithDE=episode)
 
 ## Summary stats
@@ -84,6 +93,14 @@ episodeswithDE <- challenges %>%
       group_by(outcomeType) %>%
       summarise(n=n())
 
+  # How many people are in the competition at time of DE?
+    episodeswithDE %>%
+      ungroup() %>%
+      group_by(nchefs) %>%
+      summarise(ntimes=n())
+
+    summary(episodeswithDE$nchefs)
+
 ## I want to see how strong the chefs were who were eliminated in DEs --
 ## Looking at JUST double eliminations, not when two people were eliminated in
     #the same episode
@@ -133,7 +150,8 @@ episodeswithDE <- challenges %>%
                              season=character(),
                              seasonNumber=integer(),
                              indexWeight=integer(),
-                             scorerank=integer())
+                             scorerank=integer()
+                            ,numchefs=integer())
       ## scores
       for (sn in unique(challengetypesforscore$seasonNumber)) {
         for (epwithde in unique(challengetypesforscore$episodewithDE[
@@ -147,6 +165,12 @@ episodeswithDE <- challenges %>%
                               challengetypesforscore$seasonNumber == sn &
                               challengetypesforscore$episodewithDE == epwithde]
 
+                ## Which chefs were in the competition at that time?
+                numchefsattime <- challenges %>%
+                  filter(series == "US" & episode == epwithde &
+                           seasonNumber == sn & inCompetition == TRUE) %>%
+                  select(chef) %>% distinct()
+
                 ## what's the ranked order of the chefs?
                 ## keep just the relevant chef
                 temp <- weightedindex("US",sn,numberofelimchalls
@@ -155,11 +179,16 @@ episodeswithDE <- challenges %>%
                         mutate(indexWeight = ifelse(Elimination.OUT == 0
                                             ,indexWeight
                                             ,indexWeight+(Elimination.OUT*7))) %>%
-                        arrange(desc(indexWeight))
+                        arrange(desc(indexWeight)) %>%
+                        # who was still in the competition?
+                        right_join(numchefsattime)
+
                 temp <- temp %>%
-                  mutate(scorerank = as.numeric(row.names(temp))) %>%
+                  mutate(scorerank = as.numeric(row.names(temp))
+                         ,numchefs=n()) %>%
                         filter(chef == c) %>%
-                        select(chef,season,seasonNumber,indexWeight,scorerank)
+                        select(chef,season,seasonNumber,indexWeight
+                               ,scorerank,numchefs)
 
                 ## add onto holding dataset
                 holding <- holding %>%
@@ -179,14 +208,14 @@ episodeswithDE <- challenges %>%
       ## what is the minimum and maximum score for each DE?
       ##And then what's the difference?
         group_by(season,seasonNumber,episodewithDE) %>%
-        mutate(minscore=min(indexWeight,na.rm=T)
-               ,maxscore=max(indexWeight,na.rm=T)
-               ,difference = maxscore-minscore
-               ,minrank=min(scorerank,na.rm=T)
-               ,maxrank=max(scorerank,na.rm=T)
-               ,differenceinrank=maxrank-minrank
+        mutate(worsescore=min(indexWeight,na.rm=T)
+               ,betterscore=max(indexWeight,na.rm=T)
+               ,difference = betterscore-worsescore
+               ,betterrank=min(scorerank,na.rm=T)
+               ,worserank=max(scorerank,na.rm=T)
+               ,differenceinrank=worserank-betterrank
                # create flag for the chefs that are better/worse
-               ,status = ifelse(minscore==indexWeight
+               ,status = ifelse(worsescore==indexWeight
                                 ,"worse","better"))
 
       summaryofscorediff <- indexscoresofeliminatedchefs %>%
@@ -198,8 +227,18 @@ episodeswithDE <- challenges %>%
                ,season == "Los Angeles" & episodewithDE == 12 ~ "Second to last episode"
                ,season == "New York" & episodewithDE == 13 ~  "Second to last episode"
                ,season == "New Orleans" & episodewithDE == 16 ~ "Second to last episode"
-               ,TRUE ~ "-"))
-      write.csv(summaryofscorediff,paste0(directory,"DoubleEliminations.csv")
+               ,TRUE ~ "-")
+               # add context to rank
+               ,betterrankpercent = (betterrank-1)/nchefs
+               ,worserankpercent = (worserank-1)/nchefs)
+      dataforexport <- summaryofscorediff
+        dataforexport <- dataforexport[,c("season","seasonNumber"
+                        ,"episodewithDE","numchefs"
+                        ,"worse","worsescore","worserank","worserankpercent"
+                        ,"better","betterscore","betterrank","betterrankpercent"
+                        ,"difference","differenceinrank"
+                        ,"note")]
+      write.csv(dataforexport,paste0(directory,"DoubleEliminations.csv")
                                           ,row.names=F)
 
   # what are the key takeaways
@@ -213,15 +252,17 @@ episodeswithDE <- challenges %>%
       summary(summaryofscorediff$differenceinrank[summaryofscorediff$note == "-"])
 
       summaryofscorediff %>%
-        filter(minrank < 3)
+        filter(betterrank < 3)
 
       summaryofscorediff %>%
         group_by(note) %>%
-        summarise(minscore=mean(minscore)
-                  ,maxscore=mean(maxscore)
+        summarise(worsescore=mean(worsescore)
+                  ,betterscore=mean(betterscore)
                   ,difference=mean(difference)
-                  ,minrank = mean(minrank)
-                  ,maxrank = mean(maxrank)
+                  ,betterrank = mean(betterrank)
+                  ,worserank = mean(worserank)
+                  ,betterrankpercent=mean(betterrankpercent)
+                  ,worserankpercent=mean(worserankpercent)
                   ,differenceinrank = mean(differenceinrank))
 
 
