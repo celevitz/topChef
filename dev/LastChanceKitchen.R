@@ -8,7 +8,7 @@ lck <- topChef::challengedescriptions %>%
            series == "US") %>%
     # the San Francisco returning doesn't count; it's cuz Cynthia quit
     # exclude season 21 for now, since we don't know how far the two LCK folks will go
-    filter(seasonNumber != 1 & seasonNumber != 21)
+    filter(seasonNumber != 1 & seasonNumber != 22)
 
 ## Number of episodes someone entered
   nrow(lck)
@@ -21,7 +21,7 @@ lck <- topChef::challengedescriptions %>%
 
 ## Number of times a chef entered back into the competition each season
   lck %>%
-    group_by(season) %>%
+    group_by(seasonNumber,season) %>%
     summarise(n=n())
 
   lck %>%
@@ -38,6 +38,9 @@ lck <- topChef::challengedescriptions %>%
     # separate out Claudette & Lee Anne
     mutate(chef = ifelse(chef == "Claudette Z.-W., Lee Anne W.","Claudette Z.-W.",chef)) %>%
     add_row(season="Colorado",seasonNumber=15,chef="Lee Anne W.") %>%
+    # Separate out Soo & Kaleena
+    mutate(chef = ifelse(chef == "Soo Ahn, Kaleena Bliss","Soo Ahn",chef)) %>%
+    add_row(season="Wisconsin",seasonNumber=21,chef="Kaleena Bliss") %>%
     left_join(topChef::challengewins %>%
                 filter(series == "US")) %>%
     # if they were in an episode at all, make it so they are counted for that episode
@@ -72,6 +75,7 @@ lck <- topChef::challengedescriptions %>%
         seasonNumber == 16 & chef == "Brother L." ~ 6
         ,seasonNumber == 15 & chef == "Lee Anne W." ~ 5
         ,seasonNumber == 11 & chef == "Louis M." ~ 16
+        ,seasonNumber == 21 & chef == "Soo Ahn" ~ NA
         ,TRUE ~ min(ifelse(tempvalue == "TRUE0" & episode >epelim,episode,NA),na.rm=T)
       )
 
@@ -80,11 +84,13 @@ lck <- topChef::challengedescriptions %>%
         ,epelimagain = ifelse(is.infinite(epelimagain)
                               ,max(ifelse(tempvalue == "TRUE0" & episode >= epbackin,episode,NA),na.rm=T)
                               ,epelimagain)
+        ,epelimagain=ifelse(seasonNumber == 21 & chef == "Soo Ahn" ,NA
+                            ,epelimagain)
       # length of first run, LCK run, and 2nd run
       ,firstrun = epelim-firstep+1
       ,lckrun= case_when(
         chef == "Claudette Z.-W." ~ 4
-        ,chef %in% c("Lee Anne W.","Brother L.") ~ 6
+        ,chef %in% c("Lee Anne W.","Brother L.","Soo Ahn") ~ 6
         ,TRUE ~ epbackin-epelim)
       ,secondrun = epelimagain-epbackin
 
@@ -94,10 +100,10 @@ epi %>%
   select(season,seasonNumber,chef,firstrun,lckrun,secondrun) %>%
   distinct() %>%
   arrange(seasonNumber,chef) %>%
-  print(n=20)
+  print(n=30)
 
 ### For seasons where someone started in LCK, need to change their LCK run
-### Lee Anne, Claudette, Brother
+### Lee Anne, Claudette, Brother, Soo
 
 epi %>%
   select(season,seasonNumber,chef,firstrun) %>%
@@ -109,7 +115,7 @@ epi %>%
   select(season,seasonNumber,chef,lckrun) %>%
   distinct() %>%
   ungroup() %>%
-  mutate(averagerun=mean(lckrun)) %>%
+  mutate(averagerun=mean(lckrun,na.rm=T)) %>%
   ungroup() %>% group_by(averagerun,lckrun) %>%
   summarise(nchefs=n())
 
@@ -117,7 +123,7 @@ epi %>%
   select(season,seasonNumber,chef,secondrun) %>%
   distinct() %>%
   ungroup() %>%
-  mutate(averagerun=mean(secondrun)) %>%
+  mutate(averagerun=mean(secondrun,na.rm=T)) %>%
   ungroup() %>% group_by(averagerun,secondrun) %>%
   summarise(nchefs=n())
 
@@ -129,10 +135,10 @@ epi %>%
     distinct() %>%
     mutate(epbackin_cat = if_else(epbackin <=8,"5 to 8","9 or later")) %>%
     group_by(epbackin_cat) %>%
-    summarise(avg = mean(secondrun)
-              ,mdn = median(secondrun)
-              ,avgplacement=mean(placement)
-              ,mdnplacement=median(placement))
+    summarise(avg = mean(secondrun,na.rm=T)
+              ,mdn = median(secondrun,na.rm=T)
+              ,avgplacement=mean(placement,na.rm=T)
+              ,mdnplacement=median(placement,na.rm=T))
 
 
 
