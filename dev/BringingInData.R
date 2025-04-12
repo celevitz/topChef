@@ -131,13 +131,17 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
 
 
 ## save things as RDA
+    challengewinsnoLCK <- challengewins %>% filter(series != "US LCK")
+    challengedescriptionsnoLCK <- challengedescriptions %>%
+                                    filter(series != "US LCK")
+    episodeinfonoLCK <- episodeinfo %>% filter(series != "US LCK")
 
 save(chefdetails, file = "data/chefdetails.rda")
-save(challengewins, file = "data/challengewins.rda")
-save(challengedescriptions, file = "data/challengedescriptions.rda")
+save(challengewinsnoLCK, file = "data/challengewins.rda")
+save(challengedescriptionsnoLCK, file = "data/challengedescriptions.rda")
 save(rewards, file = "data/rewards.rda")
 save(judges, file = "data/judges.rda")
-save(episodeinfo, file = "data/episodeinfo.rda")
+save(episodeinfonoLCK, file = "data/episodeinfo.rda")
 
 
 ## save as CSV for my own use later
