@@ -1,9 +1,15 @@
 rm(list=ls())
 library(tidyverse)
-library(devtools)
-library(topChef)
 
-lck <- topChef::challengedescriptions %>%
+directory <- "/Users/carlylevitz/Documents/Data/topChef/"
+
+# Bring in data
+chefs <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
+challengedescriptions <- read.csv(paste0(directory
+                                     ,"Top Chef - Challenge descriptions.csv"))
+challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
+
+lck <- challengedescriptions %>%
   filter(!(is.na(lastChanceKitchenWinnerEnters)) &
            series == "US") %>%
     # the San Francisco returning doesn't count; it's cuz Cynthia quit
@@ -31,8 +37,24 @@ lck <- topChef::challengedescriptions %>%
     group_by(numberofreentries) %>%
     summarise(numberofseasons=n())
 
+## Who were the chefs who came back?
+  chefswhocameback <- lck %>%
+    select(season,seasonNumber,lastChanceKitchenWinnerEnters) %>%
+    rename(chef=lastChanceKitchenWinnerEnters) %>%
+    # separate out Claudette & Lee Anne
+    mutate(chef = ifelse(chef == "Claudette Z.-W., Lee Anne W.","Claudette Z.-W.",chef)) %>%
+    add_row(season="Colorado",seasonNumber=15,chef="Lee Anne W.") %>%
+    # Separate out Soo & Kaleena
+    mutate(chef = ifelse(chef == "Soo Ahn, Kaleena Bliss","Soo Ahn",chef)) %>%
+    add_row(season="Wisconsin",seasonNumber=21,chef="Kaleena Bliss") %>%
+    # add gender
+    left_join(chefs %>%
+                filter(series == "US") %>%
+                select(season,seasonNumber,chef,placement,gender)) %>%
+    arrange(seasonNumber)
+
 ## Amount of episodes people missed
-  epi <- lck %>%
+  allepi <- lck %>%
     select(season,seasonNumber,lastChanceKitchenWinnerEnters) %>%
     rename(chef=lastChanceKitchenWinnerEnters) %>%
     # separate out Claudette & Lee Anne
@@ -55,18 +77,31 @@ lck <- topChef::challengedescriptions %>%
            ) %>%
     select(season,seasonNumber,chef,episode,tempvalue) %>%
     distinct() %>%
+    arrange(seasonNumber,chef,episode)
+
+  epi <- allepi %>%
     # mark the different episodes
+    # Lowest episode # where tempvalue = TRUE0 is the first episode in which
+    #   they appear. For all but Soo, this will be the start of the season.
+    # The lowest episodes # where tempvalue = TRUE1 is the episode in which
+    #   they were eliminated.
+    # The lowest episode # of tempvalue = TRUE0 after the eliminated episode
+    #   is the episode in which they came back
+    #   For Soo, he won't have that
     ungroup() %>%
     group_by(season,seasonNumber,chef) %>%
     mutate(
       # first episode in
       firstep = case_when(
+        # these two don't have a TRUE0, since they were eliminated in the first
+        # episode in which they showed up.
         seasonNumber  == 16 & chef == "Brother L." ~ 6
         ,seasonNumber == 12 & chef == "George P." ~ 1
         ,TRUE ~ min(ifelse(tempvalue == "TRUE0",episode,NA),na.rm=T)
       )
       # episode eliminated
       ,epelim = case_when(
+        # Lee Anne doesn't have TRUE1 because she wasn't eliminated, she quit.
         seasonNumber == 15 & chef == "Lee Anne W." ~ 5
         ,TRUE ~ min(ifelse(tempvalue == "TRUE1",episode,NA),na.rm=T)
       )
@@ -85,9 +120,16 @@ lck <- topChef::challengedescriptions %>%
                               ,max(ifelse(tempvalue == "TRUE0" & episode >= epbackin,episode,NA),na.rm=T)
                               ,epelimagain)
         ,epelimagain=ifelse(seasonNumber == 21 & chef == "Soo Ahn" ,NA
-                            ,epelimagain)
+                            ,epelimagain))
+
+  epi <- epi %>%
+    # need to fix the outliers;
+    # Lee Anne, Brother, Soo all came into main competition without first
+    # being eliminated
+
+  mutate(
       # length of first run, LCK run, and 2nd run
-      ,firstrun = epelim-firstep+1
+      firstrun = epelim-firstep+1
       ,lckrun= case_when(
         chef == "Claudette Z.-W." ~ 4
         ,chef %in% c("Lee Anne W.","Brother L.","Soo Ahn") ~ 6
@@ -141,8 +183,64 @@ epi %>%
               ,mdnplacement=median(placement,na.rm=T))
 
 
+############################################################################
+## Using the new LCK data
+  lckchallenges <- challengewins %>%
+    filter(series == "US LCK") %>%
+    # for merging, need to change the series to be US, instead of LCK
+    mutate(series = "US") %>%
+    left_join(chefs %>% select(chef,series,season,seasonNumber,placement
+                               ,gender,personOfColor)) %>%
+    # which ones made it back into the main series?
+    left_join(chefswhocameback %>%
+                mutate(cameback = "yes")) %>%
+    mutate(cameback=ifelse(is.na(cameback),"no",cameback)) %>%
+    # gender makeup
+    group_by(season,seasonNumber,series,episode) %>%
+    mutate(genderNumber = ifelse(gender == "Male",1,2)
+           ,gendermakeupNumeric = mean(genderNumber,na.rm=T)
+           ,gendermakeup = case_when(gendermakeupNumeric == 1 ~ "All men"
+                                     ,gendermakeupNumeric == 2 ~ "All women"
+                                     ,TRUE ~ "Mixed")
+           ,winnerGender = case_when(genderNumber == 1 &
+                                       outcome == "WIN" ~ 1
+                                     ,genderNumber == 2 &
+                                       outcome == "WIN" ~ 2
+                                     ,TRUE ~ NA)
+           ,winnerGender = case_when(gendermakeup == "All men" ~
+                                                              "All male winners"
+                             ,gendermakeup == "All women" ~ "All female winners"
+                                    ,mean(winnerGender,na.rm=T) ==1 ~
+                                                              "All male winners"
+                                   ,mean(winnerGender,na.rm=T) ==2 ~
+                                                            "All female winners"
+                                   ,TRUE ~ "Mixed winner"    )   )
 
 
+  lckcharacteristics <- lckchallenges %>%
+    # did they win at least one LCK challenge?
+    group_by(season,seasonNumber,chef) %>%
+    mutate(wonatleastone = max(ifelse(outcome == "WIN",1,0))) %>%
+    select(season,seasonNumber,chef,wonatleastone,placement,gender
+           ,personOfColor,cameback) %>%
+    distinct()
+
+
+  table(lckcharacteristics$gender)
+  table(is.na(lckcharacteristics$personOfColor))
+
+  #what's the gender and race distribution of people who won once?
+  table(lckcharacteristics$gender,lckcharacteristics$wonatleastone)
+  table(is.na(lckcharacteristics$personOfColor)
+        ,lckcharacteristics$wonatleastone)
+
+  #what's the gender and race distribution of people who won LCK?
+  table(lckcharacteristics$gender,lckcharacteristics$cameback)
+  table(is.na(lckcharacteristics$personOfColor)
+        ,lckcharacteristics$cameback)
+
+
+  table(lckchallenges$gendermakeup,lckchallenges$winnerGender)
 
 
 
