@@ -14,6 +14,9 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 
 chefdetails <- as_tibble(read.xlsx(paste(directory
                                          ,"TopChefData.xlsx",sep=""),sheet=1))
+  # Drop the birth year
+    chefdetails$birth.year <- chefdetails$premiere <- NULL
+
 challengewins <- as_tibble(read.xlsx(paste(directory
                                            ,"TopChefData.xlsx",sep=""),sheet=2))
   challengewins$dish <- NULL
