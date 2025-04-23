@@ -138,7 +138,8 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
                           ,"Private Chef/Consultant","Private chef/Consultant"
                           ,"Personal chef/caterer") ~ "Private chef"
        ,occupation %in% c("Executive Sous Chef","Executive sous chef"
-                          ,"Sous Chef","Sous chef") ~ "Sous Chef"))
+                          ,"Sous Chef","Sous chef") ~ "Sous Chef"
+       ,TRUE ~occupation))
 
 ## Do some data validation
     # Challenge wins
