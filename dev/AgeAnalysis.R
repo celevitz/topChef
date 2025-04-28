@@ -105,6 +105,8 @@ summarybefore14 <- before14 %>%
                             ,TRUE ~"Winner same age as season average"))
 
 
+lm(before14$age ~ before14$seasonNumber)
+
 summarybefore14 %>%
   ggplot(aes(x=seasonNumber,y=age
              ,fill=winnercomparedtoaverage,color=winnercomparedtoaverage)) +
