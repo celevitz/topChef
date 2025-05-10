@@ -4,6 +4,7 @@ library(openxlsx)
 library(topChef)
 library(ggplot2)
 library(devtools)
+library(gt)
 #devtools::install_github("celevitz/topChef")
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
@@ -14,14 +15,13 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))%>%
 chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series == "US" )
 
-# Prior to the Double Elimination at 12 chefs: 4 elims and 4 QFs
-    episodenumber <- 8
-    numberofelimchalls <- 8
-    numberofquickfirechalls <- numberofquickfires <- 6
-    eliminatedchefs <- c("Anya El-Wattar","Zubair Mohajir"
-                         ,"Mimi Weissenborn","Sam Olayinka"
-                         ,"Ying Gao","Katianna Hong","Corwin Hemming"
-                         ,"Kat Turner","Henry Lu")
+# Current episode #
+    currentep <- 9
+
+    chefsinlck <- c("Katianna Hong","Cesar Murillo")
+    eliminatedchefs <- c("Corwin Hemming","Zubair Mohajir","Mimi Weissenborn"
+                         ,"Anya El-Wattar","Kat Turner","Henry Lu"
+                         ,"Paula Endara")
 
 ## Index
 ## Write it out here, because it calls on the Top Chef package and that's
@@ -282,271 +282,139 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
     }
 
 #############################################################################
-## Now play around -- current ranks
-    allseasons <- weightedindex("US",22
-                                ,numberofelimchalls,numberofquickfirechalls)
-    for (sn in 1:21) {
-      allseasons <- allseasons %>%
-        bind_rows(weightedindex("US",sn
-                                ,numberofelimchalls,numberofquickfirechalls))
-    }
+## Rank by episode
+    s22 <- weightedindex("US",22,1,1) %>% mutate(episode = 1) %>%
+      bind_rows(weightedindex("US",22,2,2)  %>% mutate(episode = 2) ) %>%
+      bind_rows(weightedindex("US",22,3,3)  %>% mutate(episode = 3)  ) %>%
+      bind_rows(weightedindex("US",22,4,4)  %>% mutate(episode = 4)  ) %>%
+      bind_rows(weightedindex("US",22,5,4)  %>% mutate(episode = 5)  ) %>%
+      bind_rows(weightedindex("US",22,6,5)  %>% mutate(episode = 6)  ) %>%
+      bind_rows(weightedindex("US",22,7,6)  %>% mutate(episode = 7)  ) %>%
+      bind_rows(weightedindex("US",22,8,6)  %>% mutate(episode = 8)  ) %>%
+      bind_rows(weightedindex("US",22,9,7)  %>% mutate(episode = 9)  ) %>%
+      select(chef,placement,episode,indexWeight,OverallRank) %>%
+      mutate(placement = as.numeric(placement)
+             ,placement = ifelse(placement == 1.5,NA, placement)
+             ,yvalue=15-OverallRank+1)
 
-    allseasons$topofelims <- allseasons$Elimination.HIGH+
-                                            allseasons$Elimination.WIN
-    allseasons$topofqf <- allseasons$Quickfire.HIGH+allseasons$Quickfire.WIN
-
-  # Distribution at this # of challenges
-    summary(allseasons$indexWeight)
-    summary(allseasons$indexWeight[allseasons$placement == 1])
-
-    allseasons <- allseasons %>%
-    mutate(quartile = case_when(indexWeight < summary(allseasons$indexWeight)[2] ~ "1. Under 25th percentile"
-                          ,indexWeight >= summary(allseasons$indexWeight)[2] &
-                            indexWeight < summary(allseasons$indexWeight)[3] ~
-                                            "2. 25th to under 50th percentile"
-                          ,indexWeight >= summary(allseasons$indexWeight)[3] &
-                            indexWeight < summary(allseasons$indexWeight)[5] ~
-                                              "3. 50th to under 75th percentile"
-                          ,indexWeight >= summary(allseasons$indexWeight)[5] &
-                            indexWeight <= summary(allseasons$indexWeight)[6] ~
-                                              "4. 75th percentile or better"
-                                ))
-
-    # How many S22 chefs are in the upper quartile?
-    # Four chefs: Katianna, Massimo, Tristen, Vinny
-      allseasons %>%
-        filter(seasonNumber == 22 & quartile == "4. 75th percentile or better") %>%
-        select(chef,indexWeight)
-
-    # How many chefs are in the top quartile? Not taking the "unique" ones
-    # because there are folks on the list more than once
-      table(allseasons$quartile)
-
-    ## Placement by quartile
-      ## need to first remove the placements for S22, cuz I have placeholders
-      ##  for the chefs still in the comp
-      allseasons <- allseasons %>%
-        mutate(placement = as.numeric(placement)
-               ,placement = ifelse(placement == 1.5,NA,placement))
-
-      allseasons %>%
-        group_by(quartile) %>%
-        summarise(mean_placement = mean(placement,na.rm = T)
-                  ,median_placement = median(placement,na.rm=T)
-                  # lower is better, higher is worse
-                  #,worst_placement = max(placement,na.rm=T)
-                  ,best_placement = min(placement,na.rm=T))
-
-    ## Top quartile
-    allseasons %>%
-      filter(quartile == "4. 75th percentile or better") %>%
-      select(season,seasonNumber,chef,placement,indexWeight) %>%
-      arrange(desc(indexWeight))
-
-    ## winners at this stage and season 22 folks
-    allseasons %>%
-      filter(placement == 1 | seasonNumber == 22) %>%
-      select(season,seasonNumber,chef,indexWeight,quartile,RankOfThoseStillIn) %>%
-      arrange(desc(indexWeight))
-
-    ## season 22 not in top half -- there hasn't been a winner from there
-    allseasons %>%
-      filter(seasonNumber == 22 &
-               quartile %in% c("3. 50th to under 75th percentile"
-                               ,"4. 75th percentile or better")) %>%
-      select(chef)
-
-    ## is index weight related to placement?
-    summary(lm(allseasons$placement ~ allseasons$indexWeight))
-
-    write.csv(allseasons %>%
-                filter(seasonNumber == 22 | placement == 1 # |
-                         #quartile == "4. 75th percentile or better"
-                         )
-              ,paste0(directory,"Scoring",numberofelimchalls,"elims"
-                      ,numberofquickfires,"QFs_Winners-S22-TopQuartile.csv")
-              ,row.names=FALSE)
-
-    write.csv(allseasons %>%
-                filter(quartile == "4. 75th percentile or better" &
-                         indexWeight > 19)
-              ,paste0(directory,"Scoring",numberofelimchalls,"elims"
-                      ,numberofquickfires,"QFs_TopChefs.csv")
-              ,row.names=FALSE)
+    s22 <- s22 %>%
+    mutate(sizecat=case_when(indexWeight <
+                       summary(s22$indexWeight[s22$episode == currentep])[2] ~ 1
+     ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[2] &
+       indexWeight < summary(s22$indexWeight[s22$episode == currentep])[3] ~ 2
+     ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[3] &
+       indexWeight < summary(s22$indexWeight[s22$episode == currentep])[5] ~ 3
+     ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[5] ~ 4)
+     ,cheflabel=ifelse(episode == max(episode),chef,NA))
 
 
+  s22wide <- s22 %>%
+    select(chef,episode,indexWeight) %>%
+    mutate(episode = paste0("Episode ",episode)
+           ,inCompetition = case_when(chef %in% chefsinlck ~ 1
+                                      ,chef %in% eliminatedchefs ~ 0
+                                      ,TRUE ~ 2)) %>%
+    pivot_wider(names_from = episode,values_from=indexWeight)
 
-#############################################################################
-## Now play around --
+  currentrankforsorting <- s22 %>%
+    filter(episode == currentep) %>%
+    select(chef,OverallRank)
 
-  ## All seasons: what % of the time are people at the Judges table?
-    allseasons <- weightedindex("US",22
-                                ,numberofelimchalls,numberofquickfirechalls)
-    for (sn in 1:21) {
-      allseasons <- allseasons %>%
-        bind_rows(weightedindex("US",sn
-                                ,numberofelimchalls,numberofquickfirechalls))
-    }
-    allseasons$percentofjudgestableHigh <- (allseasons$Elimination.HIGH +
-                                allseasons$Elimination.WIN)/(allseasons$Elimination.HIGH +
-                               allseasons$Elimination.WIN + allseasons$Elimination.LOW +
-                                   allseasons$Elimination.OUT)
-    summary(allseasons$judgestableElimPercent)
+  s22wide <- s22wide %>%
+    full_join(currentrankforsorting)
+  s22wide <- s22wide[order(s22wide$OverallRank),]
 
-    # Average ranges from 32.8% to 58.3%
-    # Six seasons have at least 1 person who was at judges table 100%
-    # Only 1 season had someone at 0%
-    allseasons %>%
-      group_by(season,seasonNumber) %>%
-      summarise(mean=mean(judgestableElimPercent)
-                ,median=median(judgestableElimPercent)
-                ,min=min(judgestableElimPercent)
-                ,max=max(judgestableElimPercent)) %>%
-      arrange(desc(mean),desc(median)) %>%
-      print(n=22)
+rankgraph <- s22 %>%
+  ggplot(aes(x=episode,y=yvalue)) +
+  geom_line(aes(color=chef)) +
+  geom_point(aes(color=chef
+                 #,size=sizecat
+                 )) +
+  scale_y_continuous(breaks=seq(1,15,1),labels=rev(seq(1,15,1))
+                     ,limits=c(.5,15.5)
+                     ,"Rank (lower values are better)") +
+  scale_x_continuous(breaks=seq(1,max(s22$episode),1)
+                     ,labels=paste0("Ep. ",seq(1,max(s22$episode),1))
+                     ,limits=c(.9,max(s22$episode)+3)
+                     ,"") +
+  geom_text(aes(label=cheflabel,y=yvalue,x=episode+2,color=chef)) +
+  #geom_text(aes(label=indexWeight,y=yvalue,x=episode),color="black") +
+  ggtitle("Rank of chefs' scores each episode of Top Chef Season 22"
+          ,subtitle = "Created by Carly Levitz for Pack Your Knives"
+          ) +
+  theme_minimal() +
+  theme(legend.position="none"
+        ,panel.grid = element_blank()
+        ,plot.background = element_rect(color="white")
+        )
+ggsave(paste0(directory,"S22E",currentep,"Ranking.png")
+       ,rankgraph,width = 6,height = 4,dpi = 1200 )
 
-    # four seasons have outliers (3, 7, 11, 22)
-    allseasons %>%
-    ggplot(aes(x=seasonNumber,y=judgestableElimPercent)) +
-      geom_boxplot(aes(group=seasonNumber)) #+
-      #geom_jitter(color="blue")
 
-    limited <- allseasons %>%
-      group_by(season,seasonNumber) %>%
-      mutate(seasonaverage = mean(judgestableElimPercent,na.rm=T)) %>%
-      filter((seasonNumber == 3 & judgestableElimPercent == 1 ) |
-               (seasonNumber == 7 & judgestableElimPercent >=.7) |
-               (seasonNumber == 11 & judgestableElimPercent >=.75) |
-               (seasonNumber == 22 & judgestableElimPercent >=.7) |
-               as.numeric(placement) == 1) %>%
-      mutate(outlier = case_when((seasonNumber == 3 & judgestableElimPercent == 1 ) |
-                                   (seasonNumber == 7 & judgestableElimPercent >=.7) |
-                                   (seasonNumber == 11 & judgestableElimPercent >=.75) |
-                                   (seasonNumber == 22 & judgestableElimPercent >=.7) ~ "Outlier"
-                                 ,TRUE ~ "Not outlier")
-             ,winner = ifelse(as.numeric(placement) == 1, "Winner","Non-winner")) %>%
-      select(chef,season,seasonNumber,placement,judgestableElimPercent
-             ,percentofjudgestableHigh,seasonaverage,outlier,winner)
+scoretable <- s22wide %>%
+  gt() %>%
+  #tab_spanner_delim(delim = "_") %>%
+  cols_hide(columns=c(OverallRank,inCompetition)) %>%
+  tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
+  tab_row_group(label = "Eliminated",rows = inCompetition==0) %>%
+  tab_row_group(label = "In Last Chance Kitchen",rows = inCompetition==1) %>%
+  tab_row_group(label = "In the competition",rows = inCompetition==2) %>%
+  tab_options(data_row.padding = px(1),
+              column_labels.padding = px(1),
+              row_group.padding = px(1))  %>%
+  tab_style(style = cell_text(align = "right"),locations = cells_source_notes()) %>%
+  tab_style(style = cell_text(align = "left",weight="bold")
+            ,locations = cells_title(groups="title")) %>%
+  tab_style(style = cell_text(align = "left",weight="bold")
+            ,locations = cells_row_groups() ) %>%
+  tab_style(style = cell_text(align = "left")
+            ,locations = cells_title(groups="subtitle")) %>%
+  tab_style(style = cell_text(align = "center")
+            ,locations = cells_body(columns=!chef)) %>%
+  tab_style(style = cell_text(align = "center",weight="bold")
+            ,locations = cells_column_labels(columns=!chef)) %>%
+  tab_style(style = cell_text(align = "left",weight="bold")
+            ,locations = cells_column_labels(columns=chef)) %>%
+  tab_style(style = cell_text(align = "center",weight="bold")
+            ,locations = cells_column_spanners()) %>%
+  tab_options(
+    row_group.background.color = "gray95",
+    table.font.color = "#323232",
+    table_body.hlines.color = "#323232",
+    table_body.border.top.color = "#323232",
+    heading.border.bottom.color = "#323232",
+    row_group.border.top.color = "#323232",
+    column_labels.border.bottom.color = "#323232",
+    row_group.border.bottom.color = "transparent"
+    ,table.border.top.style = "transparent"
+    ,table.border.bottom.style = "transparent"
+  ) %>%
+  opt_all_caps() %>%
+  cols_width(chef ~ px(200), everything() ~ px(75) )  %>%
+  tab_header(
+    title = paste0("Top Chef Destination Canada Episode ",currentep)
+    ,subtitle = "Scores by episode"
+  ) %>%
+  data_color(method="numeric",
+             columns=!chef,
+             palette=c("#c85200","#ffbc69", "#a3cce9","#5fa2ce"
+                       ,"#1170AA","#141B41"),
+             domain=c(min(s22$indexWeight),max(s22$indexWeight)))
 
-      limited %>%
-        ggplot(aes(x=seasonNumber,y=judgestableElimPercent) )+
-        geom_line(aes(x=seasonNumber,y=seasonaverage)) +
-        geom_text(aes(x=seasonNumber,y=judgestableElimPercent
-                      ,label=chef,color=winner))
 
-      ## Winners and S22
-      winnersand22 <- allseasons %>%
-        filter(as.numeric(placement) == 1 | seasonNumber == 22) %>%
-        mutate(winner = ifelse(as.numeric(placement) == 1, "Winner","S22"))
+gtsave(scoretable
+       ,filename = paste(directory,"S22E",currentep,"Summary.png",sep=""))
 
-      winnersand22summ <- winnersand22 %>%
-        group_by(winner,judgestableElim,percentofjudgestableHigh) %>%
-        summarise(n=n())
 
-      winnersand22 %>%
-        ggplot(aes(x=judgestableElim,y=percentofjudgestableHigh
-               ))  +
-        geom_text(aes(label=chef,alpha=.7,color=winner),cex=3) +
-        ylab("Percent of time they were there for being at the top") +
-        xlab("Times at judges' table out of 7 elimination challenges") +
-        ggtitle("Times at judges table and reason for being there")
 
-      winnersand22 %>%
-        ggplot(aes(x=judgestableElim,y=percentofjudgestableHigh
-        ))  +
-        geom_jitter(aes(color=winner,fill=winner,shape=winner)) +
-        ylab("Percent of time they were there for being at the top") +
-        xlab("Times at judges' table out of 7 elimination challenges") +
-        ggtitle("Times at judges table and reason for being there (jittered)")
 
-      winnersand22summ %>%
-        ggplot(aes(x=judgestableElim,y=percentofjudgestableHigh
-                   ,color=winner,fill=winner,shape=winner,size=n))  +
-        geom_point(alpha=.5) +
-        ylab("Percent of time they were there for being at the top") +
-        xlab("Times at judges' table out of 7 elimination challenges") +
-        ggtitle("Times at judges table and reason for being there")
 
-  ## Comapring S22 to past winners
-    ## Stats about S22
-    s22challstats <- weightedindex("US",22,numberofelimchalls,numberofquickfirechalls) %>%
-      mutate(eliminated = ifelse(chef %in% eliminatedchefs,"Out","In the competition")) %>%
-      select(!c(season,seasonNumber,series,placement)) %>%
-      arrange(eliminated,desc(indexWeight))
 
-    s22challstats <- s22challstats[,c("chef","eliminated","Quickfire.WIN"
-                                      ,"Quickfire.HIGH","Quickfire.LOW"
-                                      ,"Elimination.WIN","Elimination.HIGH"
-                                      ,"Elimination.LOW"
-                                      ,"indexWeight")]
 
-    ## compare ranks
-    currentrank <- s22challstats %>%
-      arrange(eliminated,desc(indexWeight)) %>%
-      select(chef,eliminated,indexWeight) %>%
-      mutate(rank = row.names(s22challstats)
-             ,season = 22)
-      # compare to Danny and Buddha
 
-    s21 <- weightedindex("US",21,numberofelimchalls,numberofquickfirechalls)
-    row.names(s21) <- NULL
-    s21 <- s21 %>%
-      arrange(desc(indexWeight)) %>%
-      mutate(rank = row.names(s21)
-             ,season = 21) %>%
-      filter(chef == "Danny Garcia" | rank == 1) %>%
-      select(chef,rank,season,indexWeight,placement)
+#write.csv(s22,paste0(directory,"S22currentRankings.csv"),row.names=F)
 
-    s20 <-  weightedindex("US",20,numberofelimchalls,numberofquickfirechalls)
-    row.names(s20) <- NULL
-    s20 <- s20 %>%
-      arrange(desc(indexWeight)) %>%
-      mutate(rank = row.names(s20)
-             ,season = 20) %>%
-      filter(chef == "Buddha" | rank == 1) %>%
-      select(chef,rank,season,indexWeight,placement)
 
-    s19 <- weightedindex("US",19,numberofelimchalls,numberofquickfirechalls)
-    row.names(s19) <- NULL
-    s19 <- s19 %>%
-      arrange(desc(indexWeight)) %>%
-      mutate(rank = row.names(s19)
-             ,season = 19) %>%
-      filter(chef == "Buddha" | rank == 1) %>%
-      select(chef,rank,season,indexWeight,placement)
 
-    s18 <- weightedindex("US",18,numberofelimchalls,numberofquickfirechalls)
-    row.names(s18) <- NULL
-    s18 <- s18 %>%
-      arrange(desc(indexWeight)) %>%
-      mutate(rank = row.names(s18)
-             ,season = 18) %>%
-      filter(chef == "Gabe E." | rank == 1) %>%
-      select(chef,rank,season,indexWeight,placement)
-
-    currentrank %>%
-      bind_rows(s21 %>% mutate(eliminated = "In the competition")) %>%
-      bind_rows(s20 %>% mutate(eliminated = "In the competition")) %>%
-      bind_rows(s19 %>% mutate(eliminated = "In the competition")) %>%
-      bind_rows(s18 %>% mutate(eliminated = "In the competition"))
-
-## What's the spread of scores at this # of QFs and Elims?
-    allseasons <- weightedindex("US",1
-                                ,numberofelimchalls,numberofquickfirechalls)
-    for (season in seq(2,22,1)) {
-      allseasons <- rbind(allseasons
-                          ,weightedindex("US",season,numberofelimchalls
-                                         ,numberofquickfirechalls))
-
-    }
-
-    allseasons %>%
-      group_by(season,seasonNumber) %>%
-      summarise(standarddeviation = sd(indexWeight,na.rm=T)
-                ,differencebtwMaxAndMin = max(indexWeight,na.rm=T) -
-                                          min(indexWeight,na.rm=T)
-                  ) %>%
-      arrange(standarddeviation) %>%
-      print(n=22)
 
 

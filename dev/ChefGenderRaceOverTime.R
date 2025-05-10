@@ -4,8 +4,113 @@ library(topChef)
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv")) %>%
-  filter(series == "US" ) %>%
-  mutate(personOfColor = ifelse(is.na(personOfColor),"white",personOfColor))
+  filter(series == "US" &
+           !(placement %in% c("Eliminated in qualifying rounds"
+         ,"Didn't make it out of LCK" )) ) %>%
+  mutate(personOfColor = ifelse(is.na(personOfColor),"white",personOfColor)
+         ,placement=as.numeric(placement))
+
+## Ratio of gender at start of season compared to F8
+
+startofseason <- chefdetails %>%
+  group_by(series,season,seasonNumber,gender) %>%
+  summarise(n=n())
+
+f8 <- chefdetails %>%
+  filter(placement <= 8 | is.na(placement)) %>%
+  group_by(series,season,seasonNumber,gender) %>%
+  summarise(n=n())
+
+winnergender <- chefdetails %>%
+  filter(placement == 1) %>%
+  select(series,season,seasonNumber,gender) %>%
+  rename(genderofwinner = gender)
+
+ratiocomparison <- startofseason %>%
+  mutate(timing = "SeasonStart") %>%
+  bind_rows(f8 %>%
+              mutate(timing = "final8")) %>%
+  pivot_wider(names_from=gender,values_from=n) %>%
+  mutate(ratio = Female/(Female+Male)) %>%
+  select(!c(Female,Male)) %>%
+  pivot_wider(names_from=timing,values_from=ratio) %>%
+  left_join(winnergender) %>%
+  mutate(compare = case_when(final8 > SeasonStart ~
+                               "Greater ratio of women at F8 than at start"
+     ,final8<SeasonStart  ~ "Smaller ratio of women at F8 than at start"
+     ,final8==SeasonStart  ~ "Same gender ratio at F8 than at start")
+     ,difference = final8-SeasonStart
+     ,seasonNumberAsString = ifelse(seasonNumber <=9
+                                    ,paste0("0",as.character(seasonNumber))
+                                    ,as.character(seasonNumber))
+     ,season = paste0("Season ",seasonNumberAsString," ",season)
+     ,genderofwinner = ifelse(is.na(genderofwinner),"Current season"
+                              ,paste0(genderofwinner," winner"))) %>%
+  ungroup() %>%
+  select(!c(series,seasonNumber,seasonNumberAsString))
+
+ratiocomparison %>%
+  arrange(final8,season) %>%
+  print(n=22)
+
+## The average % of women on season casts was 46.9%, ranging from 36.8% to 56.25%.
+## Only two seasons have had more men than women at the start: Season 4 and Season 19. Season 4 had a female winner (Stephanie Izard) but Season 19 had a male winner (Buddha Lo).
+## The season that started with the fewest women compared to men was Season 11 (New Orleans). Only 36.8% of the cast were women.
+## All of the other seasons had casts that were more than 41% women.
+## Five seasons had an equal number of men and women: Season 1 San Francisco, Season 9 Texas, Season 10 Seattle, Season 15 Colorado and Season 20 World All Stars.
+##--Four of these seasons had a F8 with the same gender ratio at F8 as the start; however, three of those four seasons had male winners.
+##--1 of those seasons had a smaller ratio of women at F8 than at the start, and there was a male winner.
+
+## The average % of women at the F8 across seasons was 44.4%, ranging from 25% to 62.5%
+## At the final 8, the ratio of women to men ranged from 25% to 62.5%.
+## The seasons with the fewest women at F8 were Seasons 3 Miami and 13 California. These are also the two seasons with the largest drop in % of the cast being women; in Season 3 Miami, the F8 had a % that was 21.7% lower than at the start of the season and this was 16.2% for Season 13 California.
+## Twelve seasons had an equal number of men and women at F8.
+##--Eight of these seasons had a male winner.
+##--Seven of them had a greater ratio of women at the F8 than at the start, but four of the seven had a male winner.
+
+table(ratiocomparison$compare
+      ,ratiocomparison$genderofwinner)
+chisq.test(ratiocomparison$compare[ratiocomparison$genderofwinner != "Current season"]
+      ,ratiocomparison$genderofwinner[ratiocomparison$genderofwinner != "Current season"])
+
+
+table(ratiocomparison$compare[ratiocomparison$SeasonStart == .5]
+      ,ratiocomparison$genderofwinner[ratiocomparison$SeasonStart == .5])
+
+table(ratiocomparison$compare[ratiocomparison$final8 == .5]
+      ,ratiocomparison$genderofwinner[ratiocomparison$final8 == .5])
+
+
+write.csv(ratiocomparison %>%
+            arrange(season)
+          ,paste0(directory,"GenderAtF8.csv")
+          ,row.names=FALSE)
+
+
+
+
+
+
+
+
+
+
+
+
+removenoplacement <- chefdetails %>%
+  mutate(placement=as.numeric(placement)
+         ,highleveloccupation = case_when(occupation_category %in%
+                              c("Executive pastry chef"
+                              ,"Line cook","Private chef","Sout Chef") ~ "Other"
+                              ,TRUE ~ occupation_category))
+
+placementreg <- lm(removenoplacement$placement ~ removenoplacement$gender +
+                     removenoplacement$personOfColor +
+                     removenoplacement$highleveloccupation )
+summary(placementreg)
+
+
+
 
 
 nrow(chefdetails)
