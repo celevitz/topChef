@@ -24,6 +24,17 @@ placement <- read.csv(paste0(directory,"topChef/Top Chef - Chef details.csv")
                       ,header=TRUE)
 placement <- placement %>%
   select(series,season,seasonNumber,chef,placement)
+challengewins <- read.csv(paste0(directory,"topChef/Top Chef - Challenge wins.csv")
+                          ,header=TRUE)
+
+# who showed up at the judges' table? just for elimination challenge.
+judgestable <- challengewins %>%
+  mutate(atJT = ifelse(challengeType == "Elimination" & outcome %in% c("OUT","LOW","HIGH"
+                                                         ,"WIN"
+                                                         # including last elim
+                                                         ,"WINNER","RUNNER-UP"
+                                                         ),"yes","no") )%>%
+  select(season,seasonNumber,series,episode,chef,atJT)
 
 
 ## Episode-specific stats
@@ -231,6 +242,90 @@ placement <- placement %>%
   gtsave(confessionalstattable
          ,filename = paste(directory,"S22E",currentep
                            ,"ConfessionalStats.png",sep=""))
+
+
+###########################################################################
+## Confessionals for those at judges table or not
+  confsJTall <- confsByEpi %>%
+    left_join(judgestable %>%
+                # need to update the chefs' names who have accents in them
+                mutate(chef = case_when(chef == "Kevin D'Andrea" ~ "Kévin D'Andrea"
+                                        ,chef == "Cesar Murillo" ~ "César Murillo"
+                                        ,chef == "Begona Rodrigo" ~ "Begoña Rodrigo"
+                                        ,TRUE ~ chef))
+              ) %>%
+    # in competition only
+    filter(inCompetition == TRUE)
+
+  confsJT <- confsJTall %>%
+    ungroup() %>%
+    group_by(season,seasonNumber,series,episode,totalconfsinep,atJT) %>%
+    summarise(avg = round(mean(count,na.rm=T),1)) %>%
+    pivot_wider(names_from=atJT,values_from=avg) %>%
+    mutate(`Who has a higher average number of confessionals` =
+             case_when(yes > no ~ "Those at JT"
+                       ,yes == no ~ "Equal"
+                       ,yes < no ~ "Those not at JT")) %>%
+    ungroup() %>%
+    rename(`Not at judges' table`=no,`At judges' table`=yes)
+
+  confsatJTtable <- confsJT %>%
+    filter(seasonNumber == 22) %>%
+    gt() %>%
+    cols_hide(columns=c(season,seasonNumber,series,totalconfsinep
+                      ,`Who has a higher average number of confessionals`)) %>%
+    tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
+    tab_options(data_row.padding = px(1),
+                column_labels.padding = px(1),
+                row_group.padding = px(1))  %>%
+    tab_style(style = cell_text(align = "right"),locations = cells_source_notes()) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_title(groups="title")) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_row_groups() ) %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_title(groups="subtitle")) %>%
+    tab_style(style = cell_text(align = "center")
+              ,locations = cells_body()) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_labels()) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_labels()) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_spanners()) %>%
+    tab_options(
+      row_group.background.color = "gray95",
+      table.font.color = "#323232",
+      table_body.hlines.color = "#323232",
+      table_body.border.top.color = "#323232",
+      heading.border.bottom.color = "#323232",
+      row_group.border.top.color = "#323232",
+      column_labels.border.bottom.color = "#323232",
+      row_group.border.bottom.color = "transparent"
+      ,table.border.top.style = "transparent"
+      ,table.border.bottom.style = "transparent"
+    ) %>%
+    opt_all_caps() %>%
+    cols_width(#chef ~ px(160)
+               #,`# of times with first confessional of episode` ~ px(160)
+               #,
+               everything() ~ px(175) )  %>%
+    tab_header(
+      title = "Top Chef Destination Canada: Average confessional counts by whether they were at judges' table for the elimination challenge"
+      ,subtitle = "Being at judges' table means you were there because you were at the top or the bottom. In Episode 8, all chefs were either at the top or the the bottom."
+    ) %>%
+    data_color(method="numeric",
+               columns=!episode,
+               palette=c("#a3cce9","#5fa2ce"
+                         ,"#1170AA","#141B41"
+               ),
+               domain=c(3.4,9))
+
+
+  gtsave(confsatJTtable
+         ,filename = paste(directory,"S22_ConfsAtJT.png",sep=""))
+
+
 
 
 
