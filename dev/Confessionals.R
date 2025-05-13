@@ -12,9 +12,6 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 currentep <- 9
 
 accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
-bg <- "snow"
-timecolors <- brewer.pal(n = 7, name = "PuBuGn")
-percentcolors <- brewer.pal(n = 6, name = "PuBuGn")
 
 confsRaw <- as_tibble(read.xlsx(paste(directory
                                      ,"TopChefData.xlsx",sep="")
@@ -36,6 +33,18 @@ judgestable <- challengewins %>%
                                                          ),"yes","no") )%>%
   select(season,seasonNumber,series,episode,chef,atJT)
 
+wonElimChall <- challengewins %>%
+  mutate(winner=ifelse(challengeType == "Elimination" & outcome %in% c("WIN"
+                                                         # including last elim
+                                                               ,"WINNER")
+                       ,"yes","no")) %>%
+  select(season,seasonNumber,series,episode,chef,winner) %>%
+  filter(winner == "yes") %>%
+  # need to update the chefs' names who have accents in them
+  mutate(chef = case_when(chef == "Kevin D'Andrea" ~ "Kévin D'Andrea"
+                          ,chef == "Cesar Murillo" ~ "César Murillo"
+                          ,chef == "Begona Rodrigo" ~ "Begoña Rodrigo"
+                          ,TRUE ~ chef))
 
 ## Episode-specific stats
   confsByEpi <- confsRaw %>%
@@ -50,11 +59,13 @@ judgestable <- challengewins %>%
            ,equalInEpPercent = 1/chefsinepisode
            ,difffromequalinEp = count - equalInEp
            ,percentofEpsConfs = count/totalconfsinep
-           ,edit = case_when(percentofEpsConfs > equalInEpPercent ~ "Overedited"
-                             ,percentofEpsConfs < equalInEpPercent ~ "Underedited"
-                             ,percentofEpsConfs == equalInEpPercent  ~ "Equal edit"
+           ,edit = case_when(percentofEpsConfs > equalInEpPercent ~ "Over-shown"
+                             ,percentofEpsConfs < equalInEpPercent ~ "Under-shown"
+                             ,percentofEpsConfs == equalInEpPercent  ~ "Shown as expected"
                              ,TRUE ~ "Not in episode")
-           )
+           ) %>%
+    ## Who won the elim chall in that ep?
+    left_join(wonElimChall)
 
 ## Chef specific stats
   confs <- confsRaw %>%
@@ -85,10 +96,15 @@ judgestable <- challengewins %>%
   s22epi <- confsByEpi %>%
     ungroup() %>%
     filter(seasonNumber == 22 & series == "US") %>%
-    select(episode,chef,count,first,percentofEpsConfs,equalInEpPercent,edit) %>%
+    select(episode,chef,count,first,percentofEpsConfs,equalInEpPercent
+           ,edit,winner) %>%
     mutate(labelpercent = ifelse(!(is.na(first))
+                                 # first confessional of episode
                             ,paste0("*",round(percentofEpsConfs*100,1),"%")
                             ,paste0(round(percentofEpsConfs*100,1),"%"))
+           # won elim challenge
+           ,labelpercent = ifelse(!(is.na(winner))
+                                  ,paste0(labelpercent,"#"),labelpercent)
            ) %>%
     left_join(placement %>%
                 filter(series == "US" & seasonNumber == 22) %>%
@@ -106,8 +122,8 @@ judgestable <- challengewins %>%
   s22epi <- s22epi[order(s22epi$placement,s22epi$chefstotal
                          ,decreasing = c(T,F)),]
   s22epi$chef <- factor(s22epi$chef,levels=unique(s22epi$chef))
-  s22epi$edit <- factor(s22epi$edit, levels = c("Underedited","Equal edit"
-                                                ,"Overedited"))
+  s22epi$edit <- factor(s22epi$edit, levels = c("Under-shown","Shown as expected"
+                                                ,"Over-shown"))
 
 
 
@@ -129,8 +145,8 @@ judgestable <- challengewins %>%
                        ,position="top"
                        ,"") +
     labs(title="% of total confessionals in each episode belonging to each chef"
-         ,subtitle="Edit is compared to if the episode's confessionals were evenly distributed"
-         ,caption = "* = first confessional of episode. Created by Carly Levitz for Pack Your Knives") +
+         ,subtitle="Each chef's confessional total is compared to the number if the episode's confessionals were evenly distributed"
+         ,caption = "* = first confessional of episode. # = won elimination challenge. Created by Carly Levitz for Pack Your Knives") +
     guides(color="none") +
     theme_minimal() +
     theme(panel.grid = element_blank()
@@ -164,9 +180,9 @@ judgestable <- challengewins %>%
     # remove the chefs that didn't make it out of LCK
     filter(!(chef %in% c("Sam Olayinka","Ying Gao"))) %>%
     mutate(`Percentage point difference` = observedpercent-expectedpercentofconfs
-      ,edit = case_when(observedpercent-expectedpercentofconfs == 0 ~ "Equal edit"
-                            ,observedpercent-expectedpercentofconfs > 0 ~ "Overedited"
-                            ,observedpercent-expectedpercentofconfs < 0 ~ "Underedited"
+      ,edit = case_when(observedpercent-expectedpercentofconfs == 0 ~ "Shown as expected"
+                            ,observedpercent-expectedpercentofconfs > 0 ~ "Over-shown"
+                            ,observedpercent-expectedpercentofconfs < 0 ~ "Under-shown"
                             ,TRUE ~ "missing")) %>%
     arrange(desc(observedpercent)) %>%
     rename(`# of times with first confessional of episode`=firstconfs
@@ -240,7 +256,7 @@ judgestable <- challengewins %>%
 
 
   gtsave(confessionalstattable
-         ,filename = paste(directory,"S22E",currentep
+         ,filename = paste(directory,"topChef/S22E",currentep
                            ,"ConfessionalStats.png",sep=""))
 
 
@@ -323,7 +339,7 @@ judgestable <- challengewins %>%
 
 
   gtsave(confsatJTtable
-         ,filename = paste(directory,"S22_ConfsAtJT.png",sep=""))
+         ,filename = paste(directory,"topChef/S22_ConfsAtJT.png",sep=""))
 
 
 
