@@ -100,9 +100,13 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
       ungroup() %>% group_by(season,seasonNumber,chef) %>%
       mutate(epbackin = min(ifelse(epout<episode & tempvalue == "TRUE0"
                                ,episode,NA),na.rm=T)
-             ,epsMissed = epbackin-epout-1) %>%
-    select(season,seasonNumber,chef,firstep,epout,epbackin,epsMissed) %>%
-    distinct()
+             ,epbackin = ifelse(chef == "Louis M.",16,epbackin)) %>%
+    select(season,seasonNumber,chef,firstep,epout,epbackin) %>%
+    distinct() %>%
+    ## fix a few things
+    mutate(firstep = ifelse(chef == "Brother L.",6,firstep)
+           ,epout = ifelse(chef == "Lee Anne W.",5,epout)
+           ,epsMissed = epbackin-epout-1)
 
 ## Combine the data
   alldata <- challengeswon %>%
@@ -124,7 +128,13 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 
   ## Number of chefs who won different #s of LCK challenges
   alldata %>%
-    group_by(nWon) %>%
+    group_by(nWon,cameback) %>%
+    summarise(n=n()) %>%
+    pivot_wider(names_from=cameback,values_from=n)
+
+  ## Episodes missed of those who came back to main comp.
+  alldata %>%
+    group_by(epsMissed) %>%
     summarise(n=n())
 
 
