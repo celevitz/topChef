@@ -1,3 +1,20 @@
+## Last Chance Kitchen
+## There are three chefs who started in LCK and came back into the main comp:
+##    Lee Anne (S15), Brother (S16), and Soo (S21).
+## In S20, the "quickfire" of Dale and Begona in ep 6 is consolidated to be
+##  part of LCK, instead of the main competition. I consider it to be one
+##  challenge
+## George P. (S12) not considered a LCK return because he was voted in, and
+##    didn't win a challenge to re-enter the main competition
+## I struggled with things when they were split across two episodes but aired
+##    on the same day.
+##    Charleston LCK finale could probably have been condensed to be just one
+##      challenge, with Jamie and Casey being eliminated, instead of two
+##      challenges, with Brooke and Casey winning the first one.
+##    Ditto re: Colorado
+##    Ditto re All Stars LA mid-season -- eps 5 and 6
+##    Ditto re S19 eps 4 and 5
+
 rm(list=ls())
 library(tidyverse)
 
@@ -126,6 +143,13 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
               ,nCompetedIn = mean(nCompetedIn,na.rm=T)
               ,n=n())
 
+  #t.test(alldata$nCompetedIn[alldata$cameback == "no"]
+  #       ,alldata$nCompetedIn[alldata$cameback == "yes"])
+  t.test(alldata$nWon[alldata$cameback == "no"]
+         ,alldata$nWon[alldata$cameback == "yes"])
+  t.test(alldata$percentwon[alldata$cameback == "no"]
+         ,alldata$percentwon[alldata$cameback == "yes"])
+
   ## Number of chefs who won different #s of LCK challenges
   alldata %>%
     group_by(nWon,cameback) %>%
@@ -136,6 +160,13 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
   alldata %>%
     group_by(epsMissed) %>%
     summarise(n=n())
+
+  ## Number competed in
+  alldata %>%
+    group_by(cameback,nCompetedIn) %>%
+    summarise(n=n()) %>%
+    pivot_wider(names_from=cameback,values_from=n)
+
 
 
 
