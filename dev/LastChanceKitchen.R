@@ -155,8 +155,16 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
       ungroup() %>% group_by(season,seasonNumber,chef) %>%
       mutate(epbackin = min(ifelse(epout<episode & tempvalue == "TRUE0"
                                ,episode,NA),na.rm=T)
-             ,epbackin = ifelse(chef == "Louis M.",16,epbackin)) %>%
-    select(season,seasonNumber,chef,firstep,epout,epbackin) %>%
+             ,epbackin = ifelse(chef == "Louis M.",16,epbackin)
+        # final episode in
+             ,finalepin = min(ifelse(epbackin<episode & tempvalue == "TRUE1"
+                                     ,episode,NA),na.rm=T)
+        ) %>%
+    ## final episode of season
+    ungroup() %>% group_by(season,seasonNumber) %>%
+    mutate(finalepisodeofseason = max(episode)) %>%
+    select(season,seasonNumber,chef,firstep,epout,epbackin
+           ,finalepin,finalepisodeofseason) %>%
     distinct() %>%
     ## fix a few things
     mutate(firstep = ifelse(chef == "Brother L.",6,firstep)
@@ -167,11 +175,35 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
            ,epbackin = ifelse(chef == "Soo Ahn",6,epbackin)
            ,epsMissed = ifelse(chef == "Lee Anne W.",5,epsMissed)
            ,epsMissed = ifelse(chef == "Brother L.",6,epsMissed)
-           ,epsMissed = ifelse(chef == "Soo Ahn",6,epsMissed)) %>%
+           ,epsMissed = ifelse(chef == "Soo Ahn",6,epsMissed)
+           # winners and finalists
+           ,finalepin = ifelse(chef %in% c("Brooke W.","Kristen K.","Joe F."
+                                     ,"Amar S.","Sarah W.","Louis M.","Sara B.")
+                               ,finalepisodeofseason,finalepin)
+           ,finalepin = ifelse(chef %in% c("Lee Anne W.","Brother L.","Soo Ahn")
+                               ,epout,finalepin)
+           # Length of run post-LCK
+           ,lengthofrunpostlck = finalepin-epbackin+1
+           ,lengthofseasonpostlck = finalepisodeofseason-epbackin+1
+           ,proportionofpostlckseasonin = round(lengthofrunpostlck/lengthofseasonpostlck,3)
+           ) %>%
     # add on placement
-    left_join(chefs %>% select(chef,series,season,seasonNumber,placement)) %>%
+    left_join(chefs %>% select(chef,series,season,seasonNumber,placement,name)) %>%
     # category of when they came back in
-    mutate(whenbackin = ifelse(epbackin <10,"Mid-season","End of season"))
+    mutate(whenbackin = ifelse(epbackin <10,"Mid-season","End of season")
+           ,chef=name) %>%
+    select(!name)
+
+  winnerepisodeinfo <- missedepisodes %>%
+    select(season,seasonNumber,series,whenbackin,chef,epsMissed
+           ,lengthofrunpostlck,proportionofpostlckseasonin,whenbackin) %>%
+    arrange(whenbackin,desc(proportionofpostlckseasonin)
+            ,desc(lengthofrunpostlck),seasonNumber,chef) %>%
+    mutate(lengthofrunpostlck = ifelse(is.infinite(lengthofrunpostlck)
+                                       ,NA,lengthofrunpostlck)
+           ,proportionofpostlckseasonin = ifelse(is.infinite(proportionofpostlckseasonin)
+                                           ,NA,proportionofpostlckseasonin)) %>%
+    relocate(whenbackin ,.after=last_col())
 
 ## Combine the data
   alldata <- challengeswon %>%
@@ -180,6 +212,20 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     full_join(returningchefs ) %>%
     mutate(cameback = ifelse(is.na(cameback),"no",cameback)
            ,percentwon = nWon/nCompetedIn)
+
+  winners <- missedepisodes %>%
+    left_join(challengeswon) %>%
+    left_join(challengescompetedin) %>%
+    left_join(chefs %>% select(season,seasonNumber,chef,name)) %>%
+    mutate(chef = name
+           ,proportionwon = nWon/nCompetedIn
+           ,placement = as.numeric(placement)) %>%
+    select(!name)
+
+  winners <- winners[,c("season","seasonNumber","series","chef"
+                        ,"nCompetedIn","nWon","proportionwon"
+                        ,"whenbackin","placement")]
+  winners$proportionwon <- round(winners$proportionwon,3)
 
 
 ## Analysis
@@ -309,26 +355,29 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
           ,plot.background = element_rect(color="white")
           ,strip.background =element_rect(fill="#a3cce9")
           ,strip.text = element_text(colour = 'black')
+          ,plot.subtitle = element_text(size=5)
     )
   ggsave(paste0(directory,"LCK_ChallengesWon_ByWhetherCameBack.png")
          ,numChallengesWonGraph,width = 6,height = 4,dpi = 1200 )
 
 ## Winners of LCK
   winnersTable <-
-    missedepisodes %>% ungroup() %>%
-    arrange(seasonNumber,placement) %>%
-    mutate(placement = as.numeric(placement)) %>%
+    winners %>% ungroup() %>%
+    arrange(whenbackin,desc(nCompetedIn),desc(proportionwon),placement) %>%
     rename(`Season #` = seasonNumber
-           ,`Episode of first appearance` = firstep
-           ,`Episode eliminated` = epout
-           ,`Episode back into main competition`=epbackin
-           ,`# of episodes missed` = epsMissed
-           #,`Category of return` = whenbackin
+           ,`# LCK challenges competed in` = nCompetedIn
+           ,`# LCK challenges won` = nWon
+           ,`Proportion of LCK challenges won`=proportionwon
+           ,`Final placement` = placement
+           #,`Category of return to main competition` = whenbackin
            ) %>%
     gt() %>%
     cols_hide(columns=c(series,whenbackin)) %>%
     tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
-    tab_source_note(source_note = "There are three chefs who started in LCK and came back into the main competition: Lee Anne (S15), Brother (S16), and Soo (S21). Lee Anne and Brother were only ever in one episode each.") %>%
+    tab_source_note(source_note = "There are three chefs who started in LCK and came back into the main competition: Lee Anne (S15), Brother (S16), and Soo (S21). Lee Anne and Brother were each only ever in one episode of the main competition. In LCK challenges of more than two chefs, chefs could be considered safe but not win.") %>%
+
+    tab_row_group(label = "Returned to main competition episode 10 or later",rows = whenbackin=="End of season") %>%
+    tab_row_group(label = "Returned to main competition before episode 10",rows = whenbackin=="Mid-season") %>%
     tab_options(data_row.padding = px(1),
                 column_labels.padding = px(1),
                 row_group.padding = px(1))  %>%
@@ -363,22 +412,91 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     opt_all_caps() %>%
     cols_width(season ~ px(160)
                ,`Season #` ~ px(80)
-               ,placement ~ px(85)
+               ,`Final placement` ~ px(85)
                ,chef ~ px(130)
-               ,`Episode back into main competition` ~ px(120)
-               , everything() ~ px(100) )  %>%
+               #,`Episode back into main competition` ~ px(120)
+               , everything() ~ px(120) )  %>%
     tab_header(
       title = paste0("Top Chef Last Chance Kitchen: Winners")
       ,subtitle = "LCK = Last Chance Kitchen"
     ) %>%
     data_color(method="numeric",
-               columns=placement,
+               columns=`Final placement`,
                palette=rev(c("#c85200","#ffbc69", "#a3cce9","#5fa2ce"
                          ,"#1170AA","#141B41")),
-               domain=c(1,11))
+               domain=c(1,11))%>%
+    data_color(method="numeric",
+               columns=`Proportion of LCK challenges won`,
+               palette=c("#c85200","#ffbc69", "#a3cce9","#5fa2ce"
+                             ,"#1170AA","#141B41"),
+               domain=c(0,1))
 
   gtsave(winnersTable
          ,filename = paste(directory,"LCKWinnerStats.png",sep=""))
+
+  ## Winners and how much of the competition they missed/were part of
+  winnermissedepisTable <-
+    winnerepisodeinfo %>% ungroup() %>%
+    rename(`Episodes missed of main competition`=epsMissed
+           ,`Length of run in main competition post-LCK` = lengthofrunpostlck
+           ,`Proportion of post-LCK episodes they were in`=proportionofpostlckseasonin
+           ,`Season #`=seasonNumber) %>%
+    gt() %>%
+    cols_hide(columns=c(series,whenbackin)) %>%
+    tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
+    tab_source_note(source_note = "There are three chefs who started in LCK and came back into the main competition: Lee Anne (S15), Brother (S16), and Soo (S21).") %>%
+    tab_row_group(label = "Returned to main competition episode 10 or later",rows = whenbackin=="End of season") %>%
+    tab_row_group(label = "Returned to main competition before episode 10",rows = whenbackin=="Mid-season") %>%
+    tab_options(data_row.padding = px(1),
+                column_labels.padding = px(1),
+                row_group.padding = px(1))  %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_source_notes()) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_title(groups="title")) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_row_groups() ) %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_title(groups="subtitle")) %>%
+    tab_style(style = cell_text(align = "center")
+              ,locations = cells_body(columns=!season) ) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_labels(columns=!season)) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_column_labels(columns=season)) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_spanners()) %>%
+    tab_options(
+      row_group.background.color = "gray95",
+      table.font.color = "#323232",
+      table_body.hlines.color = "#323232",
+      table_body.border.top.color = "#323232",
+      heading.border.bottom.color = "#323232",
+      row_group.border.top.color = "#323232",
+      column_labels.border.bottom.color = "#323232",
+      row_group.border.bottom.color = "transparent"
+      ,table.border.top.style = "transparent"
+      ,table.border.bottom.style = "transparent"
+    ) %>%
+    opt_all_caps() %>%
+    cols_width(season ~ px(160)
+               ,`Season #` ~ px(80)
+               #,`Final placement` ~ px(85)
+               ,chef ~ px(130)
+               #,`Episode back into main competition` ~ px(120)
+               , everything() ~ px(120) )  %>%
+    tab_header(
+      title = paste0("Top Chef Last Chance Kitchen: Episodes missed and length of run post-LCK")
+      ,subtitle = "LCK = Last Chance Kitchen. Length of run post-LCK is the number of episodes of the main competition in which the chef appears. That is then compared to the number of episodes left in the competition at the time they returned from LCK."
+    ) %>%
+    data_color(method="numeric",
+               columns=`Proportion of post-LCK episodes they were in`,
+               palette=c("#c85200","#ffbc69", "#a3cce9","#5fa2ce"
+                         ,"#1170AA","#141B41"),
+               domain=c(0,1))
+
+  gtsave(winnermissedepisTable
+         ,filename = paste(directory,"LCKWinnerStats_Episodes.png",sep=""))
 
 
 
