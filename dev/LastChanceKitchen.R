@@ -161,7 +161,17 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     ## fix a few things
     mutate(firstep = ifelse(chef == "Brother L.",6,firstep)
            ,epout = ifelse(chef == "Lee Anne W.",5,epout)
-           ,epsMissed = epbackin-epout-1)
+           ,epsMissed = epbackin-epout-1
+           ,epbackin = ifelse(chef == "Lee Anne W.",5,epbackin)
+           ,epbackin = ifelse(chef == "Brother L.",6,epbackin)
+           ,epbackin = ifelse(chef == "Soo Ahn",6,epbackin)
+           ,epsMissed = ifelse(chef == "Lee Anne W.",5,epsMissed)
+           ,epsMissed = ifelse(chef == "Brother L.",6,epsMissed)
+           ,epsMissed = ifelse(chef == "Soo Ahn",6,epsMissed)) %>%
+    # add on placement
+    left_join(chefs %>% select(chef,series,season,seasonNumber,placement)) %>%
+    # category of when they came back in
+    mutate(whenbackin = ifelse(epbackin <10,"Mid-season","End of season"))
 
 ## Combine the data
   alldata <- challengeswon %>%
@@ -211,6 +221,13 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     group_by(cameback,nCompetedIn) %>%
     summarise(n=n()) %>%
     pivot_wider(names_from=cameback,values_from=n)
+
+  ## Placement depending on when they were back in
+  missedepisodes %>%
+    ungroup() %>%
+    mutate(placement = as.numeric(placement)) %>%
+    group_by(whenbackin) %>%
+    summarise(avgplacement = mean(placement,na.rm=T))
 
 
 ###########################################################################
