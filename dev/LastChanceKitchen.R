@@ -17,6 +17,7 @@
 
 rm(list=ls())
 library(tidyverse)
+library(gt)
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
@@ -67,6 +68,43 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     distinct() %>%
     arrange(seasonNumber, chef) %>%
     mutate(cameback = "yes")
+
+  # Stats for each season
+  seasonstats <-
+      # How many episodes of LCK?
+      lckchallenges %>%
+        ungroup() %>%
+        select(season,seasonNumber,series,episode) %>%
+        distinct() %>%
+        group_by(season,seasonNumber,series) %>%
+        summarise(numberEpisodesOfLCK = n()) %>%
+      left_join(
+        # How many chefs competed?
+        lckchallenges %>%
+          ungroup() %>%
+          select(season,seasonNumber,series,chef) %>%
+          distinct() %>%
+          group_by(season,seasonNumber,series) %>%
+          summarise(chefsThatCompeted = n())
+      ) %>%
+      left_join(
+        # number of episodes in which someone came back
+        lckchallenges %>%
+          filter(cameback == "yes") %>%
+          ungroup () %>%
+          select(season,seasonNumber,series,episode) %>%
+          distinct() %>%
+          group_by(season,seasonNumber,series) %>%
+          summarise(numberEpisodesSomeoneReturned = n())
+      ) %>%
+      left_join(
+        # How many chefs returned to main comp
+        returningchefs %>%
+          group_by(season,seasonNumber,series) %>%
+          summarise(nChefsThatReEntered=n())
+      ) %>%
+    arrange(seasonNumber)
+
 
 ## How many challenges did each chef win?
   challengeswon <-   lckchallenges %>%
@@ -166,6 +204,65 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     group_by(cameback,nCompetedIn) %>%
     summarise(n=n()) %>%
     pivot_wider(names_from=cameback,values_from=n)
+
+
+###########################################################################
+# Graphics/tables
+  seasonstatsTable <- seasonstats %>% ungroup() %>%
+    rename(`Season #`=seasonNumber
+           ,`# of LCK episodes`=numberEpisodesOfLCK
+           ,`# of chefs who competed in LCK` = chefsThatCompeted
+           ,`# of episodes in which someone returned` = numberEpisodesSomeoneReturned
+           ,`# of chefs that returned to main competition` = nChefsThatReEntered) %>%
+    gt() %>%
+    cols_hide(columns=c(series)) %>%
+    tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
+    tab_source_note(source_note = "There are three chefs who started in LCK and came back into the main competition: Lee Anne (S15), Brother (S16), and Soo (S21).\nIn S20, the quickfire of Dale and Begona in episode 6 is consolidated to be part of LCK, instead of the main competition. I consider it to be one challenge.\nGeorge P. (S12) not considered a LCK return because he was voted in, and did not win a challenge to re-enter the main competition.\nI struggled with things when they were split across two episodes but aired on the same day. I decided to categorize these as separate challenges:\nSeason 14 Charleston LCK finale, Season 15 Colorado LCK finale, Season 17 All Stars LA mid-season finale, and Season 19 Houston mid-season finale.") %>%
+    tab_options(data_row.padding = px(1),
+                column_labels.padding = px(1),
+                row_group.padding = px(1))  %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_source_notes()) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_title(groups="title")) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_row_groups() ) %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_title(groups="subtitle")) %>%
+    tab_style(style = cell_text(align = "center")
+              ,locations = cells_body(columns=!season)) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_labels(columns=!season)) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_column_labels(columns=season)) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_spanners()) %>%
+    tab_options(
+      row_group.background.color = "gray95",
+      table.font.color = "#323232",
+      table_body.hlines.color = "#323232",
+      table_body.border.top.color = "#323232",
+      heading.border.bottom.color = "#323232",
+      row_group.border.top.color = "#323232",
+      column_labels.border.bottom.color = "#323232",
+      row_group.border.bottom.color = "transparent"
+      ,table.border.top.style = "transparent"
+      ,table.border.bottom.style = "transparent"
+    ) %>%
+    opt_all_caps() %>%
+    cols_width(season ~ px(160)
+               ,`Season #` ~ px(90)
+               ,`# of LCK episodes` ~ px(90)
+               ,`# of chefs who competed in LCK` ~ px(120)
+               , everything() ~ px(150) )  %>%
+    tab_header(
+      title = paste0("Top Chef Last Chance Kitchen: statistics by season")
+      ,subtitle = "LCK = Last Chance Kitchen"
+    )
+
+  gtsave(seasonstatsTable
+         ,filename = paste(directory,"LCKSeasonStats.png",sep=""))
+
 
 
 
