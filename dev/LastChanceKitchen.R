@@ -276,7 +276,7 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
     ggplot(aes(x=nWon,y=nChefs)) +
     geom_bar(stat="identity") +
     facet_wrap(~cameback) +
-    geom_text(aes(label=nChefs,y=nChefs+4))  +
+    geom_text(aes(label=nChefs,y=nChefs+4),cex=2.3)  +
     scale_y_continuous(breaks=seq(0,110,15),labels=seq(0,110,15)
                        ,limits=c(0,112)
                        ,"Number of chefs") +
