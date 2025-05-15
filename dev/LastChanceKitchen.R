@@ -165,9 +165,9 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 
 ## Combine the data
   alldata <- challengeswon %>%
-    left_join(challengescompetedin) %>%
-    left_join(missedepisodes) %>%
-    left_join(returningchefs ) %>%
+    full_join(challengescompetedin) %>%
+    full_join(missedepisodes) %>%
+    full_join(returningchefs ) %>%
     mutate(cameback = ifelse(is.na(cameback),"no",cameback)
            ,percentwon = nWon/nCompetedIn)
 
@@ -181,18 +181,25 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
               ,nCompetedIn = mean(nCompetedIn,na.rm=T)
               ,n=n())
 
-  #t.test(alldata$nCompetedIn[alldata$cameback == "no"]
-  #       ,alldata$nCompetedIn[alldata$cameback == "yes"])
+  t.test(alldata$nCompetedIn[alldata$cameback == "no"]
+         ,alldata$nCompetedIn[alldata$cameback == "yes"])
   t.test(alldata$nWon[alldata$cameback == "no"]
          ,alldata$nWon[alldata$cameback == "yes"])
   t.test(alldata$percentwon[alldata$cameback == "no"]
          ,alldata$percentwon[alldata$cameback == "yes"])
 
   ## Number of chefs who won different #s of LCK challenges
-  alldata %>%
+  nWonDistributionData <- alldata %>%
     group_by(nWon,cameback) %>%
     summarise(n=n()) %>%
-    pivot_wider(names_from=cameback,values_from=n)
+    pivot_wider(names_from=cameback,values_from=n) %>%
+    mutate(nWon = ifelse(is.na(nWon),0,nWon)
+           ,no = ifelse(is.na(no),0,no)
+           ,yes = ifelse(is.na(yes),0,yes)) %>%
+    arrange(nWon) %>%
+    # reshape it back to long b/c it's easier for ggplot
+    pivot_longer(!nWon,names_to = "cameback",values_to = "nChefs") %>%
+    mutate(cameback = ifelse(cameback == "no","Lost LCK","Returned to main competition"))
 
   ## Episodes missed of those who came back to main comp.
   alldata %>%
@@ -208,6 +215,7 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 
 ###########################################################################
 # Graphics/tables
+## Season stats
   seasonstatsTable <- seasonstats %>% ungroup() %>%
     rename(`Season #`=seasonNumber
            ,`# of LCK episodes`=numberEpisodesOfLCK
@@ -263,8 +271,30 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
   gtsave(seasonstatsTable
          ,filename = paste(directory,"LCKSeasonStats.png",sep=""))
 
-
-
+## Number of challenges won
+  numChallengesWonGraph <- nWonDistributionData %>%
+    ggplot(aes(x=nWon,y=nChefs)) +
+    geom_bar(stat="identity") +
+    facet_wrap(~cameback) +
+    geom_text(aes(label=nChefs,y=nChefs+4))  +
+    scale_y_continuous(breaks=seq(0,110,15),labels=seq(0,110,15)
+                       ,limits=c(0,112)
+                       ,"Number of chefs") +
+    scale_x_continuous(breaks=seq(0,8,1)
+                       #,labels=paste0("Ep. ",seq(1,max(s22$episode),1))
+                       #,limits=c(.9,max(s22$episode)+3)
+                       ,"Number of LCK challenges won") +
+    ggtitle("Number of chefs who won different numbers of LCK challenges"
+            ,subtitle = "Created by Carly Levitz for Pack Your Knives"
+    ) +
+    theme_minimal() +
+    theme(panel.grid = element_blank()
+          ,plot.background = element_rect(color="white")
+          ,strip.background =element_rect(fill="#a3cce9")
+          ,strip.text = element_text(colour = 'black')
+    )
+  ggsave(paste0(directory,"LCK_ChallengesWon_ByWhetherCameBack.png")
+         ,numChallengesWonGraph,width = 6,height = 4,dpi = 1200 )
 
 
 
