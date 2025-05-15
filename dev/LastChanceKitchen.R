@@ -313,7 +313,72 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
   ggsave(paste0(directory,"LCK_ChallengesWon_ByWhetherCameBack.png")
          ,numChallengesWonGraph,width = 6,height = 4,dpi = 1200 )
 
+## Winners of LCK
+  winnersTable <-
+    missedepisodes %>% ungroup() %>%
+    arrange(seasonNumber,placement) %>%
+    mutate(placement = as.numeric(placement)) %>%
+    rename(`Season #` = seasonNumber
+           ,`Episode of first appearance` = firstep
+           ,`Episode eliminated` = epout
+           ,`Episode back into main competition`=epbackin
+           ,`# of episodes missed` = epsMissed
+           #,`Category of return` = whenbackin
+           ) %>%
+    gt() %>%
+    cols_hide(columns=c(series,whenbackin)) %>%
+    tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
+    tab_source_note(source_note = "There are three chefs who started in LCK and came back into the main competition: Lee Anne (S15), Brother (S16), and Soo (S21). Lee Anne and Brother were only ever in one episode each.") %>%
+    tab_options(data_row.padding = px(1),
+                column_labels.padding = px(1),
+                row_group.padding = px(1))  %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_source_notes()) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_title(groups="title")) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_row_groups() ) %>%
+    tab_style(style = cell_text(align = "left")
+              ,locations = cells_title(groups="subtitle")) %>%
+    tab_style(style = cell_text(align = "center")
+              ,locations = cells_body(columns=!season) ) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_labels(columns=!season)) %>%
+    tab_style(style = cell_text(align = "left",weight="bold")
+              ,locations = cells_column_labels(columns=season)) %>%
+    tab_style(style = cell_text(align = "center",weight="bold")
+              ,locations = cells_column_spanners()) %>%
+    tab_options(
+      row_group.background.color = "gray95",
+      table.font.color = "#323232",
+      table_body.hlines.color = "#323232",
+      table_body.border.top.color = "#323232",
+      heading.border.bottom.color = "#323232",
+      row_group.border.top.color = "#323232",
+      column_labels.border.bottom.color = "#323232",
+      row_group.border.bottom.color = "transparent"
+      ,table.border.top.style = "transparent"
+      ,table.border.bottom.style = "transparent"
+    ) %>%
+    opt_all_caps() %>%
+    cols_width(season ~ px(160)
+               ,`Season #` ~ px(80)
+               ,placement ~ px(85)
+               ,chef ~ px(130)
+               ,`Episode back into main competition` ~ px(120)
+               , everything() ~ px(100) )  %>%
+    tab_header(
+      title = paste0("Top Chef Last Chance Kitchen: Winners")
+      ,subtitle = "LCK = Last Chance Kitchen"
+    ) %>%
+    data_color(method="numeric",
+               columns=placement,
+               palette=rev(c("#c85200","#ffbc69", "#a3cce9","#5fa2ce"
+                         ,"#1170AA","#141B41")),
+               domain=c(1,11))
 
+  gtsave(winnersTable
+         ,filename = paste(directory,"LCKWinnerStats.png",sep=""))
 
 
 
