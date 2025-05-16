@@ -16,12 +16,12 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series == "US" )
 
 # Current episode #
-    currentep <- 9
+    currentep <- 10
 
-    chefsinlck <- c("Katianna Hong","Cesar Murillo")
+    chefsinlck <- NA
     eliminatedchefs <- c("Corwin Hemming","Zubair Mohajir","Mimi Weissenborn"
                          ,"Anya El-Wattar","Kat Turner","Henry Lu"
-                         ,"Paula Endara")
+                         ,"Paula Endara","Vincenzo Loseto","Katianna Hong")
 
 ## Index
 ## Write it out here, because it calls on the Top Chef package and that's
@@ -292,6 +292,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       bind_rows(weightedindex("US",22,7,6)  %>% mutate(episode = 7)  ) %>%
       bind_rows(weightedindex("US",22,8,6)  %>% mutate(episode = 8)  ) %>%
       bind_rows(weightedindex("US",22,9,7)  %>% mutate(episode = 9)  ) %>%
+      bind_rows(weightedindex("US",22,10,8)  %>% mutate(episode = 10)  ) %>%
       select(chef,placement,episode,indexWeight,OverallRank) %>%
       mutate(placement = as.numeric(placement)
              ,placement = ifelse(placement == 1.5,NA, placement)
@@ -390,7 +391,7 @@ scoretable <- s22wide %>%
     ,table.border.bottom.style = "transparent"
   ) %>%
   opt_all_caps() %>%
-  cols_width(chef ~ px(200), everything() ~ px(75) )  %>%
+  cols_width(chef ~ px(165), everything() ~ px(65) )  %>%
   tab_header(
     title = paste0("Top Chef Destination Canada Episode ",currentep)
     ,subtitle = "Scores by episode"
@@ -412,7 +413,6 @@ gtsave(scoretable
 
 
 
-#write.csv(s22,paste0(directory,"S22currentRankings.csv"),row.names=F)
 
 
 
