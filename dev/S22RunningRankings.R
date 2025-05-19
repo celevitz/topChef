@@ -266,13 +266,23 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       # Rank of chefs in the competition at the time
 
         statsbynumberofchalls <- statsbynumberofchalls[order(
-          statsbynumberofchalls$indexWeight,decreasing=TRUE),]
+          statsbynumberofchalls$indexWeight
+          ,statsbynumberofchalls$Elimination.WIN
+          ,statsbynumberofchalls$Elimination.HIGH
+          ,statsbynumberofchalls$Quickfire.WIN
+          ,statsbynumberofchalls$Quickfire.HIGH
+          ,decreasing=TRUE),]
         row.names(statsbynumberofchalls) <- NULL
         statsbynumberofchalls$OverallRank <- as.numeric(row.names(statsbynumberofchalls))
 
         statsbynumberofchalls <- statsbynumberofchalls[order(
           statsbynumberofchalls$stillincomp
-          ,statsbynumberofchalls$indexWeight,decreasing=TRUE),]
+          ,statsbynumberofchalls$indexWeight
+          ,statsbynumberofchalls$Elimination.WIN
+          ,statsbynumberofchalls$Elimination.HIGH
+          ,statsbynumberofchalls$Quickfire.WIN
+          ,statsbynumberofchalls$Quickfire.HIGH
+          ,decreasing=TRUE),]
         row.names(statsbynumberofchalls) <- NULL
         statsbynumberofchalls$RankOfThoseStillIn <- as.numeric(row.names(statsbynumberofchalls))
         statsbynumberofchalls$RankOfThoseStillIn[statsbynumberofchalls$stillincomp == 0] <- NA
@@ -283,7 +293,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
 
 #############################################################################
 ## Rank by episode
-    s22 <- weightedindex("US",22,1,1) %>% mutate(episode = 1) %>%
+    s22allColumns <- weightedindex("US",22,1,1) %>% mutate(episode = 1) %>%
       bind_rows(weightedindex("US",22,2,2)  %>% mutate(episode = 2) ) %>%
       bind_rows(weightedindex("US",22,3,3)  %>% mutate(episode = 3)  ) %>%
       bind_rows(weightedindex("US",22,4,4)  %>% mutate(episode = 4)  ) %>%
@@ -293,12 +303,13 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       bind_rows(weightedindex("US",22,8,6)  %>% mutate(episode = 8)  ) %>%
       bind_rows(weightedindex("US",22,9,7)  %>% mutate(episode = 9)  ) %>%
       bind_rows(weightedindex("US",22,10,8)  %>% mutate(episode = 10)  ) %>%
-      select(chef,placement,episode,indexWeight,OverallRank) %>%
       mutate(placement = as.numeric(placement)
              ,placement = ifelse(placement == 1.5,NA, placement)
              ,yvalue=15-OverallRank+1)
 
-    s22 <- s22 %>%
+    s22 <- s22allColumns
+    s22 <- s22allColumns %>%
+      select(chef,placement,episode,indexWeight,OverallRank,yvalue) %>%
     mutate(sizecat=case_when(indexWeight <
                        summary(s22$indexWeight[s22$episode == currentep])[2] ~ 1
      ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[2] &
@@ -309,8 +320,8 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
      ,cheflabel=ifelse(episode == max(episode),chef,NA))
 
 
-  s22wide <- s22 %>%
-    select(chef,episode,indexWeight) %>%
+  s22wide <- s22allColumns %>%
+    select(chef,episode,indexWeight,yvalue) %>%
     mutate(episode = paste0("Episode ",episode)
            ,inCompetition = case_when(chef %in% chefsinlck ~ 1
                                       ,chef %in% eliminatedchefs ~ 0
@@ -336,7 +347,7 @@ rankgraph <- s22 %>%
                      ,"Rank (lower values are better)") +
   scale_x_continuous(breaks=seq(1,max(s22$episode),1)
                      ,labels=paste0("Ep. ",seq(1,max(s22$episode),1))
-                     ,limits=c(.9,max(s22$episode)+3)
+                     ,limits=c(.9,max(s22$episode)+4)
                      ,"") +
   geom_text(aes(label=cheflabel,y=yvalue,x=episode+2,color=chef)) +
   #geom_text(aes(label=indexWeight,y=yvalue,x=episode),color="black") +
