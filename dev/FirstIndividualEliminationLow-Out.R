@@ -53,7 +53,10 @@ challenges <- allchallenges %>%
   mutate(placement = as.numeric(placement)) %>%
   # how does this compare to the number of episodes in the season?
   full_join(maxepisodebyseason) %>%
-  mutate(proportionintoseason = firstepisodeLow/lastepisode)
+  mutate(proportionintoseason = firstepisodeLow/lastepisode
+         ,seasonNumberAsString = ifelse(seasonNumber < 10
+                                        ,paste0("0",as.character(seasonNumber))
+                                        ,as.character(seasonNumber)))
 
 
 # Regression
@@ -78,6 +81,15 @@ challenges <- allchallenges %>%
            )%>%
     ggplot(aes(x=seasonNumber,y=proportionintoseason)) +
     geom_text(aes(label=chef,color=placement),size=2)
+
+  detailedgraphbyplacement <- challenges %>%
+    ggplot(aes(x=placement,y=proportionintoseason)) +
+    geom_jitter(alpha=.1,aes(color=seasonNumberAsString)) +
+    geom_smooth(method='lm', formula= y~x) +
+    geom_text(aes(label=chef),size=.5)
+
+  ggsave(paste0(directory,"Placement-FirstElimLow.png")
+         ,detailedgraphbyplacement,width = 6,height = 4,dpi = 1200 )
 
 
 
