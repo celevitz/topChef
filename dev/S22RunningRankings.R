@@ -16,12 +16,13 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series == "US" )
 
 # Current episode #
-    currentep <- 10
+    currentep <- 11
 
     chefsinlck <- NA
     eliminatedchefs <- c("Corwin Hemming","Zubair Mohajir","Mimi Weissenborn"
                          ,"Anya El-Wattar","Kat Turner","Henry Lu"
-                         ,"Paula Endara","Vincenzo Loseto","Katianna Hong")
+                         ,"Paula Endara","Vincenzo Loseto","Katianna Hong"
+                         ,"Lana Lagomarsini")
 
 ## Index
 ## Write it out here, because it calls on the Top Chef package and that's
@@ -31,7 +32,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
     weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
                               ,numberofquickfires) {
       # 1. Set up the data
-      placementdata <- topChef::chefdetails[,c("chef","series","season"
+      placementdata <- chefdetails[,c("chef","series","season"
                                                ,"seasonNumber","placement")]
       placementdata <- placementdata[placementdata$series == seriesname &
                                        placementdata$seasonNumber == seasonnumberofchoice,]
@@ -303,69 +304,60 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       bind_rows(weightedindex("US",22,8,6)  %>% mutate(episode = 8)  ) %>%
       bind_rows(weightedindex("US",22,9,7)  %>% mutate(episode = 9)  ) %>%
       bind_rows(weightedindex("US",22,10,8)  %>% mutate(episode = 10)  ) %>%
-      mutate(placement = as.numeric(placement)
-             ,placement = ifelse(placement == 1.5,NA, placement)
-             ,yvalue=15-OverallRank+1)
+      bind_rows(weightedindex("US",22,11,9)  %>% mutate(episode = 11)  ) %>%
+      select(!placement) %>%
+      mutate(yvalue=15-OverallRank+1)
 
-    s22 <- s22allColumns
     s22 <- s22allColumns %>%
-      select(chef,placement,episode,indexWeight,OverallRank,yvalue) %>%
-    mutate(sizecat=case_when(indexWeight <
-                       summary(s22$indexWeight[s22$episode == currentep])[2] ~ 1
-     ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[2] &
-       indexWeight < summary(s22$indexWeight[s22$episode == currentep])[3] ~ 2
-     ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[3] &
-       indexWeight < summary(s22$indexWeight[s22$episode == currentep])[5] ~ 3
-     ,indexWeight >= summary(s22$indexWeight[s22$episode == currentep])[5] ~ 4)
-     ,cheflabel=ifelse(episode == max(episode),chef,NA))
+      select(chef,episode,indexWeight,OverallRank,yvalue) %>%
+      mutate(cheflabel=ifelse(episode == max(episode),chef,NA))
+
+  # Wide version for gt()
+    s22wide <- s22allColumns %>%
+      select(chef,episode,indexWeight) %>%
+      mutate(episode = paste0("Episode ",episode)
+             ,inCompetition = case_when(chef %in% chefsinlck ~ 1
+                                        ,chef %in% eliminatedchefs ~ 0
+                                        ,TRUE ~ 2)) %>%
+      pivot_wider(names_from = episode,values_from=indexWeight)
+
+    currentrankforsorting <- s22 %>%
+      filter(episode == currentep) %>%
+      select(chef,OverallRank)
+
+    s22wide <- s22wide %>%
+      left_join(currentrankforsorting)
+
+    s22wide <- s22wide[order(s22wide$OverallRank),]
 
 
-  s22wide <- s22allColumns %>%
-    select(chef,episode,indexWeight,yvalue) %>%
-    mutate(episode = paste0("Episode ",episode)
-           ,inCompetition = case_when(chef %in% chefsinlck ~ 1
-                                      ,chef %in% eliminatedchefs ~ 0
-                                      ,TRUE ~ 2)) %>%
-    pivot_wider(names_from = episode,values_from=indexWeight)
 
-  currentrankforsorting <- s22 %>%
-    filter(episode == currentep) %>%
-    select(chef,OverallRank)
 
-  s22wide <- s22wide %>%
-    full_join(currentrankforsorting)
-  s22wide <- s22wide[order(s22wide$OverallRank),]
-
+# Graph
 rankgraph <- s22 %>%
   ggplot(aes(x=episode,y=yvalue)) +
   geom_line(aes(color=chef)) +
-  geom_point(aes(color=chef
-                 #,size=sizecat
-                 )) +
+  geom_point(aes(color=chef)) +
   scale_y_continuous(breaks=seq(1,15,1),labels=rev(seq(1,15,1))
                      ,limits=c(.5,15.5)
                      ,"Rank (lower values are better)") +
   scale_x_continuous(breaks=seq(1,max(s22$episode),1)
                      ,labels=paste0("Ep. ",seq(1,max(s22$episode),1))
-                     ,limits=c(.9,max(s22$episode)+4)
+                     ,limits=c(.9,max(s22$episode)+2.5)
                      ,"") +
-  geom_text(aes(label=cheflabel,y=yvalue,x=episode+2,color=chef)) +
-  #geom_text(aes(label=indexWeight,y=yvalue,x=episode),color="black") +
+  geom_text(aes(label=cheflabel,y=yvalue,x=episode+2,color=chef),size=3) +
   ggtitle("Rank of chefs' scores each episode of Top Chef Season 22"
-          ,subtitle = "Created by Carly Levitz for Pack Your Knives"
-          ) +
+          ,subtitle = "Created by Carly Levitz for Pack Your Knives"  ) +
   theme_minimal() +
   theme(legend.position="none"
         ,panel.grid = element_blank()
-        ,plot.background = element_rect(color="white")
-        )
+        ,plot.background = element_rect(color="white") )
 ggsave(paste0(directory,"S22E",currentep,"Ranking.png")
        ,rankgraph,width = 6,height = 4,dpi = 1200 )
 
-
+# Table
 scoretable <- s22wide %>%
   gt() %>%
-  #tab_spanner_delim(delim = "_") %>%
   cols_hide(columns=c(OverallRank,inCompetition)) %>%
   tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
   tab_row_group(label = "Eliminated",rows = inCompetition==0) %>%
