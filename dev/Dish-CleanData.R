@@ -6,6 +6,8 @@ library(stringr)
 library(topChef)
 library(openxlsx)
 library(tidyverse)
+library(wordcloud2)
+library(tm)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -34,7 +36,7 @@ dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
           gsub("kimchee","kimchi",
           gsub("brocolli","broccoli",
           gsub("applauce","applesauce",
-          gsub("flambeeded","flambee",
+          gsub("flambeeded","flambeed",
           gsub("choclate","chocolate",
           gsub("cripsy","crispy",
           gsub("linguini","linguine",
@@ -130,11 +132,11 @@ gsub(" chip","-chip",
 gsub("empanadas","empanada",
 gsub("enchiladas","enchilada",
 gsub("leche de tigre","leche-de-tigre",
-gsub("flambe","flambeed",
 gsub("fritters","fritter",
 gsub("foamed","foam",
 gsub("glazed","glaze",
 gsub("hoe cake","hoe-cake",
+gsub("hoecake","hoe-cake",
 gsub("seeds","seed",
 gsub("parker house","parker-house",
 gsub("pizzas","pizza",
@@ -212,6 +214,7 @@ gsub("button mushroom","button-mushroom",
 gsub("chanterelle mushroom","chanterelle-mushroom",
 gsub("cremini mushroom","cremini-mushroom",
 gsub("king trumpet mushroom","king-trumpet-mushroom",
+gsub("king oyster mushroom","king-oyster-mushroom",
 gsub("maitake mushroom","maitake-mushroom",
 gsub("morel mushroom","morel-mushroom",
 gsub("oyster mushroom","oyster-mushroom",
@@ -219,7 +222,7 @@ gsub("portobello mushroom","portobello-mushroom",
 gsub("shitake mushroom","shitake-mushroom",
 gsub("mushrooms","mushroom",
 cleandishes$dish
-))))))))))))
+)))))))))))))
 
 
 # produce
@@ -322,14 +325,21 @@ gsub("black bass","black-bass",
 gsub("black tea","black-tea",
 gsub("black olive","black-olive",
 gsub("black bean","black-bean",
-gsub("black rice","black-rce",
+gsub("black rice","black-rice",
 gsub("black sesame","black-sesame",
 gsub("blood orange","blood-orange",
 gsub("blue crab","blue-crab",
 gsub("oranges","orange",
 gsub("red snapper","red-snapper",
+gsub("red curry","red-curry",
+gsub("red cabbage","red-cabbage",
+gsub("red bean","red-bean",
 gsub("red miso","red-miso",
+gsub("red onion","red-onion",
 gsub("red pepper","red-pepper",
+gsub("red wine","red-wine",
+gsub("ruby red grapefruit","ruby-red-grapefruit",
+gsub("red lentil","red-lentil",
 gsub("white truffle","white-truffle",
 gsub("white pepper","white-pepper",
 gsub("white miso","white-miso",
@@ -337,21 +347,52 @@ gsub("white fish","white-fish",
 gsub("green chartreuse","green-chartreuse",
 gsub("green goddess","green-goddess",
 gsub("green olive","green-olive",
+gsub("green curry","green-curry",
 gsub("mole negro","mole-negro",
+gsub("rainbow chard","rainbow-chard",
 cleandishes$dish
-))))))))))))))))))))))))))
+)))))))))))))))))))))))))))))))))))
 
 # sauces
 cleandishes$dish <- gsub("bechamel sauce","bechamel-sauce",
 gsub("beurre blanc","beurre-blanc",
+gsub("burre blanc","beurre-blanc",
+gsub("beurre monte","beurre-monte",
 gsub("cream sauce","cream-sauce",
 gsub("soy sauce","soy-sauce",
 gsub("fish sauce","fish-sauce",
 gsub("salsa verde","salsa-verde",
+gsub("chantilly cream","chantilly-cream",
 cleandishes$dish
-))))))
+)))))))))
+
+## Things I noticed during Season 22
+cleandishes$dish <- gsub("Alaskan King ","king-salmon",
+gsub("King salmon","king-salmon",
+gsub("King crab","king-crab",
+gsub("fruitti di mare","fruitti-di-mare",
+gsub("herbes fines","herbes-fines",
+gsub("fines herbes","herbes-fines",
+gsub("jamaican patty","jamaican-patty",
+gsub("al forno","al-forno",
+gsub("chili crisp","chili-crisp",
+gsub("lap cheong","lap-cheong",
+gsub("english muffin","english-muffin",
+cleandishes$dish
+)))))))))))
 
 ## Create long form for analysis
+## function
+# clean_corpus <- function(corpus_to_use){
+#   corpus_to_use %>%
+#     tm_map(removePunctuation) %>%
+#     tm_map(stripWhitespace) %>%
+#     tm_map(content_transformer(function(x) iconv(x, to='UTF-8', sub='byte'))) %>%
+#     tm_map(removeNumbers) %>%
+#     tm_map(removeWords, stopwords("en")) %>%
+#     tm_map(content_transformer(tolower)) %>%
+#     tm_map(removeWords, c("etc","ie", "eg", stopwords("english")))
+# }
 
 cleandisheslong <- cleandishes %>%
   separate_longer_delim(dish, delim = " ") %>%
@@ -360,18 +401,43 @@ cleandisheslong <- cleandishes %>%
                        ,"40","5","a","","my","myself","-","aka"
                        ,"including","en","an","the","not","shown","on","n/a"
                        ,"of","in","with","wtih","and"
-                       ,"everything","but")))
+                       ,"everything","but"))) %>%
+  # remove extra white space
+  mutate(dish = str_squish(str_trim(dish,side="both")))
+
   # remove punctuation
   cleandisheslong$dish <- gsub("\\\\","",cleandisheslong$dish)
-
-tempy<-cleandisheslong %>%
-  group_by(dish) %>%
-  summarize(number=n())%>%
-  arrange(desc(number),dish)
-tempy %>% filter(number>=15) %>% print(n=200)
+  cleandisheslong$dish <- removePunctuation(cleandisheslong$dish)
+  cleandisheslong$dish <- removeNumbers(cleandisheslong$dish)
+  cleandisheslong$dish <- removeWords(cleandisheslong$dish,stopwords("en"))
 
 
-#table(cleandisheslong$dish)
-sort(unique(cleandisheslong$dish))[1:20]
-cleandisheslong$dish[1:200]
-sort(unique(cleandisheslong$dish))
+
+## Season 22
+season22 <- cleandisheslong %>%
+  group_by(season,seasonNumber,series,dish) %>%
+  summarise(Frequency=n()) %>%
+  ungroup() %>%
+  group_by(series,season,seasonNumber) %>%
+  mutate(N=n()
+         ,prop_term_to_total_terms=Frequency/N) %>%
+  filter(seasonNumber == 22 ) %>%
+  rename(Term=dish) %>%
+  ungroup() %>%
+  select(Term,Frequency,prop_term_to_total_terms)
+
+wordcloud2(season22, shape="pentagon",color="random-dark")
+
+season21 <- cleandisheslong %>%
+  group_by(season,seasonNumber,series,dish) %>%
+  summarise(Frequency=n()) %>%
+  ungroup() %>%
+  group_by(series,season,seasonNumber) %>%
+  mutate(N=n()
+         ,prop_term_to_total_terms=Frequency/N) %>%
+  filter(seasonNumber == 21 ) %>%
+  rename(Term=dish) %>%
+  ungroup() %>%
+  select(Term,Frequency,prop_term_to_total_terms)
+
+wordcloud2(season21, shape="pentagon",color="random-dark")

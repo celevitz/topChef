@@ -93,6 +93,10 @@ wordtrend("US",c("foie gras"))
 wordtrend("US",c("beet"))
 wordtrend("US",c("gazpacho"))
 wordtrend("US",c("confit"))
+wordtrend("US",c("pollen"))
+wordtrend("US",c("xo"))
+wordtrend("US",c("maple"))
+wordtrend("US",c("fennel"))
 
 
 
