@@ -359,11 +359,13 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       bind_rows(weightedindex("US",18,14,13)  %>% mutate(episode = 14)  ) %>%
 
     # update some stuff
-      mutate(placement==as.numeric(placement))
+      mutate(placement=as.numeric(placement))
 
 ## What's the pivot point in episodes?
-    pivotep <- 8
+## Maybe just look at the people who end up in f7?
+    pivotep <- 7
     temp <- tibble(allseasons %>%
+                     filter(placement <=10 ) %>%
       mutate(Intervention = ifelse(episode < pivotep,0,1)
              ,Post.intervention.time = ifelse(Intervention == 1
                                               ,episode-pivotep,0)))
