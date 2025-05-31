@@ -1,11 +1,9 @@
 rm(list=ls())
 library(tidyverse)
 library(openxlsx)
-library(topChef)
 library(ggplot2)
-library(devtools)
-library(gt)
-#devtools::install_github("celevitz/topChef")
+library(nlme)
+library(AICcmodavg)
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
@@ -14,15 +12,6 @@ challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))%>%
 
 chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series == "US" )
-
-# Current episode #
-    currentep <- 12
-
-    chefsinlck <- NA
-    eliminatedchefs <- c("Corwin Hemming","Zubair Mohajir","Mimi Weissenborn"
-                         ,"Anya El-Wattar","Kat Turner","Henry Lu"
-                         ,"Paula Endara","Vincenzo Loseto","Katianna Hong"
-                         ,"Lana Lagomarsini","Massimo Piedimonte")
 
 ## Index
 ## Write it out here, because it calls on the Top Chef package and that's
@@ -293,132 +282,42 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
     }
 
 #############################################################################
-## Rank by episode
-    s22allColumns <- weightedindex("US",22,1,1) %>% mutate(episode = 1) %>%
-      bind_rows(weightedindex("US",22,2,2)  %>% mutate(episode = 2) ) %>%
-      bind_rows(weightedindex("US",22,3,3)  %>% mutate(episode = 3)  ) %>%
-      bind_rows(weightedindex("US",22,4,4)  %>% mutate(episode = 4)  ) %>%
-      bind_rows(weightedindex("US",22,5,4)  %>% mutate(episode = 5)  ) %>%
-      bind_rows(weightedindex("US",22,6,5)  %>% mutate(episode = 6)  ) %>%
-      bind_rows(weightedindex("US",22,7,6)  %>% mutate(episode = 7)  ) %>%
-      bind_rows(weightedindex("US",22,8,6)  %>% mutate(episode = 8)  ) %>%
-      bind_rows(weightedindex("US",22,9,7)  %>% mutate(episode = 9)  ) %>%
-      bind_rows(weightedindex("US",22,10,8)  %>% mutate(episode = 10)  ) %>%
-      bind_rows(weightedindex("US",22,11,9)  %>% mutate(episode = 11)  ) %>%
-      bind_rows(weightedindex("US",22,12,9)  %>% mutate(episode = 12)  ) %>%
-      select(!placement) %>%
-      mutate(yvalue=15-OverallRank+1)
-
-    s22 <- s22allColumns %>%
-      select(chef,episode,indexWeight,OverallRank,yvalue) %>%
-      mutate(cheflabel=ifelse(episode == max(episode),chef,NA))
-
-  # Wide version for gt()
-    s22wide <- s22allColumns %>%
-      select(chef,episode,indexWeight) %>%
-      mutate(episode = paste0("Episode ",episode)
-             ,inCompetition = case_when(chef %in% chefsinlck ~ 1
-                                        ,chef %in% eliminatedchefs ~ 0
-                                        ,TRUE ~ 2)) %>%
-      pivot_wider(names_from = episode,values_from=indexWeight)
-
-    currentrankforsorting <- s22 %>%
-      filter(episode == currentep) %>%
-      select(chef,OverallRank)
-
-    s22wide <- s22wide %>%
-      left_join(currentrankforsorting)
-
-    s22wide <- s22wide[order(s22wide$OverallRank),]
+## Rank and score at the end of each season
+  # how many elims and QFs in each season
+    numberofchallengesbytype <- challengewins %>%
+      select(seasonNumber,episode,challengeType) %>%
+      distinct() %>%
+      filter(challengeType != "Qualifying Challenge") %>%
+      mutate(challengeType = case_when(challengeType %in%
+                                         c("Quickfire Elimination"
+                                           ,"Sudden Death Quickfire") ~
+                                                                  "Elimination"
+                                       ,TRUE ~ challengeType)) %>%
+      ungroup() %>% group_by(seasonNumber,challengeType) %>%
+      summarise(n=n()) %>%
+      pivot_wider(names_from=challengeType,values_from=n) %>%
+      print(n=22)
 
 
+  allseasons <- weightedindex("US",1,11,9)
+  for (s in seq(2,22,1)) {
+      elimchalls <- numberofchallengesbytype$Elimination[
+                                    numberofchallengesbytype$seasonNumber == s]
+      qfchalls <- numberofchallengesbytype$Quickfire[
+                                    numberofchallengesbytype$seasonNumber == s]
 
+      allseasons <- allseasons %>%
+        bind_rows(weightedindex("US",s,elimchalls,qfchalls))
+  }
 
-# Graph
-rankgraph <- s22 %>%
-  ggplot(aes(x=episode,y=yvalue)) +
-  geom_line(aes(color=chef)) +
-  geom_point(aes(color=chef)) +
-  scale_y_continuous(breaks=seq(1,15,1),labels=rev(seq(1,15,1))
-                     ,limits=c(.5,15.5)
-                     ,"Rank (lower values are better)") +
-  scale_x_continuous(breaks=seq(1,max(s22$episode),1)
-                     ,labels=paste0("Ep. ",seq(1,max(s22$episode),1))
-                     ,limits=c(.9,max(s22$episode)+2.5)
-                     ,"") +
-  geom_text(aes(label=cheflabel,y=yvalue,x=episode+2,color=chef),size=3) +
-  ggtitle("Rank of chefs' scores each episode of Top Chef Season 22"
-          ,subtitle = "Created by Carly Levitz for Pack Your Knives"  ) +
-  theme_minimal() +
-  theme(legend.position="none"
-        ,panel.grid = element_blank()
-        ,plot.background = element_rect(color="white") )
-ggsave(paste0(directory,"S22E",currentep,"Ranking.png")
-       ,rankgraph,width = 6,height = 4,dpi = 1200 )
+## Save the data
+  save(allseasons, file = "data/allseasonsfinalscores.rda")
 
-# Table
-scoretable <- s22wide %>%
-  gt() %>%
-  cols_hide(columns=c(OverallRank,inCompetition)) %>%
-  tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
-  tab_row_group(label = "Eliminated",rows = inCompetition==0) %>%
-  tab_row_group(label = "In Last Chance Kitchen",rows = inCompetition==1) %>%
-  tab_row_group(label = "In the competition",rows = inCompetition==2) %>%
-  tab_options(data_row.padding = px(1),
-              column_labels.padding = px(1),
-              row_group.padding = px(1))  %>%
-  tab_style(style = cell_text(align = "right"),locations = cells_source_notes()) %>%
-  tab_style(style = cell_text(align = "left",weight="bold")
-            ,locations = cells_title(groups="title")) %>%
-  tab_style(style = cell_text(align = "left",weight="bold")
-            ,locations = cells_row_groups() ) %>%
-  tab_style(style = cell_text(align = "left")
-            ,locations = cells_title(groups="subtitle")) %>%
-  tab_style(style = cell_text(align = "center")
-            ,locations = cells_body(columns=!chef)) %>%
-  tab_style(style = cell_text(align = "center",weight="bold")
-            ,locations = cells_column_labels(columns=!chef)) %>%
-  tab_style(style = cell_text(align = "left",weight="bold")
-            ,locations = cells_column_labels(columns=chef)) %>%
-  tab_style(style = cell_text(align = "center",weight="bold")
-            ,locations = cells_column_spanners()) %>%
-  tab_options(
-    row_group.background.color = "gray95",
-    table.font.color = "#323232",
-    table_body.hlines.color = "#323232",
-    table_body.border.top.color = "#323232",
-    heading.border.bottom.color = "#323232",
-    row_group.border.top.color = "#323232",
-    column_labels.border.bottom.color = "#323232",
-    row_group.border.bottom.color = "transparent"
-    ,table.border.top.style = "transparent"
-    ,table.border.bottom.style = "transparent"
-  ) %>%
-  opt_all_caps() %>%
-  cols_width(chef ~ px(165), everything() ~ px(65) )  %>%
-  tab_header(
-    title = paste0("Top Chef Destination Canada Episode ",currentep)
-    ,subtitle = "Scores by episode"
-  ) %>%
-  data_color(method="numeric",
-             columns=!chef,
-             palette=c("#c85200","#ffbc69", "#a3cce9","#5fa2ce"
-                       ,"#1170AA","#141B41"),
-             domain=c(min(s22$indexWeight),max(s22$indexWeight)))
-
-
-gtsave(scoretable
-       ,filename = paste(directory,"S22E",currentep,"Summary.png",sep=""))
-
-
-
-
-
-
-
-
-
-
+  ## save as CSV for my own use later
+  write.csv(allseasons
+            ,paste0(directory
+                    ,"Top Chef - All seasons final scores.csv")
+            ,row.names=FALSE)
 
 
 
