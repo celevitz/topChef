@@ -95,12 +95,42 @@ alldata %>%
 
 ##################################
 # Table format
-genderratiotable <- alldata %>%
+genderratiotableData <- alldata %>%
   ungroup() %>%
   select(season,seasonNumber,ratio,timing) %>%
   pivot_wider(names_from=timing,values_from=ratio) %>%
   arrange(seasonNumber) %>%
   rename(`season #`=seasonNumber) %>%
+  ## Category of season
+  mutate(category = case_when(
+    # B < C < D = got better over time
+    # B > C > D = got worse over time
+    # B = C = D
+    `B. Chefs with an official placement in their season` > `C. Final 8 chefs`  &
+       `C. Final 8 chefs`  > `D. Final 4 chefs` ~ "Worsened over time"
+    ,`B. Chefs with an official placement in their season` < `C. Final 8 chefs`  &
+      `C. Final 8 chefs`  < `D. Final 4 chefs` ~ "Improved over time"
+    ,`B. Chefs with an official placement in their season` == `C. Final 8 chefs`  &
+      `C. Final 8 chefs`  == `D. Final 4 chefs` ~ "Stayed the same"
+    # B > C, C = D: worsened, flattened
+    ,`B. Chefs with an official placement in their season` > `C. Final 8 chefs`  &
+      `C. Final 8 chefs`  == `D. Final 4 chefs` ~ "Worsened, then stayed the same"
+    # B < C, D < B: Got better, worsened more than at start
+    ,`B. Chefs with an official placement in their season` < `C. Final 8 chefs`  &
+      `B. Chefs with an official placement in their season` > `D. Final 4 chefs` ~ "Improved, ended up worse than at start"
+    # B > C, D > B, worsened, got better than at the start
+    ,`B. Chefs with an official placement in their season` > `C. Final 8 chefs`  &
+      `B. Chefs with an official placement in their season` < `D. Final 4 chefs` ~ "Worsened, got better than at the start"
+    # B = C, C < D: same, then improved
+    ,`B. Chefs with an official placement in their season` = `C. Final 8 chefs`  &
+      `C. Final 8 chefs` < `D. Final 4 chefs` ~ "Same, then improved"
+    # B < C, C = D: improved, flattened
+    ,`B. Chefs with an official placement in their season` < `C. Final 8 chefs`  &
+      `C. Final 8 chefs` == `D. Final 4 chefs` ~ "Improved, then stayed the same"
+    ,TRUE ~ "Mixed"
+  ))
+
+genderratiotable <- genderratiotableData %>%
   gt() %>%
   tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
   tab_options(data_row.padding = px(1),
@@ -141,6 +171,9 @@ genderratiotable <- alldata %>%
     tab_style(locations=cells_body(columns=`A. All chefs, including those who didn't make it out of Qualifiers or LCK`
                                    ,rows = `A. All chefs, including those who didn't make it out of Qualifiers or LCK` >=2)
               ,style = cell_fill("#1170AA")) %>%
+    tab_style(locations=cells_body(columns=`A. All chefs, including those who didn't make it out of Qualifiers or LCK`
+                                   ,rows = `A. All chefs, including those who didn't make it out of Qualifiers or LCK` >=2)
+              ,style = cell_text("white")) %>%
   # Category B
   tab_style(locations=cells_body(columns=`B. Chefs with an official placement in their season`
                                  ,rows = `B. Chefs with an official placement in their season` <.7)
@@ -162,6 +195,9 @@ genderratiotable <- alldata %>%
   tab_style(locations=cells_body(columns=`B. Chefs with an official placement in their season`
                                  ,rows = `B. Chefs with an official placement in their season` >=2)
             ,style = cell_fill("#1170AA")) %>%
+  tab_style(locations=cells_body(columns=`B. Chefs with an official placement in their season`
+                                 ,rows = `B. Chefs with an official placement in their season` >=2)
+            ,style = cell_text("white")) %>%
   # Category C
   tab_style(locations=cells_body(columns=`C. Final 8 chefs`
                                  ,rows = `C. Final 8 chefs` <.7)
@@ -183,6 +219,9 @@ genderratiotable <- alldata %>%
   tab_style(locations=cells_body(columns=`C. Final 8 chefs`
                                  ,rows = `C. Final 8 chefs` >=2)
             ,style = cell_fill("#1170AA")) %>%
+  tab_style(locations=cells_body(columns=`C. Final 8 chefs`
+                                 ,rows = `C. Final 8 chefs` >=2)
+            ,style = cell_text("white")) %>%
   # Category D
   tab_style(locations=cells_body(columns=`D. Final 4 chefs`
                                  ,rows = `D. Final 4 chefs` <.7)
@@ -204,6 +243,9 @@ genderratiotable <- alldata %>%
   tab_style(locations=cells_body(columns=`D. Final 4 chefs`
                                  ,rows = `D. Final 4 chefs` >=2)
             ,style = cell_fill("#1170AA")) %>%
+  tab_style(locations=cells_body(columns=`D. Final 4 chefs`
+                                 ,rows = `D. Final 4 chefs` >=2)
+            ,style = cell_text("white")) %>%
   tab_options(
     row_group.background.color = "gray95",
     table.font.color = "#323232",
