@@ -1,5 +1,6 @@
 ## Carly Levitz
 ## June 9, 2024
+## Updated June 4th, 2025
 ## Purpose: stats about the F4 in each season
 ## stats PRIOR to the F4 challenge
 ## remove qualifying challenges
@@ -16,12 +17,13 @@ library(tidyverse)
 library(topChef)
 library(ggplot2)
 
-finalfours <- topChef::chefdetails %>%
+finalfours <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series=="US" &
-           (placement <=4 ) | (seasonNumber == 21 & is.na(placement))) %>%
+           (placement <=4 ) | (seasonNumber == 22 & is.na(placement))) %>%
   select(series,season,seasonNumber,chef,placement)
 
-numberofchallseachseasonbeforeF4 <- topChef::challengewins %>%
+numberofchallseachseasonbeforeF4 <- read.csv(paste0(directory
+                                          ,"Top Chef - Challenge wins.csv")) %>%
   right_join(topChef::episodeinfo %>%
                filter(series == "US" & nCompetitors >= 5 &
                         !(is.na(nCompetitors)))) %>%
@@ -33,9 +35,10 @@ numberofchallseachseasonbeforeF4 <- topChef::challengewins %>%
   group_by(series,season,seasonNumber) %>%
   summarise(nchall=n())
 
-challoutcomes <- topChef::challengewins %>%
+challoutcomes <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
   # keep just the episodes prior to final four
-  right_join(topChef::episodeinfo %>%
+  right_join(read.csv(paste0(directory
+                             ,"Top Chef - Episode information.csv")) %>%
                filter(series == "US" & nCompetitors >= 5 &
                         !(is.na(nCompetitors)))) %>%
   # remove the reunions and qualifying challenges
