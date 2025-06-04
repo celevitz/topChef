@@ -24,7 +24,7 @@ starting <- chefdetails %>%
   ungroup() %>%
   group_by(season,seasonNumber) %>%
   mutate(total = sum(n)
-         ,timing="Including Qualifiers and LCK not in main comp.")
+         ,timing="A. All chefs, including those who didn't make it out of Qualifiers or LCK")
 
 ## Gender ratio of only those who were in the official competition
 officialcomp <- chefdetails %>%
@@ -41,7 +41,7 @@ officialcomp <- chefdetails %>%
   ungroup() %>%
   group_by(season,seasonNumber) %>%
   mutate(total = sum(n)
-         ,timing="Only in official competition")
+         ,timing="B. Chefs with an official placement in their season")
 
 ## Gender ratio of top 8 chefs
 eight <- chefdetails %>%
@@ -55,7 +55,7 @@ eight <- chefdetails %>%
   group_by(season,seasonNumber,gender) %>%
   summarise(n=n()) %>%
   mutate(total=8
-         ,timing = "Final 8")
+         ,timing = "C. Final 8 chefs")
 
 ## Gender ratio of top 4 chefs
 four <- chefdetails %>%
@@ -69,7 +69,7 @@ four <- chefdetails %>%
   group_by(season,seasonNumber,gender) %>%
   summarise(n=n()) %>%
   mutate(total=4
-         ,timing = "Final 4")
+         ,timing = "D. Final 4 chefs")
 
 ## Bring the data together
 alldata <- starting %>%
@@ -81,7 +81,11 @@ alldata <- starting %>%
   filter(gender == "Female") %>%
   # get ratio of group that are women
   mutate(ratio = n/(total-n)) %>%
-  select(!gender)
+  select(!gender) %>%
+  # which ones have more women and which have less?
+  mutate(balance = case_when(ratio < 1 ~ "Fewer women than men"
+                             ,ratio == 1 ~ "Same number"
+                             ,ratio > 1 ~ "More women than men"))
 
 alldata %>%
 ggplot(aes(x=seasonNumber,y=percent,color=timing)) +
@@ -89,5 +93,10 @@ ggplot(aes(x=seasonNumber,y=percent,color=timing)) +
   scale_y_continuous(limits=c(0,1)) +
   facet_wrap(~timing)
 
+alldata %>%
+  ggplot(aes(x=seasonNumber,y=ratio,color=balance,shape=balance)) +
+  geom_point() +
+  scale_y_continuous(limits=c(0,3)) +
+  facet_wrap(~timing)
 
 
