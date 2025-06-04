@@ -85,13 +85,38 @@ alldata <- starting %>%
 ##################################
 ## Visualize it
 
-alldata %>%
-  ggplot(aes(x=seasonNumber,y=ratio,color=Gender_balance,shape=Gender_balance))+
-  geom_point() +
-  scale_y_continuous(limits=c(0,3)
-                     ,"Ratio of women to men") +
-  scale_x_continuous("Season #") +
-  facet_wrap(~timing)
+facetviz <- alldata %>%
+  mutate(timing = ifelse(timing %in% "A. All chefs, including those who didn't make it out of Qualifiers or LCK"
+                         ,"A. All chefs, including those who didn't\nmake it out of Qualifiers or LCK"
+                         ,timing)
+         ,timing = ifelse(timing %in% "B. Chefs with an official placement in their season"
+                          ,"B. Chefs with an official\nplacement in their season"
+                          ,timing)) %>%
+  ggplot(aes(x=seasonNumber,y=ratio
+             ,color=Gender_balance,shape=Gender_balance,fill=Gender_balance))+
+  geom_point(size=1) +scale_x_continuous("Season #") + facet_wrap(~timing) +
+  scale_y_continuous(limits=c(0,3.1),"Ratio of women to men") +
+  guides(shape=guide_legend(title="Gender balance",override.aes=list(size=1))
+        ,fill=guide_legend(title="Gender balance")
+        ,color=guide_legend(title="Gender balance")) +
+  ggtitle("Ratio of women to men at different times of Top Chef seasons"
+          ,subtitle = "Values under 1 indicate fewer women than men; values over 1 indicate more women than men") +
+  scale_color_manual(values=c("#c85200","gray60","#1170AA")) +
+  scale_fill_manual(values=c("#c85200",NA,"#1170AA")) +
+  scale_shape_manual(values=c(25,16,24) ) +
+  theme(#panel.grid = element_blank()
+    panel.background = element_rect(fill="white")
+    ,plot.background = element_rect(fill="white")
+    ,strip.background =element_rect(fill="gray90")
+    ,strip.text = element_text(colour = 'black',size=7)
+    ,plot.subtitle = element_text(size=7)
+    ,legend.text = element_text(size=5)
+    ,legend.title = element_text(size=6)
+    ,axis.line = element_line(color="black")
+    ,axis.ticks = element_line(color="black")
+    ,axis.text = element_text(color="black"))
+ggsave(paste0(directory,"Gender ratio at different times - facet scatter.png")
+       ,facetviz,width = 8,height = 4,dpi = 1200 )
 
 ##################################
 # Table format
