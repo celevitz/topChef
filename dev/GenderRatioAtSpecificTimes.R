@@ -101,17 +101,22 @@ facetviz <- alldata %>%
         ,color=guide_legend(title="Gender balance")) +
   ggtitle("Ratio of women to men at different times of Top Chef seasons"
           ,subtitle = "Values under 1 indicate fewer women than men; values over 1 indicate more women than men") +
+  labs(caption="Created by Carly Levitz for Pack Your Knives")+
   scale_color_manual(values=c("#c85200","gray60","#1170AA")) +
   scale_fill_manual(values=c("#c85200",NA,"#1170AA")) +
   scale_shape_manual(values=c(25,16,24) ) +
   theme(#panel.grid = element_blank()
     panel.background = element_rect(fill="white")
     ,plot.background = element_rect(fill="white")
+    ,plot.title.position="plot"
+    ,plot.caption = element_text(hjust=0,size=5)
+    ,plot.caption.position="plot"
     ,strip.background =element_rect(fill="gray90")
-    ,strip.text = element_text(colour = 'black',size=7)
-    ,plot.subtitle = element_text(size=7)
-    ,legend.text = element_text(size=5)
-    ,legend.title = element_text(size=6)
+    ,strip.text = element_text(colour = 'black',size=8)
+    ,plot.title = element_text(size=12)
+    ,plot.subtitle = element_text(size=10)
+    ,legend.text = element_text(size=7)
+    ,legend.title = element_text(size=8)
     ,axis.line = element_line(color="black")
     ,axis.ticks = element_line(color="black")
     ,axis.text = element_text(color="black"))
