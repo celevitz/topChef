@@ -14,9 +14,6 @@ dishesraw <- read.csv(paste0(directory
                              ,"/topChef/Top Chef - Dishes wide form.csv")
                       ,header = TRUE)
 
-
-
-
 # Function
 wordtrend <- function(seriesname,wordorwordsofinterest) {
 
@@ -41,11 +38,14 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
                            ,timevar="usesWord"
                            ,idvar="seasonNumber")
       highlevel$count.1[is.na(highlevel$count.1)] <- 0
-      highlevel$percent <- highlevel$count.1/(highlevel$count.0+
-                                                highlevel$count.1)
+      highlevel$percent <- paste0(round((highlevel$count.1/(highlevel$count.0+
+                                                highlevel$count.1))*100,1),"%")
       names(highlevel) <- c("seasonNumber","disheswithoutwordorwords"
                             ,"disheswithwordorwords"
                             ,"percentofdisheswithwordorwords")
+      print("Number of dishes")
+      print(sum(highlevel$disheswithwordorwords))
+
       print(highlevel)
 
     ## Now just look at when the word/s were used:
@@ -66,6 +66,21 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
       print("Outcomes of dishes with the word/s of interest")
       print(table(basicdata$outcome))
 
+      ## % of times that it won or was eliminated
+      print("What's the % of times this dish won?")
+      print(paste0(round(nrow(basicdata[basicdata$outcome %in% c("WIN","WINNER"),])/
+              nrow(basicdata[,])*100,1),"%"))
+      print("What's the % of times this dish won or was at the top?")
+      print(paste0(round(nrow(basicdata[basicdata$outcome %in% c("WIN","WINNER","HIGH"),])/
+                           nrow(basicdata[,])*100,1),"%"))
+
+      print("What's the % of times this dish was eliminated?")
+      print(paste0(round(nrow(basicdata[basicdata$outcome %in% c("OUT","RUNNER-UP"),])/
+                           nrow(basicdata[,])*100,1),"%"))
+      print("What's the % of times this dish was eliminated or at the bottom?")
+      print(paste0(round(nrow(basicdata[basicdata$outcome %in% c("OUT","RUNNER-UP","LOW"),])/
+                           nrow(basicdata[,])*100,1),"%"))
+
       ## Who won?
       print("Who won?")
       print(basicdata[basicdata$outcome %in% c("WIN","WINNER")
@@ -79,7 +94,7 @@ seriesname <- "US"
 wordtrend("US",c("risotto"))
 
 
-wordtrend("US",c("aguachile","carpaccio","crudo","ceviche","crudite"
+wordtrend("US",c("aguachile","crudo","ceviche","crudite"
                  ,"futomake","leche de tigre","nigiri","poke","sashimi"
                  ,"negitoro"))
 wordtrend("US",c("duo","trio","3-ways","3 ways","2 ways","2-ways","three ways"
@@ -102,6 +117,10 @@ wordtrend("US",c("pollen"))
 wordtrend("US",c("xo"))
 wordtrend("US",c("maple"))
 wordtrend("US",c("fennel"))
+wordtrend("US",c("pasta","ravioli","linguine","spaghetti","lasagna"
+                 ,"gnocchi","fussili","penne","orzo","fettuccine","cavatelli"
+                 ,"gemelli","campanelle","pappardelle","orecchiette"))
 
 
+wordtrend("US",c("liquid nitrogen"))
 
