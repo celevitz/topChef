@@ -432,7 +432,7 @@ season22 <- cleandisheslong %>%
   ungroup() %>%
   select(Term,Frequency,prop_term_to_total_terms)
 
-wordcloud2(season22, shape="pentagon",color="random-dark")
+#wordcloud2(season22, shape="pentagon",color="random-dark")
 
 season21 <- cleandisheslong %>%
   group_by(season,seasonNumber,series,dish) %>%
@@ -446,4 +446,4 @@ season21 <- cleandisheslong %>%
   ungroup() %>%
   select(Term,Frequency,prop_term_to_total_terms)
 
-wordcloud2(season21, shape="pentagon",color="random-dark")
+#wordcloud2(season21, shape="pentagon",color="random-dark")
