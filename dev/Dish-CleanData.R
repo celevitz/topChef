@@ -411,6 +411,12 @@ cleandisheslong <- cleandishes %>%
   cleandisheslong$dish <- removeNumbers(cleandisheslong$dish)
   cleandisheslong$dish <- removeWords(cleandisheslong$dish,stopwords("en"))
 
+  write.csv(cleandisheslong
+            ,paste0(directory,"/topChef/Top Chef - Dishes long form.csv")
+            ,row.names=FALSE)
+  write.csv(cleandishes
+            ,paste0(directory,"/topChef/Top Chef - Dishes wide form.csv")
+            ,row.names=FALSE)
 
 
 ## Season 22

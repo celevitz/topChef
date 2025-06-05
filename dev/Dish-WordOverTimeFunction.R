@@ -10,12 +10,9 @@ library(tidyverse)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
-dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
-                                 ,sheet=2)) %>%
-  filter(inCompetition == TRUE & !(is.na(dish))) %>%
-  select(series,season,seasonNumber,episode,chef,challengeType
-         ,dish,outcome,notes) %>%
-  mutate(dish = tolower(dish),notes=tolower(notes))
+dishesraw <- read.csv(paste0(directory
+                             ,"/topChef/Top Chef - Dishes wide form.csv")
+                      ,header = TRUE)
 
 
 
@@ -68,15 +65,23 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
       ## outcomes of dishes with the word/s of interest
       print("Outcomes of dishes with the word/s of interest")
       print(table(basicdata$outcome))
+
+      ## Who won?
+      print("Who won?")
+      print(basicdata[basicdata$outcome %in% c("WIN","WINNER")
+                      ,c("season","seasonNumber","episode","chef"
+                         ,"challengeType")])
 }
 
 
 seriesname <- "US"
+
+wordtrend("US",c("risotto"))
+
+
 wordtrend("US",c("aguachile","carpaccio","crudo","ceviche","crudite"
                  ,"futomake","leche de tigre","nigiri","poke","sashimi"
                  ,"negitoro"))
-
-wordtrend("US",c("risotto"))
 wordtrend("US",c("duo","trio","3-ways","3 ways","2 ways","2-ways","three ways"
                  ,"two ways","dual"))
 wordtrend("US",c("foam","gel","mousse","snow","espuma"))

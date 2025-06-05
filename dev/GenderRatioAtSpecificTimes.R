@@ -99,7 +99,7 @@ facetviz <- alldata %>%
   guides(shape=guide_legend(title="Gender balance",override.aes=list(size=1))
         ,fill=guide_legend(title="Gender balance")
         ,color=guide_legend(title="Gender balance")) +
-  ggtitle("Ratio of women to men at different times of Top Chef seasons"
+  ggtitle("Figure 1: Ratio of women to men at different times of Top Chef seasons"
           ,subtitle = "Values under 1 indicate fewer women than men; values over 1 indicate more women than men") +
   labs(caption="Created by Carly Levitz for Pack Your Knives")+
   scale_color_manual(values=c("#c85200","gray60","#1170AA")) +
@@ -162,6 +162,7 @@ genderratiotableData <- alldata %>%
 
 genderratiotable <- genderratiotableData %>%
   gt() %>%
+  cols_hide(columns=category) %>%
   tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
   tab_options(data_row.padding = px(1),
               column_labels.padding = px(1),
@@ -296,7 +297,7 @@ genderratiotable <- genderratiotableData %>%
              ,`D. Final 4 chefs` ~ px(90)
              , everything() ~ px(125) )  %>%
   tab_header(
-    title = "Ratio of women to men at different times in Top Chef seasons"
+    title = "Table 1: Ratio of women to men at different times in Top Chef seasons"
     ,subtitle = "Ratios above 1 indicate there were more women than men. Ratios under 1 indicate there were fewer men than women. Category A will be the same as Category B for seasons that didn't have Qualifiers or didn't have people competing in Last Chance Kitchen (LCK) who didn't make it into the main competition. There have not been nonbinary chefs on Top Chef, so this analysis just looks at two genders."
   )
 
@@ -304,6 +305,66 @@ genderratiotable <- genderratiotableData %>%
 gtsave(genderratiotable
        ,filename = paste(directory,"Gender ratio at different times.png"
                          ,sep=""))
+
+
+## Gender ratio at final 4 compared to winners' gender
+final4 <- alldata %>%
+  filter(timing == "D. Final 4 chefs") %>%
+  select(season,seasonNumber,ratio) %>%
+  left_join(chefdetails %>%
+              filter(placement == "1.0") %>%
+              select(season,seasonNumber,gender) %>%
+              rename(WinnerGender=gender)
+            ) %>%
+  # drop season 22 since they don't have a winner yet
+  filter(!(is.na(WinnerGender)))
+
+final4summary <- final4 %>%
+  group_by(ratio,WinnerGender) %>%
+  summarise(n=n()) %>%
+  ungroup() %>% group_by(ratio) %>%
+  mutate(total = sum(n)
+         ,percent = n/total
+         ,ratio = as.character(ratio)) %>%
+  select(!n) %>%
+  pivot_wider(values_from=percent,names_from=WinnerGender) %>%
+  mutate(Female = ifelse(is.na(Female),0,Female)) %>%
+  pivot_longer(!c(ratio,total),names_to="Winner's gender"
+               ,values_to = "percent") %>%
+  mutate(ratio = paste0("Ratio of ",ratio,"\n(",total," seasons)",sep=""))
+
+
+final4pie <- final4summary %>%
+  ggplot(aes(x=1,y=percent,fill=`Winner's gender`)) +
+  geom_bar(stat="identity",width=2) +
+  coord_polar(theta="y") +
+  facet_wrap(~ratio) +
+  scale_fill_manual(values=c("#1170AA","#ffbc69"))+
+  ggtitle("Figure 2. Ratio of women to men at the final four of Top Chef seasons and the gender\nof winners in those seasons"
+          ,subtitle = "Values under 1 indicate fewer women than men; values over 1 indicate more women than men") +
+  labs(caption="Created by Carly Levitz for Pack Your Knives")+
+  theme(
+    axis.ticks = element_blank()
+    ,axis.title = element_blank()
+    ,axis.text = element_blank()
+    ,panel.grid = element_blank()
+  )
+
+ggsave(paste0(directory
+              ,"Gender ratio at F4 and winner gender.png")
+       ,final4pie,width = 8,height = 4,dpi = 1200 )
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
