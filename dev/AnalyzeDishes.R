@@ -7,12 +7,18 @@ library(stringr)
 library(topChef)
 library(openxlsx)
 library(ggplot2)
+library(tm)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
 dishesraw <- read.csv(paste0(directory
                              ,"/topChef/Top Chef - Dishes wide form.csv")
                       ,header = TRUE)
+
+challengedescr <- read.csv(paste0(directory
+                             ,"/topChef/Top Chef - Challenge descriptions.csv")
+                              ,header = TRUE) %>%
+          select(series,season,seasonNumber,episode,challengeType,outcomeType)
 
 ###############################################################################
 # Stay in wide form
@@ -327,18 +333,44 @@ dishesraw <- read.csv(paste0(directory
       disheswide$trend[grepl(t,disheswide$notes)  ] <- t
     }
 
+  # Bring on outome and challenge type
+    disheswide <- disheswide %>%
+      left_join(challengedescr)
+
+  # save
+    write.csv(disheswide
+              ,paste0(directory
+                      ,"/topChef/Top Chef - Dishes wide form with classifications.csv")
+              ,row.names=FALSE)
+
+
 ###############################################################################
 # Long form: to help with counts of sub-categories in larger categories
 ###############################################################################
 
 ## Clean the dish data:
 cleandishes <- disheswide %>%
-  select(!c(outcome,challengeType,notes))
+  select(!c(notes))
 
 ## Prep the data for analysis
   # reshape the data
     cleandisheslong <- cleandishes %>%
-      separate_longer_delim(dish, delim = " ")
+      separate_longer_delim(dish, delim = " ") %>%
+      # remove non-dishes
+      filter(!(dish %in% c("1","10","14","15","15minute","2","20","3","30","4"
+                           ,"40","5","a","","my","myself","-","aka"
+                           ,"including","en","an","the","not","shown","on","n/a"
+                           ,"of","in","with","wtih","and","-","+","15-minute"
+                           ,"everything","but"))) %>%
+      # remove extra white space
+      mutate(dish = str_squish(str_trim(dish,side="both"))) %>%
+      distinct()
+
+    # remove punctuation
+    cleandisheslong$dish <- gsub("\\\\","",cleandisheslong$dish)
+    cleandisheslong$dish <- removePunctuation(cleandisheslong$dish)
+    cleandisheslong$dish <- removeNumbers(cleandisheslong$dish)
+    cleandisheslong$dish <- removeWords(cleandisheslong$dish,stopwords("en"))
 
   # check for words that aren't categorized in the previous section
     cleandisheslong %>%
@@ -351,20 +383,19 @@ cleandishes <- disheswide %>%
                starch == 0 & tea == 0 & vegetable == 0 & is.na(trend)) %>%
       select(dish) %>%
       distinct()
-  # clean the data
-    cleandisheslong <- cleandisheslong %>%
-      filter(!(dish %in% c("-","3","1","10","+","15","15-minute","2","20"
-                           ,"30","4","40","5","a"," ")) & !(is.na(dish)))
 
-# ## Summary analyses
+
+
+################################################################################
+#### Summary analyses
 ## Specific word
-    #   # Number of times a word shows up
+    ## Number of times a word shows up
         wordtimes <- cleandisheslong %>%
           group_by(series,dish) %>%
           summarise(totaltimesused=n()) %>%
           arrange(desc(totaltimesused))
 
-    #   # number of seasons in which a word shows up
+    ## number of seasons in which a word shows up
         wordinseason <- cleandisheslong %>%
           select(series,season,seasonNumber,dish) %>%
           distinct() %>%
@@ -372,7 +403,7 @@ cleandishes <- disheswide %>%
           summarise(numberofseasonsusedin = n()) %>%
           arrange(desc(numberofseasonsusedin))
 
-    #   # number of episodes a word is used in
+    ## number of episodes a word is used in
         wordinepisodes <- cleandisheslong %>%
           select(series,season,seasonNumber,episode,dish) %>%
           distinct() %>%
@@ -380,7 +411,7 @@ cleandishes <- disheswide %>%
           summarise(numberofepisodesusedin = n()) %>%
           arrange(desc(numberofepisodesusedin))
 
-    #   # Number of episodes within each season
+    ## Number of episodes within each season
         wordinseasonnumberofepis <- cleandisheslong %>%
           select(series,season,seasonNumber,episode,dish) %>%
           distinct() %>%
@@ -389,7 +420,7 @@ cleandishes <- disheswide %>%
           arrange(desc(numberofepisodesusedin)) %>%
           pivot_wider(names_from=season,values_from=numberofepisodesusedin)
 
-    #   # first time a word shows up
+    ## first time a word shows up
         firstappearance <- cleandisheslong %>%
           group_by(dish) %>%
           left_join(topChef::episodeinfo %>%
@@ -398,6 +429,11 @@ cleandishes <- disheswide %>%
           filter(minep == overallEpisodeNumber) %>%
           select(season,seasonNumber,episode,dish) %>%
           distinct()
+
+    ## Results for each category
+
+
+
 ##############################################################################
 ## Trends of words
     # Time trend
