@@ -235,7 +235,7 @@ challengedescr <- read.csv(paste0(directory
                         grepl("piklz",disheswide$dish)] <- 1
 
   # Pork
-    pig <- c("bacon","bratwurst","ham","hotdog","pancetta"
+    pig <- c("bacon","bratwurst","ham","hotdog","pancetta","prosciutto"
              ,"chorizo","karabuto","mortadella","speck","pork","pork-leg"
              ,"porketta","porkloin","salami","sausage")
 
