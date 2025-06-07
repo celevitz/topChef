@@ -15,40 +15,56 @@ dishesraw <- read.csv(paste0(directory
                       ,header = TRUE) %>%
   mutate(topbottom = case_when(outcome %in% c("WIN","WINNER","HIGH") ~ "Top"
                              ,outcome %in% c("LOW","OUT","RUNNER-UP") ~ "Bottom"
-                               ,TRUE ~ "In the middle"))
+                               ,TRUE ~ "In the middle")
+         ,challengeType = ifelse(challengeType %in% c("Quickfire Elimination"
+                                                   ,"Sudden Death Quickfire")
+                                 ,"Elimination",challengeType))
 
 risotto <- dishesraw %>%
-  filter(grepl("risotto",dish) & series =="US")
+  filter(grepl("risotto",dish) & series =="US" ) %>%
+  mutate(risottoadjacent = ifelse(grepl("risotto-style",dish) |
+                                    grepl("risotto cake",dish) |
+                                  grepl("risotto foam",dish) |
+                                    grepl("cauliflower risotto",dish) |
+                                    grepl("risotto paella",dish)
+                                  ,"Risotto adjacent","Risotto"))
+
 
   ## In what types of challenges did people make risotto?
   table(risotto$challengeType,risotto$outcomeType)
 
   barchartdata <- as.data.frame(risotto %>%
-    group_by(series,challengeType,outcomeType) %>%
+    group_by(series,challengeType,outcomeType,risottoadjacent) %>%
     mutate(n_group=n())  %>%
     ungroup() %>% group_by(series,challengeType) %>%
     mutate(n_CT = n()) %>%
     ungroup() %>% group_by(series,outcomeType) %>%
     mutate(n_OT=n()) %>%
-    select(series,challengeType,outcomeType,n_group,n_CT,n_OT) %>%
+    ungroup() %>% group_by(series,risottoadjacent) %>%
+    mutate(n_RA = n()) %>%
+    select(series,challengeType,risottoadjacent,outcomeType
+           ,n_group,n_CT,n_OT,n_RA) %>%
     distinct() %>%
-      mutate(challengeType = paste0(challengeType," (n=",n_CT,")")
-             ,outcomeType = paste0(outcomeType," (n=",n_OT,")"))  )
+      mutate(#challengeType = paste0(challengeType," (n=",n_CT,")")
+             outcomeType = paste0(outcomeType," (n=",n_OT,")")
+              ,risottoadjacent = paste0(risottoadjacent," (n=",n_RA,")")))
 
   barchartpng <- barchartdata %>%
     ggplot(aes(x=challengeType,y=n_group
                ,color=outcomeType,fill=outcomeType,label=n_group)) +
     geom_bar(stat="identity",position = "dodge") +
+    facet_wrap(~risottoadjacent) +
     geom_text(color="white",position = position_dodge(width = .9),vjust=1.5) +
     ggtitle("Most risottos were made in elimination challenges"
-            ,subtitle = "Data collection is complete for seasons 1 through 3, 16, and 20 through 22.\nThis also includes times when people made things in the style of risotto.") +
-    labs(caption = "Created by Carly Levitz for Pack Your Knives") +
+            #,subtitle = "Analysis excludes dishes made things in the style of risotto (n=) and when they were required to make risotto (n=4)."
+            ) +
+    labs(caption = "Created by Carly Levitz for Pack Your Knives. Data collection is complete for seasons 1 through 3, 16, and 20 through 22. I have partial season data for seasons 4 though 15 and 17 through 19.") +
     scale_y_continuous("Number of dishes") +
     scale_x_discrete("Challenge type") +
     scale_color_manual(values=c("#c85200","#1170AA")) +
     scale_fill_manual(values=c("#c85200","#1170AA")) +
     guides(color=guide_legend(title="Outcome type")
-           ,fill=guide_legend(title="Outcome type"))+
+           ,fill=guide_legend(title="Outcome type")) +
   theme(#panel.grid = element_blank()
     panel.background = element_rect(fill="white")
     ,plot.background = element_rect(fill="white")
@@ -64,20 +80,22 @@ risotto <- dishesraw %>%
 
 
   ## How did people do in the challenges in which they made risotto?
-  outcomes <- risotto %>%
-    group_by(series,challengeType,outcomeType) %>%
+  outcomesDetails <- risotto %>%
+    group_by(series,challengeType,outcomeType,risottoadjacent) %>%
     mutate(N=n()) %>% ungroup() %>%
-    group_by(series,challengeType,outcomeType,N,topbottom) %>%
+    group_by(series,challengeType,outcomeType,N,topbottom,risottoadjacent) %>%
     summarise(n=n() ) %>%
     mutate(percent = round(n/as.numeric(N),3)
            ,challenge = paste0(outcomeType," ",challengeType)) %>%
     ungroup()
 
 
-    outcomes %>%
+  outcomesDetails %>%
       ggplot(aes(x=percent,y=challenge,color=topbottom,shape=topbottom
-                 ,size=n)) +
-      geom_point() +
+                 ,label=n
+                 )) +
+      geom_point(aes(size=topbottom)) +
+      #geom_text() +
       scale_x_continuous("% of dishes in those challenges"
                          ,lim=c(0,1.05)
                          ,breaks=seq(0,1,.2)
@@ -85,8 +103,44 @@ risotto <- dishesraw %>%
       scale_color_manual(values=c("#c85200","gray50","#1170AA")) +
       scale_shape_manual(values=c(20,21,22)) +
       scale_fill_manual(values=NA) +
-      facet_wrap(~topbottom)
+      facet_wrap(~risottoadjacent) +
+      ggtitle("Outcomes of risotto dishes in different types of challenges")
 
+    # higher level outcomes
+    higherleveloutcomesTemp <- risotto %>%
+      # By challenge type and risotto type
+      group_by(series,challengeType,risottoadjacent) %>%
+      mutate(N=n()) %>% ungroup() %>%
+      group_by(series,challengeType,risottoadjacent,topbottom,N) %>%
+      summarise(n=n()) %>%
+      bind_rows(  # Regardless of challenge type
+        risotto %>%
+          group_by(series,risottoadjacent) %>%
+          mutate(N=n()) %>% ungroup() %>%
+          group_by(series,risottoadjacent,topbottom,N) %>%
+          summarise(n=n()) %>%
+          mutate(challengeType = "All")      ) %>%
+      bind_rows(  # Regardless of challenge type or risotto type
+        risotto %>%
+          group_by(series) %>%
+          mutate(N=n()) %>% ungroup() %>%
+          group_by(series,topbottom,N) %>%
+          summarise(n=n()) %>%
+          mutate(challengeType = "All"
+                 ,risottoadjacent="All")      ) %>%
+      mutate(percent=n/N)
+    # All otucomes combined
+    alloutcomes <- higherleveloutcomesTemp %>%
+      mutate(outcomeType = "All") %>%
+      bind_rows(outcomesDetails %>% select(!challenge)) %>%
+      pivot_wider(names_from=topbottom,values_from=c(percent,n)) %>%
+      arrange(series,challengeType,outcomeType,risottoadjacent) %>%
+      relocate(N,.before=percent_Bottom) %>%
+      relocate(risottoadjacent,.after=outcomeType)
+
+    for (columnnum in 6:length(alloutcomes)) {
+      alloutcomes[is.na(alloutcomes[,columnnum]),columnnum] <- 0
+    }
 
 
 
