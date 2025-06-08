@@ -252,6 +252,15 @@ challengedescr <- read.csv(paste0(directory
       disheswide$poultry[grepl(f,disheswide$dish)  ] <- 1
     }
 
+  # raw-ish things
+    rawish <- c("aguachile","crudo","ceviche","crudite","carpaccio"
+                ,"futomake","leche de tigre","nigiri","poke","sashimi"
+                ,"negitoro")
+    disheswide$rawish <- 0
+    for (r in rawish) {
+      disheswide$rawish[grepl(r,disheswide$dish)  ] <- 1
+    }
+
   # Sauce types
     disheswide$sauce <- NA
     disheswide$sauce[grepl("bolognese",disheswide$dish)] <- "bolognese"
