@@ -16,13 +16,15 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series == "US" )
 
 # Current episode #
-    currentep <- 12
+    currentep <- 13
 
     chefsinlck <- NA
     eliminatedchefs <- c("Corwin Hemming","Zubair Mohajir","Mimi Weissenborn"
                          ,"Anya El-Wattar","Kat Turner","Henry Lu"
                          ,"Paula Endara","Vincenzo Loseto","Katianna Hong"
-                         ,"Lana Lagomarsini","Massimo Piedimonte")
+                         ,"Lana Lagomarsini","Massimo Piedimonte"
+                         #,"Cesar Murillo"
+                         )
 
 ## Index
 ## Write it out here, because it calls on the Top Chef package and that's
@@ -306,6 +308,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       bind_rows(weightedindex("US",22,10,8)  %>% mutate(episode = 10)  ) %>%
       bind_rows(weightedindex("US",22,11,9)  %>% mutate(episode = 11)  ) %>%
       bind_rows(weightedindex("US",22,12,9)  %>% mutate(episode = 12)  ) %>%
+      bind_rows(weightedindex("US",22,13,10)  %>% mutate(episode = 13)  ) %>%
       select(!placement) %>%
       mutate(yvalue=15-OverallRank+1)
 
@@ -316,7 +319,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   # Wide version for gt()
     s22wide <- s22allColumns %>%
       select(chef,episode,indexWeight) %>%
-      mutate(episode = paste0("Episode ",episode)
+      mutate(episode = paste0("Ep. ",episode)
              ,inCompetition = case_when(chef %in% chefsinlck ~ 1
                                         ,chef %in% eliminatedchefs ~ 0
                                         ,TRUE ~ 2)) %>%
@@ -336,15 +339,17 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
 
 # Graph
 rankgraph <- s22 %>%
+  mutate(StillIn = ifelse(chef %in% eliminatedchefs,"Out","In")
+         ,alphavalue = ifelse(chef %in% eliminatedchefs,.8,1)) %>%
   ggplot(aes(x=episode,y=yvalue)) +
-  geom_line(aes(color=chef)) +
-  geom_point(aes(color=chef)) +
+  geom_line(aes(color=chef,linetype=StillIn,alpha=alphavalue)) +
+  geom_point(aes(color=chef,alpha=alphavalue)) +
   scale_y_continuous(breaks=seq(1,15,1),labels=rev(seq(1,15,1))
                      ,limits=c(.5,15.5)
                      ,"Rank (lower values are better)") +
   scale_x_continuous(breaks=seq(1,max(s22$episode),1)
                      ,labels=paste0("Ep. ",seq(1,max(s22$episode),1))
-                     ,limits=c(.9,max(s22$episode)+2.5)
+                     ,limits=c(.9,max(s22$episode)+3.5)
                      ,"") +
   geom_text(aes(label=cheflabel,y=yvalue,x=episode+2,color=chef),size=3) +
   ggtitle("Rank of chefs' scores each episode of Top Chef Season 22"
@@ -352,7 +357,8 @@ rankgraph <- s22 %>%
   theme_minimal() +
   theme(legend.position="none"
         ,panel.grid = element_blank()
-        ,plot.background = element_rect(color="white") )
+        ,plot.background = element_rect(color="white")
+        ,axis.text.x=element_text(size=6))
 ggsave(paste0(directory,"S22E",currentep,"Ranking.png")
        ,rankgraph,width = 6,height = 4,dpi = 1200 )
 
@@ -395,7 +401,7 @@ scoretable <- s22wide %>%
     ,table.border.bottom.style = "transparent"
   ) %>%
   opt_all_caps() %>%
-  cols_width(chef ~ px(165), everything() ~ px(65) )  %>%
+  cols_width(chef ~ px(165), everything() ~ px(50) )  %>%
   tab_header(
     title = paste0("Top Chef Destination Canada Episode ",currentep)
     ,subtitle = "Scores by episode"
