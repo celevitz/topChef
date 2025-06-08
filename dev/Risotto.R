@@ -54,7 +54,7 @@ risotto <- dishesraw %>%
                ,color=outcomeType,fill=outcomeType,label=n_group)) +
     geom_bar(stat="identity",position = "dodge") +
     facet_wrap(~risottoadjacent) +
-    geom_text(color="white",position = position_dodge(width = .9),vjust=1.5) +
+    geom_text(color="white",position = position_dodge(width = .9),vjust=1.3) +
     ggtitle("Most risottos were made in elimination challenges"
             #,subtitle = "Analysis excludes dishes made things in the style of risotto (n=) and when they were required to make risotto (n=4)."
             ) +
@@ -129,6 +129,7 @@ risotto <- dishesraw %>%
           mutate(challengeType = "All"
                  ,risottoadjacent="All")      ) %>%
       mutate(percent=n/N)
+
     # All otucomes combined
     alloutcomes <- higherleveloutcomesTemp %>%
       mutate(outcomeType = "All") %>%
@@ -142,7 +143,13 @@ risotto <- dishesraw %>%
       alloutcomes[is.na(alloutcomes[,columnnum]),columnnum] <- 0
     }
 
+  ##
 
+    outcomesDetails %>%
+      ggplot(aes(x=percent,y=challenge,size=n,label=n,color=topbottom)) +
+      geom_point() +
+      geom_text(color="white") +
+      facet_wrap(~risottoadjacent)
 
 
 

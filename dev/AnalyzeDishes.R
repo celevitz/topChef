@@ -209,7 +209,7 @@ challengedescr <- read.csv(paste0(directory
     pastas <- c("agnolotti","fettuccini","spaghetti"," mac "
                 ,"gnocchi","gnudi","lasagna","linguine","macaroni","cannellonis"
                 ,"cappellini","fettulini","orecchiette","pappardelle","noodle"
-                ,"udon","ramen","tortellini","ravioli","raviolo","linguini"
+                ,"udon","ramen","tortellin","ravioli","raviolo","linguini"
                 ,"fusilli","pasta","rigatoni","soba")
 
     disheswide$pasta <- 0

@@ -329,6 +329,7 @@ gsub("black rice","black-rice",
 gsub("black sesame","black-sesame",
 gsub("blood orange","blood-orange",
 gsub("blue crab","blue-crab",
+gsub("blue cheese","blue-cheese",
 gsub("oranges","orange",
 gsub("red snapper","red-snapper",
 gsub("red curry","red-curry",
@@ -351,7 +352,7 @@ gsub("green curry","green-curry",
 gsub("mole negro","mole-negro",
 gsub("rainbow chard","rainbow-chard",
 cleandishes$dish
-)))))))))))))))))))))))))))))))))))
+))))))))))))))))))))))))))))))))))))
 
 # sauces
 cleandishes$dish <- gsub("bechamel sauce","bechamel-sauce",
