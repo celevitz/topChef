@@ -20,6 +20,8 @@ challengedescr <- read.csv(paste0(directory
                               ,header = TRUE) %>%
           select(series,season,seasonNumber,episode,challengeType,outcomeType)
 
+runsummarystats <- "no"
+
 ###############################################################################
 # Stay in wide form
 ###############################################################################
@@ -394,7 +396,7 @@ cleandishes <- disheswide %>%
       distinct()
 
 
-
+if (runsummarystats == "yes") {
 ################################################################################
 #### Summary analyses
 ## Specific word
@@ -513,7 +515,4 @@ cleandishes <- disheswide %>%
         #, No heat , risotto, scallop
 
 
-
-
-
-
+}
