@@ -67,6 +67,11 @@ wonElimChall <- challengewins %>%
     ## Who won the elim chall in that ep?
     left_join(wonElimChall)
 
+
+  write.csv(confsByEpi
+          ,paste0(directory,"/topChef/Top Chef - Confessionals by episode.csv")
+            ,row.names=FALSE)
+
 ## Chef specific stats
   confs <- confsRaw %>%
     ungroup() %>% group_by(season,seasonNumber,series) %>%
@@ -85,12 +90,18 @@ wonElimChall <- challengewins %>%
            ,chefconfs = sum(count,na.rm=T)
            ,expectedpercentofconfs = episodesIn/totalchefsepisodes
            ,observedpercent = chefconfs/totalconfs
+           ,difffromexpected = observedpercent-expectedpercentofconfs
            ) %>%
     select(season,seasonNumber,series,chef
            ,totalconfs,totalchefsepisodes
            ,firstconfs,phonecallsorphotos,chefconfs
-           ,expectedpercentofconfs,observedpercent) %>%
+           ,expectedpercentofconfs,observedpercent
+           ,difffromexpected) %>%
     distinct()
+
+  write.csv(confsByEpi
+          ,paste0(directory,"/topChef/Top Chef - Confessionals in a season.csv")
+            ,row.names=FALSE)
 
 ## Season specific confessionals
   s22epi <- confsByEpi %>%
@@ -340,6 +351,26 @@ wonElimChall <- challengewins %>%
 
   gtsave(confsatJTtable
          ,filename = paste(directory,"topChef/S22_ConfsAtJT.png",sep=""))
+
+
+########################################################################
+## What's related to winning the season?
+  # confplacement <- confsByEpi %>%
+  #   left_join(placement %>%
+  #               mutate(placement = as.numeric(placement))) %>%
+  #   # Drop the episodes with three or fewer chefs
+  #   filter(chefsinepisode > 3) %>%
+  #   # Create a variable for if they are the winner of the season
+  #   mutate(seasonWinner = ifelse(placement == 1,1,0))
+
+  confplacement <- confs %>%
+    left_join(placement %>%
+                mutate(placement = as.numeric(placement))) %>%
+    mutate(seasonWinner = ifelse(placement == 1, 1, 0))
+
+  ## Logistic regression on season winner
+  reg <- glm(confplacement$seasonWinner ~ confplacement$firstconfs +
+        confplacement$difffromexpected + confplacement$phonecallsorphotos)
 
 
 
