@@ -9,7 +9,7 @@ library(RColorBrewer)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
-currentep <- 9
+currentep <- 13
 
 accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
 
@@ -52,7 +52,7 @@ wonElimChall <- challengewins %>%
     ## How many chefs are in the episode? How many total confessionals?
     group_by(season,seasonNumber,series,episode) %>%
     mutate(chefsinepisode = length(unique(ifelse(inCompetition == "TRUE"
-                                                 ,chef,NA)))-1
+                                                 ,chef,NA)))
            ,totalconfsinep = sum(count,na.rm=T)
            # average per episode and difference from it
            ,equalInEp = totalconfsinep/chefsinepisode
