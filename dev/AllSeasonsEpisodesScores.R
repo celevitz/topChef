@@ -377,6 +377,23 @@ episodeinfo <- read.csv(paste0(directory,"Top Chef - Episode information.csv")) 
       bind_rows(weightedindex("US",17,13,10)  %>% mutate(episode = 13)  ) %>%
       bind_rows(weightedindex("US",17,14,10)  %>% mutate(episode = 14)  ) %>%
 
+    # Season 16
+      bind_rows(weightedindex("US",16,1,1) %>% mutate(episode = 1) ) %>%
+      bind_rows(weightedindex("US",16,2,2)  %>% mutate(episode = 2) ) %>%
+      bind_rows(weightedindex("US",16,3,3)  %>% mutate(episode = 3)  ) %>%
+      bind_rows(weightedindex("US",16,4,4)  %>% mutate(episode = 4)  ) %>%
+      bind_rows(weightedindex("US",16,5,4)  %>% mutate(episode = 5)  ) %>%
+      bind_rows(weightedindex("US",16,6,4)  %>% mutate(episode = 6)  ) %>%
+      bind_rows(weightedindex("US",16,7,5)  %>% mutate(episode = 7)  ) %>%
+      bind_rows(weightedindex("US",16,8,5)  %>% mutate(episode = 8)  ) %>%
+      bind_rows(weightedindex("US",16,9,6)  %>% mutate(episode = 9)  ) %>%
+      bind_rows(weightedindex("US",16,10,7)  %>% mutate(episode = 10)  ) %>%
+      bind_rows(weightedindex("US",16,11,8)  %>% mutate(episode = 11)  ) %>%
+      bind_rows(weightedindex("US",16,12,9)  %>% mutate(episode = 12)  ) %>%
+      bind_rows(weightedindex("US",16,13,10)  %>% mutate(episode = 13)  ) %>%
+      bind_rows(weightedindex("US",16,14,11)  %>% mutate(episode = 14)  ) %>%
+      bind_rows(weightedindex("US",16,15,12)  %>% mutate(episode = 15)  ) %>%
+
     # update some stuff
       mutate(placement=as.numeric(placement))
 
