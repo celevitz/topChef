@@ -99,7 +99,7 @@ wonElimChall <- challengewins %>%
            ,difffromexpected) %>%
     distinct()
 
-  write.csv(confsByEpi
+  write.csv(confs
           ,paste0(directory,"/topChef/Top Chef - Confessionals in a season.csv")
             ,row.names=FALSE)
 
