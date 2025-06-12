@@ -26,7 +26,8 @@ officialcomp <- chefdetails %>%
   filter(!(is.na(gender)) &
            # While Season 22 is ongoing, I need to include them since their
            # placement is NA for those still in the comp
-           (!(is.na(placement)) | seasonNumber == 22)
+           (!(is.na(placement)) | seasonNumber == 22) &
+           !(chef %in% c("Ying Gao","Sam Olayinka"))
          ) %>%
   select(season,seasonNumber,chef,gender) %>%
   group_by(season,seasonNumber,gender) %>%
@@ -43,7 +44,8 @@ eight <- chefdetails %>%
   filter(!(is.na(gender)) &
            # While Season 22 is ongoing, I need to include them since their
            # placement is NA for those still in the comp
-           (placement <=8 |  (seasonNumber == 22 & is.na(placement)) )
+           (placement <=8 |  (seasonNumber == 22 & is.na(placement)) ) &
+           !(chef %in% c("Ying Gao","Sam Olayinka"))
         ) %>%
   select(season,seasonNumber,chef,gender) %>%
   group_by(season,seasonNumber,gender) %>%
@@ -57,7 +59,8 @@ four <- chefdetails %>%
   filter(!(is.na(gender)) &
            # While Season 22 is ongoing, I need to include them since their
            # placement is NA for those still in the comp
-           (placement <=4 | (seasonNumber == 22 & is.na(placement)) )
+           (placement <=4 | (seasonNumber == 22 & is.na(placement)) ) &
+           !(chef %in% c("Ying Gao","Sam Olayinka"))
   ) %>%
   select(season,seasonNumber,chef,gender) %>%
   group_by(season,seasonNumber,gender) %>%
