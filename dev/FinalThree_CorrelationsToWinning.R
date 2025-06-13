@@ -87,13 +87,19 @@ reg <- glm(final3$seasonWinner ~ final3$wins_Elimination +final3$wins_Quickfire 
           # quite a few of the chefs in the final 3s haven't won a QF
           #+ final3$mostrecentwin_Quickfire
           )
+reg <- glm(seasonWinner ~ wins_Elimination +wins_Quickfire +
+             lows_Elimination + lows_Quickfire +
+             mostrecentwin_Elimination,data=final3,family="binomial")
 summary(reg)
+plot(allEffects(reg))
+confint(reg)
 
 ## Logistic reg, combingin wins and losses
 reg2 <- glm(final3$seasonWinner ~ final3$wins +final3$losses +
             final3$mostrecentwin_Elimination
 )
 summary(reg2)
+confint(reg2)
 
 ## Add in the confessionals, but only for the seasons that I have it for
 reg3 <- glm(final3seasonswithconfs$seasonWinner ~
@@ -106,6 +112,7 @@ reg3 <- glm(final3seasonswithconfs$seasonWinner ~
              final3seasonswithconfs$difffromexpected
 )
 summary(reg3)
+confint(reg3)
 
 ## Then combine the wins and losses
 reg4 <- glm(final3seasonswithconfs$seasonWinner ~ final3seasonswithconfs$wins +
@@ -115,7 +122,41 @@ reg4 <- glm(final3seasonswithconfs$seasonWinner ~ final3seasonswithconfs$wins +
              final3seasonswithconfs$difffromexpected
 )
 summary(reg4)
+confint(reg4)
 
+##############
+# combined <- as.data.frame(reg$coefficients)
+# combined$variable <- row.names(combined)
+#
+# combined2 <- as.data.frame(confint(reg))
+# combined2$variable <- row.names(combined2)
+# names(combined2) <- c("lower","upper","variable")
+#
+# allcombined <- combined %>%
+#   left_join(combined2) %>%
+#   mutate(regression = "reg1")
+#
+#   for (eachreg in c(reg2,reg3,reg4)) {
+#     holding <- as.data.frame(eachreg$coefficients)
+#     holding$variable <- row.names(holding)
+#
+#     holding2 <- as.data.frame(confint(eachreg))
+#     holding2$variable <- row.names(holding2)
+#     names(holding2) <- c("lower","upper","variable")
+#
+#   }
+#
+
+
+
+
+
+
+  names(holding) <- c("variable","coefficient")
+
+  left_join(data.frame(confint(reg4)))
+
+##############
 
 
 ## Reg 1, but w/ final 6

@@ -48,14 +48,16 @@ episodeinfo <- read.csv(paste0(directory,"Top Chef - Episode information.csv")) 
     group_by(series,season,seasonNumber,challengeType,outcome,chef) %>%
     summarise(n=n()) %>%
     # calculate the points
-    mutate(points = case_when(outcome == "HIGH" & challengeType ==
+    # Multiply by the number of times they got each of those outcomes
+    mutate(points = (case_when(outcome == "HIGH" & challengeType ==
                                                             "Elimination" ~ 3
                       ,outcome == "WIN" & challengeType == "Elimination" ~ 7
                       ,outcome == "LOW" & challengeType == "Elimination" ~ -3
                       ,outcome == "OUT" & challengeType == "Elimination" ~ -7
                       ,outcome == "HIGH" & challengeType == "Quickfire" ~ 2
                       ,outcome == "WIN" & challengeType == "Quickfire" ~ 4
-                    ,outcome == "LOW" & challengeType == "Quickfire" ~ -2)) %>%
+                    ,outcome == "LOW" & challengeType == "Quickfire" ~ -2))*n
+           ) %>%
     ungroup() %>%
     left_join(chefdetails %>%
                 select(series,season,seasonNumber,chef,placement) %>%
@@ -63,6 +65,8 @@ episodeinfo <- read.csv(paste0(directory,"Top Chef - Episode information.csv")) 
     mutate(seasonWinner = ifelse(placement == 1, 1, 0))
 
   # total score
+  # this already takes into account the # of chefs in the game -
+  # see "numchefsofinterest
   scores <- scoresDetails%>%
     group_by(series,season,seasonNumber,chef,placement,seasonWinner) %>%
     summarise(points=sum(points,na.rm=T))
@@ -73,6 +77,37 @@ episodeinfo <- read.csv(paste0(directory,"Top Chef - Episode information.csv")) 
   reg <- glm(scores$seasonWinner[scores$placement <= 3] ~
                scores$points[scores$placement <= 3])
   summary(reg)
+
+
+  # scores at final 3 -- who is the underdog and do they win?
+  final3 <- scores %>%
+    filter(placement <= 3 | (seasonNumber == 22 & chef %in% c("Bailey Sullivan"
+                                                              ,"Shuai Wang"
+                                                          ,"Tristen Epps"))) %>%
+    # for now, put season winner as 0 for the Season 22 chefs
+    mutate(seasonWinner = ifelse(seasonNumber == 22,0,seasonWinner)) %>%
+    # get the smallest score of each season's final 3
+    # flag that one as the underdog
+    ungroup() %>% group_by(series,season,seasonNumber) %>%
+    mutate(min=min(points,na.rm=T)
+           ,max=max(points,na.rm=T)
+           ,difference = max-min
+           ,stdev = sd(points,na.rm=T)
+           ,average = median(points,na.rm=T)
+           ,flag = ifelse(abs((points-average)/average) > .5,"flag","fine")
+           ,underdog = case_when(points == min & flag == "flag" ~ "Underdog"
+                                 ,points == max & flag == "flag" ~ "Overdog"
+                                 ,TRUE ~ "dog")
+           )
+
+    table(final3$underdog,final3$seasonWinner)
+
+    final3 %>%
+    ggplot(aes(x=seasonNumber,y=points,label = chef
+               ,color=underdog,shape=as.character(seasonWinner)))  +
+      geom_point() +
+      scale_y_continuous(lim=c(-20,60))
+
 
 
 
