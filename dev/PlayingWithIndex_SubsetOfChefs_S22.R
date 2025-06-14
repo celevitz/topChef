@@ -16,8 +16,8 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
 
 # Episode 8 of S 22
     seriesname <- "US"
-    numberofelimchalls <- 8
-    numberofquickfirechalls <- numberofquickfires <- 5
+    numberofelimchalls <- 14
+    numberofquickfirechalls <- numberofquickfires <- 10
     seasonnumberofchoice <- 22
 
 ## Index
@@ -373,5 +373,8 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
     arrange(desc(Elimination.WIN),desc(indexWeight))
 
 
-
+  allseasons %>%
+    arrange(desc(indexWeight),placement,seasonNumber,chef) %>%
+    select(!(c(series,stillincomp,judgestableQF,judgestableElim
+             ,judgestableElimPercent,RankOfThoseStillIn)))
 

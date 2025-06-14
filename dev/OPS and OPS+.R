@@ -42,6 +42,6 @@ tcus <- temp %>%
 tcus %>%
   arrange(desc(ITPplus),desc(numberofchallenges)) %>%
   filter(numberofchallenges > 4) %>%
-  print(n=20)
+  print(n=50)
 
 
