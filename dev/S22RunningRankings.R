@@ -16,14 +16,14 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   filter(series == "US" )
 
 # Current episode #
-    currentep <- 13
+    currentep <- 14
 
     chefsinlck <- NA
     eliminatedchefs <- c("Corwin Hemming","Zubair Mohajir","Mimi Weissenborn"
                          ,"Anya El-Wattar","Kat Turner","Henry Lu"
                          ,"Paula Endara","Vincenzo Loseto","Katianna Hong"
                          ,"Lana Lagomarsini","Massimo Piedimonte"
-                         #,"Cesar Murillo"
+                         ,"Cesar Murillo"
                          )
 
 ## Index
@@ -296,7 +296,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
 
 #############################################################################
 ## Rank by episode
-    s22allColumns <- weightedindex("US",22,1,1) %>% mutate(episode = 1) %>%
+    s22allColumnsTemp <- weightedindex("US",22,1,1) %>% mutate(episode = 1) %>%
       bind_rows(weightedindex("US",22,2,2)  %>% mutate(episode = 2) ) %>%
       bind_rows(weightedindex("US",22,3,3)  %>% mutate(episode = 3)  ) %>%
       bind_rows(weightedindex("US",22,4,4)  %>% mutate(episode = 4)  ) %>%
@@ -309,6 +309,9 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
       bind_rows(weightedindex("US",22,11,9)  %>% mutate(episode = 11)  ) %>%
       bind_rows(weightedindex("US",22,12,9)  %>% mutate(episode = 12)  ) %>%
       bind_rows(weightedindex("US",22,13,10)  %>% mutate(episode = 13)  ) %>%
+      bind_rows(weightedindex("US",22,14,10)  %>% mutate(episode = 14)  )
+
+    s22allColumns <- s22allColumnsTemp %>%
       select(!placement) %>%
       mutate(yvalue=15-OverallRank+1)
 
@@ -334,9 +337,50 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
 
     s22wide <- s22wide[order(s22wide$OverallRank),]
 
+#############################################################################
+## Compare to all seasons
+    allseasons <- s22allColumnsTemp %>%
+      filter(episode == 14) %>% select(!episode)
+    for (sn in 1:21) {
+      allseasons <- allseasons %>%
+        bind_rows(weightedindex("US",sn,14,10)  )
+    }
+
+   # Most Elimination wins
+    allseasons %>%
+      select(chef,season,seasonNumber,Elimination.WIN) %>%
+      arrange(desc(Elimination.WIN)) %>%
+     filter(Elimination.WIN >=3)
+
+  # Most Quickfire wins
+    allseasons %>%
+      select(chef,season,seasonNumber,Quickfire.WIN) %>%
+      arrange(desc(Quickfire.WIN)) %>%
+      filter(Quickfire.WIN >=3)
+
+  # Elimination, quickfire - at the top, including wins
+  allseasons %>%
+    mutate(top = Elimination.WIN + Elimination.HIGH) %>%
+    select(chef,season,seasonNumber,top) %>%
+    arrange(desc(top)) %>%
+    filter(top >=7)
+
+  allseasons %>%
+    mutate(top = Quickfire.WIN + Quickfire.HIGH) %>%
+    select(chef,season,seasonNumber,top) %>%
+    arrange(desc(top)) %>%
+    filter(top >=4)
+
+  # Top three, most lows
+  allseasons %>%
+    filter(placement <=3 & !(is.na(placement))) %>%
+    select(chef,season,seasonNumber,placement,Elimination.LOW) %>%
+    arrange(desc(Elimination.LOW))
 
 
 
+#############################################################################
+## Visualizations
 # Graph
 rankgraph <- s22 %>%
   mutate(StillIn = ifelse(chef %in% eliminatedchefs,"Out","In")
