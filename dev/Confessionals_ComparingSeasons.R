@@ -10,6 +10,8 @@ confs <- read.csv(paste0(directory,"Top Chef - Confessionals in a season.csv")
 
 placement <- read.csv(paste0(directory,"Top Chef - Chef details.csv")
                       ,header=TRUE)
+placement$chef[placement$chef == "Kevin D'Andrea"] <- "Kévin D'Andrea"
+placement$chef[placement$chef == "Cesar Murillo"] <- "César Murillo"
 
 temp <- confs %>%
   select(!c(series,totalconfs,totalchefsepisodes,phonecallsorphotos) )%>%
@@ -20,17 +22,19 @@ temp <- confs %>%
          ,expectedpercentofconfs = paste0(round(expectedpercentofconfs,3)*100
                                           ,"%")
          ,observedpercent = paste0(round(observedpercent,3)*100,"%")
-         ,difffromexpected = paste0(round(difffromexpected,3)*100,"%")
+         ,difffromexpected = round(difffromexpected,3)*100
                                     ) %>%
+  filter(!(is.na(placement))) %>%
   rename(`season #` = seasonNumber
          ,`# of first confessionals`=firstconfs,`total confessionals`=chefconfs
          ,`expected %`=expectedpercentofconfs,`observed %`=observedpercent
          ,`difference from expected`=difffromexpected) %>%
-  arrange(placement,`season #`)
+  arrange(placement,desc(`difference from expected`),`season #`)
+## add average for each grouping of placements
 
 temp %>%
   gt() %>%
-  #cols_hide(columns=c(placement)) %>%
+  #cols_hide(columns=c(difffromexpected,difffromexpectedpercent)) %>%
   tab_row_group(label = "13th or lower",rows = placement >=13) %>%
   tab_row_group(label = "10th through 12th",rows = placement %in%
                   c(10,11,12)) %>%
@@ -52,8 +56,19 @@ temp %>%
   tab_style(style = cell_text(align = "center")
             ,locations = cells_body(columns=!c(season,chef))) %>%
   tab_style(style = cell_text(align = "center",weight="bold")
-            ,locations = cells_column_labels(columns=!c(season,chef)))
+            ,locations = cells_column_labels(columns=!c(season,chef))) %>%
   tab_style(style = cell_text(align = "left",weight="bold")
-            ,locations = cells_column_labels(columns=!c(season,chef)))
+            ,locations = cells_column_labels(columns=!c(season,chef))) %>%
   tab_style(style = cell_text(align = "center",weight="bold")
-            ,locations = cells_column_spanners())
+            ,locations = cells_column_spanners()) %>%
+  data_color(method="numeric",
+             columns=`difference from expected`,
+             palette=c("#c85200","#ffbc69","gray80", "#a3cce9","#1170AA"),
+             domain=c(min(temp$`difference from expected`)
+                      ,max(temp$`difference from expected`))) %>%
+  summary_rows(
+    groups = TRUE, columns = vars(`expected %`,`difference from expected`),
+    fns = list(Average = ~mean(.)),
+    formatter = fmt_number, decimals = 1
+  )
+

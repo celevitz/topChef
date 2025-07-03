@@ -377,6 +377,18 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
     select(chef,season,seasonNumber,placement,Elimination.LOW) %>%
     arrange(desc(Elimination.LOW))
 
+  # Bad: most lows
+  # Most Elimination wins
+  allseasons %>%
+    select(chef,season,seasonNumber,Elimination.LOW) %>%
+    arrange(desc(Elimination.LOW)) %>%
+    filter(Elimination.LOW >=3)
+
+  allseasons %>%
+    select(chef,season,seasonNumber,Quickfire.LOW) %>%
+    arrange(desc(Quickfire.LOW)) %>%
+    filter(Quickfire.LOW >=3)
+
 
 
 #############################################################################
@@ -461,10 +473,61 @@ gtsave(scoretable
        ,filename = paste(directory,"S22E",currentep,"Summary.png",sep=""))
 
 
+## Gabri and Bailey
+temp <- allseasons %>%
+  filter(chef %in% c("Bailey Sullivan","Gabriel Rodriguez"
+                     ,"Tristen Epps","Buddha") &
+           seasonNumber %in% c(20,22)) %>%
+  select(chef,Quickfire.WIN,Elimination.WIN,Quickfire.HIGH,Elimination.HIGH
+         ,Quickfire.LOW,Elimination.LOW,Elimination.OUT
+         #,indexWeight
+         ) %>%
+  pivot_longer(!chef,names_to="Statistic",values_to="Count") %>%
+  mutate(chef = case_when(chef == "Bailey Sullivan" ~ "Bailey"
+                          ,chef == "Gabriel Rodriguez" ~ "Gabri"
+                          ,chef == "Tristen Epps" ~ "Tristen"
+                          ,chef == "Buddha" ~ "Buddha")
+         #,winner = ifelse(chef %in% c("Buddha","Tristen"),"Winner","Finalist")
+         ) %>%
+  pivot_wider(names_from=chef,values_from=Count) %>%
+  mutate(Statistic = gsub(".WIN"," win"
+                           ,gsub(".LOW"," low"
+                           ,gsub(".HIGH"," high"
+                           ,gsub(".OUT"," out",Statistic)))))
 
-
-
-
+gabribailey <- temp %>%
+  gt() %>%
+  tab_spanner(label = "Finalists",
+    columns = c(Bailey,Gabri)) %>%
+  tab_spanner(label = "Winners",
+              columns = c(Tristen,Buddha)) %>%
+  #tab_source_note(source_note = "Elimination win = 7 points. Quickfire win = 4 points. Elimination high = 3 points. Quickfire high = 2 points. Quickfire low = -2 points. Elimination low = -3 points. Elimination out = -7 points.") %>%
+  tab_options(data_row.padding = px(1),
+              column_labels.padding = px(1),
+              row_group.padding = px(1)) %>%
+  tab_style(style = cell_text(align = "center")
+            ,locations = cells_body(columns=!Statistic)) %>%
+  tab_style(style = cell_text(align = "center",weight="bold")
+            ,locations = cells_column_labels(columns=!Statistic)) %>%
+  tab_style(style = cell_text(align = "left",weight="bold")
+            ,locations = cells_column_labels(columns=Statistic)) %>%
+  tab_style(style = cell_text(align = "left",weight="bold")
+            ,locations = cells_title(groups="title")) %>%
+  tab_style(style = cell_text(align = "left")
+            ,locations = cells_title(groups="subtitle")) %>%
+  tab_style(style = cell_text(align = "center",weight="bold")
+            ,locations = cells_column_spanners()) %>%
+  tab_header(
+    title = "Statistics of winners and non-winning finalists: Two examples"
+    ,subtitle = "Created by Carly Levitz for Pack Your Knives"
+  ) %>%
+  cols_width(Bailey ~ px(80)
+             ,Gabri ~ px(80)
+             ,Buddha ~ px(80)
+             ,Tristen ~ px(80)
+             ,Statistic ~ px(130) )
+gtsave(gabribailey
+       ,filename = paste(directory,"GabriBailey.png",sep=""))
 
 
 
