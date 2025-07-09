@@ -105,7 +105,10 @@ temparranged <- temp %>%
                            ,placement >= 10 ~ "10th place or lower")
          ,`season #` = case_when(`season #` == "Season 1" ~ "Season 01"
                                  ,`season #` == "Season 2" ~ "Season 02"
-                                 ,TRUE ~ `season #`))
+                                 ,TRUE ~ `season #`)
+         ,color = case_when(`difference from expected` < 0 ~ "Less than expected"
+                            ,`difference from expected` == 0 ~ "As expected"
+                            ,TRUE ~ "More than expected"))
 
 # temparranged <- temparranged[order(temparranged$`difference from expected`),]
 #
@@ -145,12 +148,34 @@ dev.off()
 temparranged %>%
   ggplot(aes(x=`difference from expected`,y=placement)) +
   geom_rect(xmin=-.01,xmax=0.01,ymin=1,ymax=16.1,color="gray90") +
-  geom_point(aes(color=`season #`) ) +
-  scale_color_manual(values = c("#D81B60","#1E88E5","#55B9A7","#FFC107"
-                                ,"#004D40")) +
+  geom_point(aes(color=color) ,size=7) +
   ylab("placement (lower is better)") +
-  facet_grid(cols = vars(`season #`))
+  facet_grid(cols = vars(`season #`)) +
+  scale_color_manual(values = c("gray70","#55B9A7","#004D40")) +
+  scale_y_continuous(limits=c(0.5,16.5)
+                     ,breaks=seq(1,16,1),labels = seq(1,16,1)) +
+  xlab("difference from expected % of confessionals") +
+  labs(title = "Top Chef Confessionals: Difference from Expected % of Confessionals"
+       ,subtitle = "Data collected manually by Carly Levitz") +
+  theme_minimal() +
+  theme(axis.line = element_line(color="black")
+        ,axis.ticks = element_line(color="black")
+        ,axis.text = element_text(color="black",size=18)
+        ,axis.title = element_text(color="black",size=20)
+        ,title = element_text(color="black",size=22)
+        ,subtitle = element_text(color="black",size=20)
+        ,panel.grid = element_blank()
+        #,legend.position = "none"
+        ,legend.title = element_blank()
+        ,legend.text = element_text(color="black",size=18)
+        ,strip.text = element_text(color="black",size=20)
+        ,strip.background = element_rect(fill = "gray80",color="black")
+        ,panel.spacing = unit(3, "lines")
+  )
 
+dev.print(png, file = paste0(directory,"ConfessionalsByPlacementAndSeason.png")
+          , width = 1600, height = 900)
+dev.off()
 
 
 
