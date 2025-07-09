@@ -2,6 +2,7 @@
 rm(list=ls())
 library(tidyverse)
 library(gt)
+library(ggplot2)
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
@@ -37,7 +38,7 @@ temp <- confs %>%
 
 
 ############################################################################
-## Comparing 6th place and better.
+## Comparing 6th place and better: Table
 confessionalstattable <- temp %>%
   ## keep just people in 6th place or better
   filter(placement <= 6) %>%
@@ -91,3 +92,66 @@ confessionalstattable <- temp %>%
 
 gtsave(confessionalstattable
        ,filename = paste(directory,"Confessionals_6thplaceorbetter.png",sep=""))
+
+
+############################################################################
+## Comparing 6th place and better: Visual compared to expected
+temparranged <- temp %>%
+  ungroup() %>%
+  mutate(group = case_when(placement == 1 ~ "1st place"
+                           ,placement %in% c(2,3) ~ "2nd or 3rd place"
+                           ,placement %in% c(4,5) ~ "4th or 5th place"
+                           ,placement %in% c(6,7,8,9) ~ "6th to 9th place"
+                           ,placement >= 10 ~ "10th place or lower")
+         ,`season #` = case_when(`season #` == "Season 1" ~ "Season 01"
+                                 ,`season #` == "Season 2" ~ "Season 02"
+                                 ,TRUE ~ `season #`))
+
+# temparranged <- temparranged[order(temparranged$`difference from expected`),]
+#
+# temparranged %>%
+#   ggplot(aes(x=`difference from expected`,y=placement
+#              ,color=placement,shape=`season #`)) +
+#   geom_point() +
+#   facet_wrap(~`season #`)
+
+temparranged %>%
+  ggplot(aes(x=`difference from expected`,y=placement)) +
+  geom_rect(xmin=-.01,xmax=0.01,ymin=1,ymax=16.1,color="gray90") +
+  geom_point(aes(color=`season #`,shape=`season #`) ,size = 7) +
+  scale_color_manual(values = c("#D81B60","#1E88E5","#55B9A7","#FFC107"
+                                ,"#004D40")) +
+  ylab("placement (lower is better)") +
+  xlab("difference from expected % of confessionals") +
+  labs(title = "Top Chef Confessionals: Difference from Expected % of Confessionals"
+          ,subtitle = "Data collected manually by Carly Levitz") +
+  theme_minimal() +
+  theme(axis.line = element_line(color="black")
+        ,axis.ticks = element_line(color="black")
+        ,axis.text = element_text(color="black",size=20)
+        ,axis.title = element_text(color="black",size=20)
+        ,title = element_text(color="black",size=22)
+        ,subtitle = element_text(color="black",size=20)
+        ,panel.grid = element_blank()
+        ,legend.title = element_text(size=18)
+        ,legend.text = element_text(size=16)
+        )
+
+dev.print(png, file = paste0(directory,"ConfessionalsByPlacement.png")
+          , width = 900, height = 900)
+dev.off()
+
+
+temparranged %>%
+  ggplot(aes(x=`difference from expected`,y=placement)) +
+  geom_rect(xmin=-.01,xmax=0.01,ymin=1,ymax=16.1,color="gray90") +
+  geom_point(aes(color=`season #`) ) +
+  scale_color_manual(values = c("#D81B60","#1E88E5","#55B9A7","#FFC107"
+                                ,"#004D40")) +
+  ylab("placement (lower is better)") +
+  facet_grid(cols = vars(`season #`))
+
+
+
+
+
