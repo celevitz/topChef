@@ -25,18 +25,20 @@ challengewins <- read.csv(paste0(directory,"topChef/Top Chef - Challenge wins.cs
                           ,header=TRUE)
 
 # who showed up at the judges' table? just for elimination challenge.
+# use max of the 1 and 0 in the case of multiple elim challs in an ep.
 wonElimChall <- challengewins %>%
-  mutate(ElimWinner=ifelse(challengeType == "Elimination" &
-                             outcome %in% c("WIN","WINNER"),"yes","no")
-         ,atJTElim = ifelse(challengeType == "Elimination" &
+  mutate(ElimWinner=max(ifelse(challengeType == "Elimination" &
+                             outcome %in% c("WIN","WINNER"),1,0))
+         ,atJTElim = max(ifelse(challengeType == "Elimination" &
                               outcome %in% c("OUT","LOW","HIGH","WIN","WINNER"
-                                             ,"RUNNER-UP"),"yes","no")
-         ,OutWithdrewElim = ifelse(challengeType == "Elimination" &
+                                             ,"RUNNER-UP"),1,0))
+         ,OutWithdrewElim = max(ifelse(challengeType == "Elimination" &
                                    outcome %in% c("OUT","WITHDREW","RUNNER-UP"
-                                              ,"DISQUALIFIED"),"yes","no")) %>%
+                                              ,"DISQUALIFIED"),1,0))) %>%
   select(season,seasonNumber,series,episode,chef,ElimWinner,atJTElim
          ,OutWithdrewElim) %>%
-  filter(ElimWinner == "yes" | atJTElim == "yes" | OutWithdrewElim =="yes") %>%
+  # remove duplicates (i.e., because there are multiple challenges per episode)
+  distinct() %>%
   # need to update the chefs' names who have accents in them
   mutate(chef = case_when(chef == "Kevin D'Andrea" ~ "Kévin D'Andrea"
                           ,chef == "Cesar Murillo" ~ "César Murillo"
@@ -58,9 +60,9 @@ wonElimChall <- challengewins %>%
            ,percentdifffromequalinEp = (count - equalInEp)/equalInEp
            ,percentofEpsConfs = count/totalconfsinep
            ,edit = case_when(percentofEpsConfs > equalInEpPercent ~ "Over-shown"
-                             ,percentofEpsConfs < equalInEpPercent ~ "Under-shown"
-                             ,percentofEpsConfs == equalInEpPercent  ~ "Shown as expected"
-                             ,TRUE ~ "Not in episode")
+                   ,percentofEpsConfs < equalInEpPercent ~ "Under-shown"
+                   ,percentofEpsConfs == equalInEpPercent  ~ "Shown as expected"
+                   ,TRUE ~ "Not in episode")
            ) %>%
     ## Who won the elim chall in that ep?
     left_join(wonElimChall)
