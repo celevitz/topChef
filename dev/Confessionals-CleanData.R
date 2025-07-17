@@ -27,6 +27,7 @@ challengewins <- read.csv(paste0(directory,"topChef/Top Chef - Challenge wins.cs
 # who showed up at the judges' table? just for elimination challenge.
 # use max of the 1 and 0 in the case of multiple elim challs in an ep.
 wonElimChall <- challengewins %>%
+  group_by(series,season,seasonNumber,chef,episode) %>%
   mutate(ElimWinner=max(ifelse(challengeType == "Elimination" &
                              outcome %in% c("WIN","WINNER"),1,0))
          ,atJTElim = max(ifelse(challengeType == "Elimination" &
