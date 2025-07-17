@@ -25,21 +25,18 @@ challengewins <- read.csv(paste0(directory,"topChef/Top Chef - Challenge wins.cs
                           ,header=TRUE)
 
 # who showed up at the judges' table? just for elimination challenge.
-judgestable <- challengewins %>%
-  mutate(atJT = ifelse(challengeType == "Elimination" & outcome %in% c("OUT","LOW","HIGH"
-                                                         ,"WIN"
-                                                         # including last elim
-                                                         ,"WINNER","RUNNER-UP"
-                                                         ),"yes","no") )%>%
-  select(season,seasonNumber,series,episode,chef,atJT)
-
 wonElimChall <- challengewins %>%
-  mutate(winner=ifelse(challengeType == "Elimination" & outcome %in% c("WIN"
-                                                         # including last elim
-                                                               ,"WINNER")
-                       ,"yes","no")) %>%
-  select(season,seasonNumber,series,episode,chef,winner) %>%
-  filter(winner == "yes") %>%
+  mutate(ElimWinner=ifelse(challengeType == "Elimination" &
+                             outcome %in% c("WIN","WINNER"),"yes","no")
+         ,atJTElim = ifelse(challengeType == "Elimination" &
+                              outcome %in% c("OUT","LOW","HIGH","WIN","WINNER"
+                                             ,"RUNNER-UP"),"yes","no")
+         ,OutWithdrewElim = ifelse(challengeType == "Elimination" &
+                                   outcome %in% c("OUT","WITHDREW","RUNNER-UP"
+                                              ,"DISQUALIFIED"),"yes","no")) %>%
+  select(season,seasonNumber,series,episode,chef,ElimWinner,atJTElim
+         ,OutWithdrewElim) %>%
+  filter(ElimWinner == "yes" | atJTElim == "yes" | OutWithdrewElim =="yes") %>%
   # need to update the chefs' names who have accents in them
   mutate(chef = case_when(chef == "Kevin D'Andrea" ~ "Kévin D'Andrea"
                           ,chef == "Cesar Murillo" ~ "César Murillo"
