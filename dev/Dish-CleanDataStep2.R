@@ -58,7 +58,8 @@ runsummarystats <- "no"
 
   # Beef/cattle
     beefs <- c("beef","cheesesteak","filet mignon","waygu","flank steak"
-               ,"meatball","meatloaf","oxtail")
+               ,"meatball","meatloaf","oxtail","top round","sirloin","ribeye"
+               ,"eye round","tri-tip","tri tip","steak","pot roast","striploin")
     disheswide$beef <- 0
     for (b in beefs) {
       disheswide$beef[grepl(b,disheswide$dish)  ] <- 1
@@ -147,7 +148,7 @@ runsummarystats <- "no"
       disheswide$fruit[grepl(f,disheswide$dish)  ] <- 1
     }
 
-  # Game meet (including pheasant, goose)
+  # Game meat (including pheasant, goose)
     games <- c("alligator","antelope","buffalo","bison","boar","elk","frog"
                ,"goat","goose","kangaroo","lamb","pheasant","ostrich","squab"
                ,"quail")
@@ -337,7 +338,8 @@ runsummarystats <- "no"
   # What do I think are the trendy things?
     trends <- c("confit","conserva","consomme","deconstructed","emulsion"
                 ,"espuma","foam","gel","mousse","risotto","scallop"
-                ,"ceviche","aguachile","croquette","sous vide","tartare")
+                ,"ceviche","aguachile","croquette","sous vide","tartare"
+                ,"egg yolk")
     disheswide$trend <- NA
     for (t in trends) {
       disheswide$trend[grepl(t,disheswide$dish)  ] <- t
