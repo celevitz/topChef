@@ -257,7 +257,7 @@ runsummarystats <- "no"
   # raw-ish things
     rawish <- c("aguachile","crudo","ceviche","crudite","carpaccio"
                 ,"futomake","leche de tigre","nigiri","poke","sashimi"
-                ,"negitoro","kifto")
+                ,"negitoro","kitfo")
     disheswide$rawish <- 0
     for (r in rawish) {
       disheswide$rawish[grepl(r,disheswide$dish)  ] <- 1
