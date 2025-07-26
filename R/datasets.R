@@ -117,6 +117,68 @@
 "challengedescriptions"
 
 
+#' challengedescriptionsnoLCK
+#'
+#' A dataset containing information about each challenge that the
+#' Chefs compete in; excludes LCK
+#'
+#' @docType data
+#'
+#' @usage data(challengedescriptionsnoLCK)
+#'
+#' @format This data frame contains the following columns:
+#' \describe{
+#'   \item{\code{season}}{Name of season}
+#'   \item{\code{seasonNumber}}{Season number}
+#'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
+#'             (listed as US Masters); Top Chef Canada (listed as Canada)}
+#'   \item{\code{episode}}{Episode number}
+#'   \item{\code{challengeType}}{Challenge type: qualifying challenge,
+#'              elimination, quickfire, sudden death quickfire, quickfire
+#'              elimination, battle of the sous chefs}
+#'   \item{\code{outcomeType}}{Is the challenge run as a team or as an
+#'              individual?}
+#'   \item{\code{challengeDescription}}{Description of the challenge}
+#'   \item{\code{shopTime}}{If they go shopping, how long do they have?
+#'              Unit is minutes}
+#'   \item{\code{shopBudget}}{If they go shopping, what is their budget?
+#'              Unit is dollars unless otherwise specified.}
+#'   \item{\code{prepTime}}{If they have prep time, how long do they have?
+#'              Unit is minutes}
+#'   \item{\code{cookTime}}{How long they have to cook (in minutes)}
+#'   \item{\code{productPlacement}}{List of products promoted in the
+#'              challenge, other than the usual series-wide product placement.
+#'              Will be blank if none were mentioned}
+#'   \item{\code{advantage}}{If an advantage is offered to the winner of the
+#'            challenge, it will be listed here: e.g., Immunity, choosing
+#'            a protein in the elimination challenge, choosing your team in
+#'            the elimination challenge. Will be blank if none were mentioned.}
+#'   \item{\code{lastChanceKitchenWinnerEnters}}{If someone comes in from
+#'       Last Chance Kitchen at this challenge, their name will be listed here.
+#'       Will be blank for all other challenges.}
+#'   \item{\code{restaurantWarWinner}}{Role played by the winner of
+#'              restaurant wars: Executive Chef, Front of House, the full team,
+#'              Line Cook, Roles Rotated, or No one won. Will only have values
+#'              for Restaurant War episodes.}
+#'   \item{\code{restaurantWarEliminated}}{Role played by the Chef eliminated
+#'             after restaurant wars: Executive Chef, Front of House, the full
+#'             team, Line Cook, Roles Rotated. Will only have values for
+#'             Restaurant War episodes.}
+#'   \item{\code{didJudgesVisitWinningTeamFirst}}{Categorical variable of
+#'   which team was shown serving the judges first. Will only have values for
+#'   Restaurant Wars episodes.}
+#' }
+#'
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_longer
+#'
+#' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
+
 
 #' challengewins
 #'
@@ -169,6 +231,48 @@
 "challengewins"
 
 
+#' challengewinsnoLCK
+#'
+#' A dataset containing win and loss data for each chef in each episode(no LCK)
+#'
+#' @docType data
+#'
+#' @usage data(challengewinsnoLCK)
+#'
+#' @format This data frame contains the following columns:
+#' \describe{
+#'   \item{\code{season}}{Name of season}
+#'   \item{\code{seasonNumber}}{Season number}
+#'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
+#'                        (listed as US Masters); Top Chef Canada (listed
+#'                        as Canada)}
+#'   \item{\code{episode}}{Episode number}
+#'   \item{\code{inCompetition}}{True / false for whether the Chef was still
+#'                                in the competition at the time of the
+#'                                challenge}
+#'   \item{\code{immune}}{True / false for whether that Chef was immune from
+#'                            being eliminated for challenge}
+#'   \item{\code{chef}}{Name of chef}
+#'   \item{\code{challengeType}}{Challenge type: qualifying challenge,
+#'                              elimination, quickfire, sudden death quickfire,
+#'                              quickfire elimination, battle of the sous
+#'                              chefs}
+#'   \item{\code{outcome}}{Result for each Chef in the competition for that
+#'                        challenge}
+#'   \item{\code{rating}}{Numeric rating provided to chefs in Top Chef US
+#'                        Masters Seasons 1 and 2. Will be blank for all
+#'                        other seasons.}
+#' }
+#'
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_longer
+#'
+#' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 
 
 #' episodeinfo
@@ -209,7 +313,38 @@
 #' episodeinfo %>% filter(season=="World All Stars")
 "episodeinfo"
 
-
+#' episodeinfonoLCK
+#'
+#' A dataset containing information about each episode w/o LCK
+#'
+#' @docType data
+#'
+#' @usage data(episodeinfonoLCK)
+#'
+#' @format This data frame contains the following columns:
+#' \describe{
+#'   \item{\code{season}}{Name of season}
+#'   \item{\code{seasonNumber}}{Season number}
+#'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
+#'                        (listed as US Masters); Top Chef Canada (listed as
+#'                        Canada)}
+#'   \item{\code{overallEpisodeNumber}}{Running number of episode within
+#'                                        the series}
+#'   \item{\code{episode}}{Episode number}
+#'   \item{\code{episodeName}}{Name of episode}
+#'   \item{\code{airDate}}{Date the episode originally aired}
+#'   \item{\code{nCompetitors}}{Number of Chefs still in the competition}
+#' }
+#'
+#' @importFrom dplyr select
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr arrange
+#' @importFrom dplyr summarise
+#' @importFrom tidyr pivot_wider
+#' @importFrom tidyr pivot_longer
+#'
+#' @source \url{https://en.wikipedia.org/wiki/Top_Chef}
 
 #' judges
 #'
