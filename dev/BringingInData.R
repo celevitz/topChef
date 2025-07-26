@@ -173,6 +173,7 @@ save(rewards, file = "data/rewards.rda")
 save(judges, file = "data/judges.rda")
 save(episodeinfonoLCK, file = "data/episodeinfo.rda")
 
+challengewinsnoLCK <- challengedescriptionsnoLCK <- episodeinfonoLCK<- NULL
 
 ## save as CSV for my own use later
 write.csv(chefdetails
