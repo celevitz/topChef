@@ -311,7 +311,7 @@ chefdetails <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
   }
 
 ## Save the data
-  save(allseasons, file = "data/allseasonsfinalscores.rda")
+  #save(allseasons, file = "data/allseasonsfinalscores.rda")
 
   ## save as CSV for my own use later
   write.csv(allseasons
