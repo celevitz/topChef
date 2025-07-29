@@ -266,7 +266,7 @@ alldata <- starting %>%
     figure1 <- figure0data %>%
       rename(Cast = timing) %>%
       ggplot(aes(x=seasonNumber,y=percent,color=Cast)) +
-      geom_line() +
+      geom_line(lwd=1.5) + geom_point(pch=19,size=3) +
       labs(title = "Figure 1. Proportion of Top Chef cast that are people of color"
            ,subtitle = "Comparing the full casts with the chefs who made it past qualifying challenges and Last Chance Kitchen"
            ,caption="Analysis by Carly Levitz for Pack Your Knives")+
