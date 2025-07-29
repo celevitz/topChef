@@ -187,8 +187,8 @@ alldata <- starting %>%
   # Interrupted time series plot
     # first "intervention" of the first all stars isn't significant
       figure3 <- ggplot(df,aes(seasonNumber,percent))+
-        geom_segment(x=7.9,yend=max(df$seasonNumber))+
-        geom_segment(x=17.1,yend=max(df$seasonNumber))+
+        geom_segment(x=7.9,yend=max(df$seasonNumber),y=0)+
+        geom_segment(x=17.1,yend=max(df$seasonNumber),y=0)+
         # counter factual
         geom_ribbon(aes(ymin = predictionsCF - (1.96*seCF)
                         , ymax = predictionsCF + (1.96*seCF)),fill = "lightblue"
@@ -198,9 +198,29 @@ alldata <- starting %>%
         geom_ribbon(aes(ymin = predictions - (1.96*se)
                         , ymax = predictions + (1.96*se)), fill = "lightgreen"
                     ,alpha=.8)+
-        geom_line(aes(seasonNumber,predictions),color="black",lty=1)+
+        geom_line(aes(seasonNumber,predictions),color="forestgreen",lty=1)+
         geom_point(alpha=0.3) +
-        ggtitle("Figure 3")
+        labs(title="Figure 3. Racial diversity on Top Chef seasons"
+            ,subtitle = "Modeled interrupted time series with a 95% confidence interval (green), and a counterfactual (blue with dotted line)\nCircles are observed percent of the cast that are people of color"
+            ,caption="Analysis by Carly Levitz for Pack Your Knives") +
+        scale_y_continuous(lim=c(0,1),breaks=seq(0,1,.2)
+                           ,labels = paste0(seq(0,100,20),"%")
+                         ,name="Proportion of cast that are people of color")+
+        scale_x_continuous(breaks=seq(1,22,1),labels=seq(1,22,1)
+                           ,name = "Season number") +
+        theme(panel.background = element_rect(fill="white")
+              ,plot.background = element_rect(fill="white")
+              ,plot.title.position="plot",plot.caption = element_text(hjust=0,size=5)
+              ,plot.caption.position="plot",plot.title = element_text(size=12)
+              ,plot.subtitle = element_text(size=10)
+              ,strip.text = element_text(colour = 'black',size=8)
+              ,legend.text = element_text(size=7),legend.title = element_text(size=8)
+              ,axis.line = element_line(color="black")
+              ,axis.ticks = element_line(color="black")
+              ,axis.text = element_text(color="black",size=8)
+              ,panel.grid = element_blank())
+      ggsave(paste0(directory,"Interrupted time series.png")
+             ,figure3,width = 10,height = 5,dpi = 1200 )
 
 
   # Simple time trend plot
@@ -221,12 +241,54 @@ alldata <- starting %>%
                   ,alpha=.8)+
       geom_line(aes(seasonNumber,predictions),color="black",lty=1)+
       geom_point(alpha=0.5) +
-      ggtitle("Figure 2")
+      labs(title = "Figure 2. Relationship between season number and proportion of Top Chef cast that are people of color"
+           ,subtitle = "Linear regression model with 95% confidence interval"
+           ,caption="Analysis by Carly Levitz for Pack Your Knives")+
+      scale_y_continuous(lim=c(0,1),breaks=seq(0,1,.2)
+                         ,labels = paste0(seq(0,100,20),"%")
+                         ,name="Proportion of cast that are people of color")+
+      scale_x_continuous(breaks=seq(1,22,1),labels=seq(1,22,1)
+                         ,name = "Season number") +
+      theme(panel.background = element_rect(fill="white")
+            ,plot.background = element_rect(fill="white")
+            ,plot.title.position="plot",plot.caption = element_text(hjust=0,size=5)
+            ,plot.caption.position="plot",plot.title = element_text(size=12)
+            ,plot.subtitle = element_text(size=10)
+            ,strip.text = element_text(colour = 'black',size=8)
+            ,legend.text = element_text(size=7),legend.title = element_text(size=8)
+            ,axis.line = element_line(color="black")
+            ,axis.ticks = element_line(color="black")
+            ,axis.text = element_text(color="black",size=8)
+            ,panel.grid = element_blank())
+    ggsave(paste0(directory,"Linear regression.png")
+           ,figure2,width = 10,height = 5,dpi = 1200 )
 
     figure1 <- figure0data %>%
-      ggplot(aes(x=seasonNumber,y=percent,color=timing)) +
+      rename(Cast = timing) %>%
+      ggplot(aes(x=seasonNumber,y=percent,color=Cast)) +
       geom_line() +
-      ggtitle("Figure 1")
+      labs(title = "Figure 1. Proportion of Top Chef cast that are people of color"
+           ,subtitle = "Comparing the full casts with the chefs who made it past qualifying challenges and Last Chance Kitchen"
+           ,caption="Analysis by Carly Levitz for Pack Your Knives")+
+      scale_y_continuous(lim=c(0,1),breaks=seq(0,1,.2)
+                         ,labels = paste0(seq(0,100,20),"%")
+                         ,name="Proportion of cast that are people of color")+
+      scale_x_continuous(breaks=seq(1,22,1),labels=seq(1,22,1)
+                         ,name = "Season number") +
+      scale_color_manual(values=c("#1170AA","#a3cce9")) +
+      theme(panel.background = element_rect(fill="white")
+            ,plot.background = element_rect(fill="white")
+            ,plot.title.position="plot",plot.caption = element_text(hjust=0,size=5)
+            ,plot.caption.position="plot",plot.title = element_text(size=12)
+            ,plot.subtitle = element_text(size=10)
+            ,strip.text = element_text(colour = 'black',size=8)
+            ,legend.text = element_text(size=7),legend.title = element_text(size=8)
+            ,axis.line = element_line(color="black")
+            ,axis.ticks = element_line(color="black")
+            ,axis.text = element_text(color="black",size=8)
+            ,panel.grid = element_blank())
+    ggsave(paste0(directory,"General time trend.png")
+           ,figure1,width = 10,height = 5,dpi = 1200 )
 
   # Descriptive statistics
     figure0data %>% group_by(timing) %>%
@@ -276,23 +338,23 @@ alldata <- starting %>%
                                        ,minorityowned < percent & minorityowned > percentOwners ~ "Full cast more and just owners less\ndiverse than state restaurant owner average"
                                        ,minorityowned > percent & minorityowned < percentOwners ~ "Full cast less and just owners more\ndiverse than state restaurant owner average"
                                        ,minorityowned > percent & minorityowned > percentOwners ~ "Full cast and just owners less\ndiverse than state restaurant owner average"
-                                       ,minorityowned > percent & is.na(percentOwners) ~ "Full cast less diverse than\nstate restaurant owner average\n(no owners on cast)"
+                                       ,minorityowned > percent & is.na(percentOwners) ~ "Full cast less diverse than state restaurant owner\naverage (no owners on cast)"
                                        ,is.na(minorityowned) ~ "Not filmed in USA"
                                        ,TRUE ~ "CATEGORIZATION NEEDED"
                                        )) %>%
       select(!c(category,category2)) %>%
-      pivot_longer(!c(season,seasonNumber,maincategory),names_to="Group"
+      pivot_longer(!c(season,seasonNumber,maincategory),names_to="Legend"
                    ,values_to="values") %>%
-      mutate(Group = case_when(Group == "minorityowned" ~ "state's restaurant owners in 2025"
-                               ,Group == "percent" ~ "season's cast"
-                               ,Group == "percentOwners" ~ "season's cast that were owners"))
+      mutate(Legend = case_when(Legend == "minorityowned" ~ "state's restaurant owners in 2025"
+                               ,Legend == "percent" ~ "season's cast"
+                               ,Legend == "percentOwners" ~ "season's cast that were owners"))
 
     figure4 <- figure4data %>%
-      ggplot(aes(x=values,y=seasonNumber,color=Group,shape=Group,fill=Group)) +
-      facet_wrap(maincategory~.) + geom_point() +
+      ggplot(aes(x=values,y=seasonNumber,color=Legend,shape=Legend,fill=Legend)) +
+      facet_wrap(maincategory~.) + geom_point(size=2.5) +
       scale_y_continuous(breaks=seq(1,22,1),labels=paste0("Season ",seq(1,22,1))
                          ,name=NULL)+
-      scale_x_continuous(breaks=seq(0,1,.1),labels=paste0(seq(0,100,10),"%")
+      scale_x_continuous(breaks=seq(0,1,.1),labels=c("0%","","20%","","40%","","60%","","80%","","100%")
                          ,name = "% of group that is a minority or people of color")+
       ggtitle("Figure 4: Comparing Top Chef seasons' casts to the demographics of restaurant owners"
               ,subtitle = "Demographics of restaurant owners by state comes from the National Restaurant's Association's April 2025 report.") +
@@ -302,18 +364,20 @@ alldata <- starting %>%
       scale_shape_manual(values=c(24,17,1) ) +
       theme(panel.background = element_rect(fill="white")
             ,plot.background = element_rect(fill="white")
-            ,plot.title.position="plot",plot.caption = element_text(hjust=0,size=5)
-            ,plot.caption.position="plot",plot.title = element_text(size=12)
-            ,plot.subtitle = element_text(size=10)
-            ,strip.text = element_text(colour = 'black',size=8)
+            ,plot.title.position="plot",plot.caption = element_text(hjust=0,size=7)
+            ,plot.caption.position="plot",plot.title = element_text(size=13)
+            ,plot.subtitle = element_text(size=11)
+            ,strip.text = element_text(colour = 'black',size=7)
             ,legend.text = element_text(size=7),legend.title = element_text(size=8)
             ,axis.line = element_line(color="black")
             ,axis.ticks = element_line(color="black")
-            ,axis.text = element_text(color="black",size=5)
-            ,panel.grid.major.y = element_line(color="gray95",linewidth=.7)
-            ,panel.grid.major.x = element_blank())
+            ,axis.text = element_text(color="black",size=7)
+            ,panel.grid.major.y = element_line(color="gray95",linewidth=.2)
+            ,panel.grid.major.x = element_line(color="gray95",linewidth=.2)
+            ,legend.position="top"
+            ,legend.margin=margin(c(.1,5,.1,5)))
     ggsave(paste0(directory,"Comparing casts to restaurant owners.png")
-           ,figure4,width = 10,height = 5,dpi = 1200 )
+           ,figure4,width = 8,height = 7,dpi = 1200 )
 
 
 

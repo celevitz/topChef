@@ -66,23 +66,23 @@ winners %>%
   geom_point(aes(x=percentofEpsConfs,y=y,color=category,fill=category
                  ,shape=category),cex=5) +
   geom_point(aes(x=equalInEpPercent,y=y),shape="|",color="black",cex=5) +
-  labs(title="% of confessionals each winner had in the first episode of their season"
-       ,subtitle="Each chef's confessional total is compared to the number if the episode's confessionals were evenly distributed.\n| = expected % of confessionals a chef would receive if everyone received the same amount in the first episode.\n* = chef had the first confessional of the first episode."
+  labs(title="% of confessionals winners had in the 1st episode of their season"
+       ,subtitle="Each chef's total is compared to the number if the episode's confessionals were evenly distributed.\n\n| = expected % of confessionals a chef would receive if everyone received the same # in the 1st episode.\n\n* = chef had the first confessional of the first episode."
        ,caption = "Created by Carly Levitz for Pack Your Knives") +
   scale_linetype_manual(values=c("solid","73", "dashed"))+
   scale_color_manual(values = c("#f8931f","#364156","#57b8ff")) +
-
   theme_minimal()+
   theme(
     panel.grid = element_blank()
     ,axis.ticks.y = element_blank()
     ,axis.title.y = element_blank()
-    ,axis.text = element_text(color="black",size = 16)
-    ,axis.title.x = element_text(color="black",size = 20,face="bold")
+    ,axis.text = element_text(color="black",size = 22)
+    ,axis.title.x = element_text(color="black",size = 22,face="bold")
     ,axis.line = element_line(color="black")
     ,axis.ticks.x = element_line(color="black")
-    ,plot.title = element_text(color="black",size = 30,face="bold")
-    ,plot.subtitle = element_text(color="black",size=20)
+    ,plot.title = element_text(color="black",size = 32,face="bold")
+    ,plot.title.position="plot"
+    ,plot.subtitle = element_text(color="black",size=25)
     ,plot.caption = element_text(color="black",size=20,hjust=.5)
     ,panel.background = element_rect(color="white", fill="white")
     ,plot.background  = element_rect(color="white", fill="white")
@@ -90,13 +90,37 @@ winners %>%
     ,legend.key.size = unit(1, 'cm')
     ,legend.key.height = unit(1, 'cm')
     ,legend.key.width = unit(1, 'cm')
-    ,legend.title = element_text(size=18)
-    ,legend.text = element_text(size=16)
+    ,legend.title = element_text(size=20)
+    ,legend.text = element_text(size=18)
   )
 
 dev.print(png, file = paste0(directory,"WinnersConfsEp1.png")
           , width = 1200, height = 900)
 dev.off()
+
+## For social media
+
+## Verifying that there are no winners who were at the bottom of 1st elim chall
+winnersraw <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
+
+winners<- winnersraw %>%
+  filter(series=="US" & placement =="1.0" ) %>%
+  select(series,season,seasonNumber,chef,placement)
+
+
+challs <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
+  filter(series == "US" & challengeType %in% c("Elimination","Sudden Death Elimination","Quickfire Elimination"))
+
+
+challwin <- challs %>%
+  left_join(winners) %>%
+  filter(placement == "1.0") %>%
+  group_by(season,seasonNumber,chef) %>%
+  mutate(firstep=min(episode)) %>%
+  filter(episode == firstep) %>%
+  select(season,seasonNumber,chef,episode,challengeType,outcome)
+
+
 #
 ## Keep just first episode and whoever was shown the most
 # shownmost <- confs %>% ungroup() %>%
