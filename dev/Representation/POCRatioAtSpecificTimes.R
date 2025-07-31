@@ -325,8 +325,8 @@ alldata <- starting %>%
         # season 1 and 5 don't have any owners
         mutate(percentOwners=ifelse(seasonNumber %in% c(4,10),0
                                     ,percentOwners)) %>%
-      mutate(category = case_when(minorityowned > percent ~ "Cast less representative than state\nrestaurant owner average"
-                                  ,minorityowned < percent ~ "Cast more representative than state\nrestaurant owner average"
+      mutate(category = case_when(minorityowned > percent ~ "Cast less representative than state restaurant owner average"
+                                  ,minorityowned < percent ~ "Cast more representative than state restaurant owner average"
                                   ,minorityowned == percent ~ "Cast same as state restaurant owner average"
                                   ,TRUE ~ "Out of USA")
              ,category2 = case_when(minorityowned > percentOwners ~ "Cast (owners) less representative than state\nrestaurant owner average"
@@ -342,42 +342,45 @@ alldata <- starting %>%
                                        ,is.na(minorityowned) ~ "Not filmed in USA"
                                        ,TRUE ~ "CATEGORIZATION NEEDED"
                                        )) %>%
-      select(!c(category,category2)) %>%
-      pivot_longer(!c(season,seasonNumber,maincategory),names_to="Legend"
+      select(!c(maincategory,category2)) %>%
+      pivot_longer(!c(season,seasonNumber,category),names_to="Legend"
                    ,values_to="values") %>%
       mutate(Legend = case_when(Legend == "minorityowned" ~ "state's restaurant owners in 2025"
                                ,Legend == "percent" ~ "season's cast"
                                ,Legend == "percentOwners" ~ "season's cast that were owners"))
 
     figure4 <- figure4data %>%
+      filter(Legend != "season's cast that were owners" &
+               !(seasonNumber %in% c(20,22))) %>%
+      mutate(seasonNumber = ifelse(seasonNumber==21,20,seasonNumber)) %>%
       ggplot(aes(x=values,y=seasonNumber,color=Legend,shape=Legend,fill=Legend)) +
-      facet_wrap(maincategory~.) + geom_point(size=2.5) +
-      scale_y_continuous(breaks=seq(1,22,1),labels=paste0("Season ",seq(1,22,1))
-                         ,name=NULL)+
-      scale_x_continuous(breaks=seq(0,1,.1),labels=c("0%","","20%","","40%","","60%","","80%","","100%")
-                         ,name = "% of group that is a minority or people of color")+
+      facet_wrap(category~.) + geom_point(size=2.5) +
+      scale_y_continuous(breaks=seq(1,20,1),labels=c(paste0("Season ",seq(1,19,1))
+                                                     ,"Season 21"),name=NULL)+
+      scale_x_continuous(breaks=seq(0,.8,.1),labels=c("0%","10%","20%","30%","40%","50%","60%","70%","80%")
+                         ,lim=c(0,.8),name = "% of group that is a minority or people of color")+
       ggtitle("Figure 4: Comparing Top Chef seasons' casts to the demographics of restaurant owners"
               ,subtitle = "Demographics of restaurant owners by state comes from the National Restaurant's Association's April 2025 report.") +
-      labs(caption="Created by Carly Levitz for Pack Your Knives")+
-      scale_color_manual(values=c("#1170AA","#a3cce9","#c85200")) +
-      scale_fill_manual(values=c("#1170AA",NA,"#c85200")) +
-      scale_shape_manual(values=c(24,17,1) ) +
+      labs(caption="Created by Carly Levitz for Pack Your Knives. Excludes the seasons filmed internationally.")+
+      scale_color_manual(values=c("#1170AA","#c85200")) +
+      scale_fill_manual(values=c("#1170AA","#c85200")) +
+      scale_shape_manual(values=c(24,1) ) +
       theme(panel.background = element_rect(fill="white")
             ,plot.background = element_rect(fill="white")
             ,plot.title.position="plot",plot.caption = element_text(hjust=0,size=7)
             ,plot.caption.position="plot",plot.title = element_text(size=13)
             ,plot.subtitle = element_text(size=11)
-            ,strip.text = element_text(colour = 'black',size=7)
-            ,legend.text = element_text(size=7),legend.title = element_text(size=8)
+            ,strip.text = element_text(colour = 'black',size=9)
+            ,legend.text = element_text(size=10),legend.title = element_text(size=10)
             ,axis.line = element_line(color="black")
             ,axis.ticks = element_line(color="black")
-            ,axis.text = element_text(color="black",size=7)
+            ,axis.text = element_text(color="black",size=8)
             ,panel.grid.major.y = element_line(color="gray95",linewidth=.2)
             ,panel.grid.major.x = element_line(color="gray95",linewidth=.2)
             ,legend.position="top"
             ,legend.margin=margin(c(.1,5,.1,5)))
     ggsave(paste0(directory,"Comparing casts to restaurant owners.png")
-           ,figure4,width = 8,height = 7,dpi = 1200 )
+           ,figure4,width = 8,height = 5,dpi = 1200 )
 
 
 
