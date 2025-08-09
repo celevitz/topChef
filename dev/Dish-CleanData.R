@@ -112,14 +112,17 @@ gsub("patty melt","patty-melt",
 gsub("petite filet","petite-filet",
 gsub(" pork bell"," pork-bell",
 gsub("pork bell","pork-bell",
+gsub("pollo","chicken",
 gsub("short rib","short-rib",
 gsub("top round","top-round",
-cleandishes$dish)))))))))))))))))))))))))))
+cleandishes$dish))))))))))))))))))))))))))))
 
 
 # kinda random stuff
 cleandishes$dish <- gsub("chips","chip",
+gsub("al forno","al-forno",
 gsub("balsamic vinegar","balsamic-vinegar",
+gsub("brûléed","bruleed",
 gsub("corn cake","corn-cake",
 gsub("croquettes","croquette",
 gsub("croutons","crouton",
@@ -141,12 +144,13 @@ gsub("seeds","seed",
 gsub("parker house","parker-house",
 gsub("pizzas","pizza",
 gsub("purees","puree",
+gsub("ras al hanout","ras-al-hanout",
 gsub("sous vide","sous-vide",
 gsub("angel hair","angel-hair",
 gsub("stir fr","stir-fr",
 gsub("sauces","sauce",
 gsub("wild rice","wild-rice",
-cleandishes$dish))))))))))))))))))))))))))))
+cleandishes$dish)))))))))))))))))))))))))))))))
 
 # desserts
 cleandishes$dish <- gsub("bread pudding","bread-pudding",
@@ -155,11 +159,12 @@ gsub("ice cream","ice-cream",
 gsub("funnel cake","funnel-cake",
 gsub(" desserts"," dessert",
 gsub("desserts","dessert",
-gsub("banana foster","banana-foster",
+gsub("banana foster","bananas-foster",
 gsub("bananas foster","bananas-foster",
 gsub(" biscuits"," biscuit",
 gsub("biscuits","biscuit",
 gsub("bon bons","bon-bons",
+gsub("bonbon","bon-bons",
 gsub("cakes","cake",
 gsub("cookies","cookie",
 gsub("crumbles","crumble",
@@ -180,7 +185,7 @@ gsub("sour cream","sour-cream",
 gsub("tarte tatin","tarte-tatin",
 gsub("whipped cream","whipped-cream",
 gsub("whipping cream","whipping-cream",
-cleandishes$dish)))))))))))))))))))))))))))))))
+cleandishes$dish))))))))))))))))))))))))))))))))
 
 # seafood
 cleandishes$dish <-gsub("anchovies","anchovy",
@@ -259,6 +264,7 @@ gsub("taro root","taro-root",
 cleandishes$dish))))))))))))))))))))))))))))))
 
 cleandishes$dish <- gsub("aji amarillo","aji-amarillo",
+gsub("aji casero","aji-casero",
 gsub("baby potat","baby-potat",
 gsub("brussel sprout","brussels-sprout",
 gsub("brussels sprout","brussels-sprout",
@@ -288,7 +294,7 @@ gsub("scallions","scallion",
 gsub("sprouts","sprout",
 gsub("shallots","shallot",
 gsub("sweet chili","sweet-chili",
-cleandishes$dish))))))))))))))))))))))))))))))
+cleandishes$dish)))))))))))))))))))))))))))))))
 
 cleandishes$dish <- gsub("kalamata olive","kalamata-olive",
 gsub("asian pear","asian-pear",
@@ -329,17 +335,21 @@ gsub("black rice","black-rice",
 gsub("black sesame","black-sesame",
 gsub("blood orange","blood-orange",
 gsub("blue crab","blue-crab",
+gsub("blue fish","blue-fish",
 gsub("blue cheese","blue-cheese",
 gsub("oranges","orange",
 gsub("red snapper","red-snapper",
+gsub("red chil","red-chil",
 gsub("red curry","red-curry",
 gsub("red cabbage","red-cabbage",
 gsub("red bean","red-bean",
 gsub("red miso","red-miso",
 gsub("red onion","red-onion",
 gsub("red pepper","red-pepper",
+gsub("red sauce","red-sauce",
 gsub("red wine","red-wine",
-gsub("ruby red grapefruit","ruby-red-grapefruit",
+gsub("ruby red grapefruit","red-grapefruit",
+gsub("red grapefruit","red-grapefruit",
 gsub("red lentil","red-lentil",
 gsub("white truffle","white-truffle",
 gsub("white pepper","white-pepper",
@@ -352,7 +362,7 @@ gsub("green curry","green-curry",
 gsub("mole negro","mole-negro",
 gsub("rainbow chard","rainbow-chard",
 cleandishes$dish
-))))))))))))))))))))))))))))))))))))
+))))))))))))))))))))))))))))))))))))))))
 
 # sauces
 cleandishes$dish <- gsub("bechamel sauce","bechamel-sauce",
@@ -364,8 +374,10 @@ gsub("soy sauce","soy-sauce",
 gsub("fish sauce","fish-sauce",
 gsub("salsa verde","salsa-verde",
 gsub("chantilly cream","chantilly-cream",
+gsub("sauce au poivre","sauce-au-poivre",
+gsub("au poivre","au-poivre",
 cleandishes$dish
-)))))))))
+)))))))))))
 
 ## Things I noticed during Season 22
 cleandishes$dish <- gsub("Alaskan King ","king-salmon",
@@ -379,8 +391,14 @@ gsub("al forno","al-forno",
 gsub("chili crisp","chili-crisp",
 gsub("lap cheong","lap-cheong",
 gsub("english muffin","english-muffin",
+gsub("leche de tigre","leche-de-tigre",
+gsub("dulce de leche","dulce-de-leche",
+gsub("old bay","old-bay",
+gsub("Louis XV","",
+gsub("ti leaf","ti-leaf",
+gsub("with-chipotle","with chipotle",
 cleandishes$dish
-)))))))))))
+)))))))))))))))))
 
 ## Create long form for analysis
 ## function
@@ -399,16 +417,18 @@ cleandisheslong <- cleandishes %>%
   separate_longer_delim(dish, delim = " ") %>%
   # remove non-dishes
   filter(!(dish %in% c("1","10","14","15","15minute","2","20","3","30","4"
-                       ,"40","5","a","","my","myself","-","aka"
+                       ,"40","5","a","","my","myself","aka"
                        ,"including","en","an","the","not","shown","on","n/a"
                        ,"of","in","with","wtih","and"
-                       ,"everything","but"))) %>%
+                       ,"everything","but","alla","e"))) %>%
   # remove extra white space
   mutate(dish = str_squish(str_trim(dish,side="both")))
 
   # remove punctuation
   cleandisheslong$dish <- gsub("\\\\","",cleandisheslong$dish)
-  cleandisheslong$dish <- removePunctuation(cleandisheslong$dish)
+  cleandisheslong$dish <- removePunctuation(cleandisheslong$dish
+                                        ,preserve_intra_word_contractions=TRUE
+                                        ,preserve_intra_word_dashes=TRUE)
   cleandisheslong$dish <- removeNumbers(cleandisheslong$dish)
   cleandisheslong$dish <- removeWords(cleandisheslong$dish,stopwords("en"))
 
@@ -418,33 +438,3 @@ cleandisheslong <- cleandishes %>%
   write.csv(cleandishes
             ,paste0(directory,"/topChef/Top Chef - Dishes wide form.csv")
             ,row.names=FALSE)
-
-
-## Season 22
-season22 <- cleandisheslong %>%
-  group_by(season,seasonNumber,series,dish) %>%
-  summarise(Frequency=n()) %>%
-  ungroup() %>%
-  group_by(series,season,seasonNumber) %>%
-  mutate(N=n()
-         ,prop_term_to_total_terms=Frequency/N) %>%
-  filter(seasonNumber == 22 ) %>%
-  rename(Term=dish) %>%
-  ungroup() %>%
-  select(Term,Frequency,prop_term_to_total_terms)
-
-#wordcloud2(season22, shape="pentagon",color="random-dark")
-
-season21 <- cleandisheslong %>%
-  group_by(season,seasonNumber,series,dish) %>%
-  summarise(Frequency=n()) %>%
-  ungroup() %>%
-  group_by(series,season,seasonNumber) %>%
-  mutate(N=n()
-         ,prop_term_to_total_terms=Frequency/N) %>%
-  filter(seasonNumber == 21 ) %>%
-  rename(Term=dish) %>%
-  ungroup() %>%
-  select(Term,Frequency,prop_term_to_total_terms)
-
-#wordcloud2(season21, shape="pentagon",color="random-dark")
