@@ -184,7 +184,8 @@ runsummarystats <- "no"
 
   # No heat was used
     noheatdishes <- c("aguachile","carpaccio","crudo","ceviche","crudite"
-                      ,"futomake","leche-de-tigre","nigiri","poke","sashimi")
+                      ,"futomake","leche-de-tigre","nigiri","poke","sashimi"
+                      ,"negitoro","kitfo")
     disheswide$noheat <- 0
     for (nh in noheatdishes) {
       disheswide$noheat[grepl(nh,disheswide$dish)  ] <- 1
@@ -253,15 +254,6 @@ runsummarystats <- "no"
     disheswide$poultry <- 0
     for (f in fowl) {
       disheswide$poultry[grepl(f,disheswide$dish)  ] <- 1
-    }
-
-  # raw-ish things
-    rawish <- c("aguachile","crudo","ceviche","crudite","carpaccio"
-                ,"futomake","leche-de-tigre","nigiri","poke","sashimi"
-                ,"negitoro","kitfo")
-    disheswide$rawish <- 0
-    for (r in rawish) {
-      disheswide$rawish[grepl(r,disheswide$dish)  ] <- 1
     }
 
   # Sauce types
