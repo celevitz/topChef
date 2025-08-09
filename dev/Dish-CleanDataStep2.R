@@ -31,7 +31,7 @@ runsummarystats <- "no"
     alcohols <- c("amaretto","baileys","beer","bourbon"
                   ,"brandy","brut","cachaca","champagne","chartreuse"
                   ,"cognac","grissini","guinness","gran marnier"
-                  ,"liqueur","merlot","mezcal"
+                  ,"liqueur","merlot","mezcal","corona"
                   ,"mojito","moscato","pernod","rum","sake","shaoxing"
                   ,"sambuca","sherry","shaoxing","vermouth","wine")
     disheswide$alcohol <- 0
@@ -184,7 +184,7 @@ runsummarystats <- "no"
 
   # No heat was used
     noheatdishes <- c("aguachile","carpaccio","crudo","ceviche","crudite"
-                      ,"futomake","leche de tigre","nigiri","poke","sashimi")
+                      ,"futomake","leche-de-tigre","nigiri","poke","sashimi")
     disheswide$noheat <- 0
     for (nh in noheatdishes) {
       disheswide$noheat[grepl(nh,disheswide$dish)  ] <- 1
@@ -257,7 +257,7 @@ runsummarystats <- "no"
 
   # raw-ish things
     rawish <- c("aguachile","crudo","ceviche","crudite","carpaccio"
-                ,"futomake","leche de tigre","nigiri","poke","sashimi"
+                ,"futomake","leche-de-tigre","nigiri","poke","sashimi"
                 ,"negitoro","kitfo")
     disheswide$rawish <- 0
     for (r in rawish) {
@@ -353,7 +353,7 @@ runsummarystats <- "no"
   # save
     write.csv(disheswide
               ,paste0(directory
-                      ,"/topChef/Top Chef - Dishes wide form with classifications.csv")
+              ,"/topChef/Top Chef - Dishes wide form with classifications.csv")
               ,row.names=FALSE)
 
 
@@ -371,17 +371,19 @@ cleandishes <- disheswide %>%
       separate_longer_delim(dish, delim = " ") %>%
       # remove non-dishes
       filter(!(dish %in% c("1","10","14","15","15minute","2","20","3","30","4"
-                           ,"40","5","a","","my","myself","-","aka"
+                           ,"40","5","a","","my","myself","aka"
                            ,"including","en","an","the","not","shown","on","n/a"
-                           ,"of","in","with","wtih","and","-","+","15-minute"
-                           ,"everything","but"))) %>%
+                           ,"of","in","with","wtih","and","+","15-minute"
+                           ,"everything","but","alla","e"))) %>%
       # remove extra white space
       mutate(dish = str_squish(str_trim(dish,side="both"))) %>%
       distinct()
 
     # remove punctuation
     cleandisheslong$dish <- gsub("\\\\","",cleandisheslong$dish)
-    cleandisheslong$dish <- removePunctuation(cleandisheslong$dish)
+    cleandisheslong$dish <- removePunctuation(cleandisheslong$dish
+                                        ,preserve_intra_word_contractions=TRUE
+                                        ,preserve_intra_word_dashes=TRUE)
     cleandisheslong$dish <- removeNumbers(cleandisheslong$dish)
     cleandisheslong$dish <- removeWords(cleandisheslong$dish,stopwords("en"))
 
