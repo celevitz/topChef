@@ -11,16 +11,19 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 ## What season am I interested in?
 seasonnumber <- 22
 
+  ## what word do I think is unique to this season?
+    wordofinterest <- "maple"
+
 ## Bring in the data
 dishesraw <- as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
                                                     ,sheet=2)) %>%
   filter(!(is.na(dish))) %>%
   filter(seasonNumber == seasonnumber & series == "US")
 
-cleandisheslong <- read.csv(paste0(directory
+cleandisheslongraw <- read.csv(paste0(directory
                                    ,"/topChef/Top Chef - Dishes long form.csv")
          ,header=TRUE)
-cleandisheslong <- cleandisheslong %>%
+cleandisheslong <- cleandisheslongraw %>%
   filter(seasonNumber == seasonnumber & series == "US")
 
 classifiedraw <- read.csv(paste0(directory
@@ -104,5 +107,19 @@ classifiedraw <- read.csv(paste0(directory
 
   classified %>% print(n=dim(classified)[1])
 
-
-
+##
+  cleandisheslongraw %>%
+  group_by(series,seasonNumber,dish) %>%
+    summarise(n=n()) %>%
+    # how many times does this actually show up?
+    ungroup() %>% group_by(series,dish) %>%
+    mutate(N=sum(n)) %>%
+    arrange(seasonNumber,desc(N),dish) %>%
+    filter(dish %in% c(wordofinterest)) %>%
+    left_join(
+      # number of dishes I have in that season
+      as_tibble(read.xlsx(paste(directory,"TopChefData.xlsx",sep="")
+                          ,sheet=2)) %>%
+        filter(!(is.na(dish))) %>%
+        group_by(series,season,seasonNumber) %>%
+        summarise(total = n()) )
