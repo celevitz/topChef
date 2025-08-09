@@ -310,7 +310,7 @@ runsummarystats <- "no"
     }
 
   # Uses tea
-    teas <- c("cha","chai","tea")
+    teas <- c(" cha ","chai"," tea ")
     disheswide$tea <- 0
     for (t in teas) {
       disheswide$tea[grepl(t,disheswide$dish)  ] <- 1
