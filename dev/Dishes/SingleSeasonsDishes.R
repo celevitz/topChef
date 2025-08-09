@@ -65,7 +65,7 @@ classifiedraw <- read.csv(paste0(directory
     ungroup() %>%
     select(Term,Frequency,prop_term_to_total_terms)
 
-  wordcloud2(seasonwordclouddata, shape="pentagon",color="random-dark")
+  #wordcloud2(seasonwordclouddata, shape="pentagon",color="random-dark")
 
 ## How many words are in the season?
   dim(seasonwordclouddata)[1]
@@ -86,6 +86,10 @@ classifiedraw <- read.csv(paste0(directory
     arrange(desc(numberofepisodesusedin))
 
 ## Classifications
+  # Denominator is the sum of the # of chefs in each challenge.
+  denom <- nrow(classifiedraw)
+
+  # how many of each
   classified <- classifiedraw %>%
     # change sauce to be 0/1
     mutate(sauce = as.numeric(ifelse(is.na(sauce),"0","1"))) %>%
@@ -93,4 +97,12 @@ classifiedraw <- read.csv(paste0(directory
               ,notes,trend,outcomeType)) %>%
     pivot_longer(!dish,names_to = "category",values_to="count") %>%
     group_by(category) %>%
-    summarise(count=sum(count))
+    summarise(count=sum(count)) %>%
+    mutate(denominator = denom
+           ,percent=count/denominator) %>%
+    arrange(desc(count))
+
+  classified %>% print(n=dim(classified)[1])
+
+
+
