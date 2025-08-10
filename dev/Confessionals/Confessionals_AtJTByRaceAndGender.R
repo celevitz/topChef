@@ -28,6 +28,15 @@ combined <- confsByEpi %>%
   mutate(personOfColor = ifelse(is.na(personOfColor),"white","POC")
          ,identity = paste(personOfColor,gender,sep=" "))
 
+## how many episodes do I have data for in each season?
+confsByEpi %>%
+  filter(count > 0 & !(is.na(count))) %>%
+  select(series,season,seasonNumber,episode) %>%
+  distinct() %>%
+  group_by(series,season,seasonNumber) %>%
+  summarise(numberofepisodeswithdata = n()) %>%
+  arrange(seasonNumber)
+
 #########################################################################
 ## Some exploratory stats
   ## average difference from equal edit for those @JT by gender-racial identity
@@ -35,5 +44,17 @@ combined <- confsByEpi %>%
   combined %>%
   group_by(series,identity,atJTElim) %>%
   summarise(mean=mean(percentdifffromequalinEp,na.rm=TRUE)
-            ,median = median(percentdifffromequalinEp,na.rm=TRUE))
+            ,median = median(percentdifffromequalinEp,na.rm=TRUE)) %>%
+  arrange(atJTElim,median)
+
+  ## what predicts average edit if they're at JT?
+  ## use logistic regression because it's between -1 and 1
+  atJT <- combined %>% filter(atJTElim == 1)
+  reg <- glm(atJT$percentdifffromequalinEp ~ atJT$gender + atJT$personOfColor +
+        atJT$gender*atJT$personOfColor        )
+  summary(reg)
+
+  reg <- glm(atJT$percentdifffromequalinEp ~ atJT$identity)
+  summary(reg)
+
 
