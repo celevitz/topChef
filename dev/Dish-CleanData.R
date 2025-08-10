@@ -144,13 +144,14 @@ gsub("seeds","seed",
 gsub("parker house","parker-house",
 gsub("pizzas","pizza",
 gsub("purees","puree",
-gsub("ras al hanout","ras-al-hanout",
+gsub("ras al hanout","ras-el-hanout",
+gsub("ras el hanout","ras-el-hanout",
 gsub("sous vide","sous-vide",
 gsub("angel hair","angel-hair",
 gsub("stir fr","stir-fr",
 gsub("sauces","sauce",
 gsub("wild rice","wild-rice",
-cleandishes$dish)))))))))))))))))))))))))))))))
+cleandishes$dish))))))))))))))))))))))))))))))))
 
 # desserts
 cleandishes$dish <- gsub("bread pudding","bread-pudding",
