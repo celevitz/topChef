@@ -107,8 +107,8 @@ classifiedraw <- read.csv(paste0(directory
 
   classified %>% print(n=dim(classified)[1])
 
-##
-  cleandisheslongraw %>%
+## Unique word of the season
+  uniquewordanalysis <- cleandisheslongraw %>%
   group_by(series,seasonNumber,dish) %>%
     summarise(n=n()) %>%
     # how many times does this actually show up?
@@ -122,4 +122,16 @@ classifiedraw <- read.csv(paste0(directory
                           ,sheet=2)) %>%
         filter(!(is.na(dish))) %>%
         group_by(series,season,seasonNumber) %>%
-        summarise(total = n()) )
+        summarise(total = n()) ) %>%
+    mutate(percent = (n/total)*100)
+
+  uniquewordanalysis %>%
+    filter(series == "US") %>%
+    select(series,seasonNumber,total,percent)
+
+
+
+
+
+
+
