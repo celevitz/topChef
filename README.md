@@ -588,3 +588,34 @@ library(dplyr)
       
     
 ```
+
+## 6. Modified Index Function: Scores Through a Given # of Chefs
+Similar to the previous index function, except looking at scores through a 
+given number of chefs.
+
+- Elimination win = 7 points
+- Elimination high = 3 points
+- Elimination low = -3 points
+- Eliminated = -7 points
+- Quickfire win = 4 points
+- Quickfire high = 2 points
+- Quickfire low = -2 points
+
+If you set the parameter `scoringsystem` to modified instead of original, the 
+score will include an added point for every episode in which the chef appears
+
+The `ScoresThroughAGivenNumberOfChefs` function takes the following parameters:
+
+- `series`: US, US Masters, or Canada
+- `seasonnumber`: Values between 1 and 22 for Top Chef US; 1 through 5
+  for US Masters; and 6 for Canada
+- `numberofchefsofinterest` The number of chefs you want to still be in
+ the competition. The score will include all challenges up to and including
+ that number of chefs
+- `scoringsystem`: Values can be original or modified. Modified gives
+ points for just being in the competition; original is only for how they do in
+ the challenges.
+
+The `ScoresThroughAGivenNumberOfChefs` function exports a tibble with the 
+variables of:
+series, season name, season number, chef, chef’s placement, & points.

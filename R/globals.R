@@ -4,4 +4,4 @@ utils::globalVariables(c("Elimination", "Elimination_HIGH", "Elimination_LOW"
                          ,"Quickfire_WIN", "challengeType", "chef", "count"
                          , "episode","inCompetition", "outcome", "placement"
                          ,"rating", "s", "series", "season", "seasonNumber"
-                         ,"tempcount"))
+                         ,"tempcount","temp"))
