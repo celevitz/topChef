@@ -128,7 +128,7 @@ ScoresThroughAGivenNumberOfChefs <- function(seriesname,seasonnumberofchoice
                               scoredetails$challengeType == "Quickfire"]
     scoredetails$points[scoredetails$outcome == "HIGH" &
                           scoredetails$challengeType == "Quickfire"] <-
-      4*scoredetails$points[scoredetails$outcome == "HIGH" &
+      2*scoredetails$points[scoredetails$outcome == "HIGH" &
                               scoredetails$challengeType == "Quickfire"]
     scoredetails$points[scoredetails$outcome == "LOW" &
                           scoredetails$challengeType == "Quickfire"] <-
