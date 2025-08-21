@@ -167,7 +167,8 @@ runsummarystats <- "no"
 
   # Greens
     greens <- c("cabbage","chard","kale","dandelion","kombu","collard"
-                ,"lettuce","micro-greens","nori","sea bean","seaweed"," greens")
+                ,"lettuce","micro-greens","nori","sea bean","seabean","seaweed"
+                ," greens","glasswort")
     disheswide$green <- 0
     for (g in greens) {
       disheswide$green[grepl(g,disheswide$dish)  ] <- 1

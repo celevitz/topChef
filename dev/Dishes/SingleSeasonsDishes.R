@@ -5,6 +5,7 @@ library(stringr)
 library(tidyverse)
 library(wordcloud2)
 library(tm)
+library(openxlsx)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
@@ -68,7 +69,7 @@ classifiedraw <- read.csv(paste0(directory
     ungroup() %>%
     select(Term,Frequency,prop_term_to_total_terms)
 
-  #wordcloud2(seasonwordclouddata, shape="pentagon",color="random-dark")
+  wordcloud2(seasonwordclouddata, shape="pentagon",color="random-dark")
 
 ## How many words are in the season?
   dim(seasonwordclouddata)[1]
