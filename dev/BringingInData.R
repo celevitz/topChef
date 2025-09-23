@@ -14,8 +14,11 @@ directory <- "/Users/carlylevitz/Documents/Data/"
 
 chefdetails <- as_tibble(read.xlsx(paste(directory
                                          ,"TopChefData.xlsx",sep=""),sheet=1))
-  # Drop the birth year
-    chefdetails$birth.year <- chefdetails$premiere <- NULL
+  # Drop the birth year and astrological things
+    chefdetails$birth.year <- chefdetails$premiere <- chefdetails$Sign <-
+      chefdetails$Polarity <- chefdetails$Modality <- chefdetails$Triplicity <-
+      chefdetails$Northern.Hemisphere.Season <- chefdetails$Animal <-
+      chefdetails$Yin.Yang <- chefdetails$Element <- NULL
 
 challengewins <- as_tibble(read.xlsx(paste(directory
                                            ,"TopChefData.xlsx",sep=""),sheet=2))
