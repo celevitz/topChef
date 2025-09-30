@@ -26,30 +26,70 @@ challwins <- as_tibble(read.xlsx(paste(directory
   left_join(chefdetails %>% select(chef,placement))
 
 
-## Challenge stats by person
-  challstats <- challwins %>%
-    group_by(chef,placement,challengeType,outcome) %>%
-    summarise(n=n()) %>%
-    pivot_wider(names_from=challengeType,values_from=n) %>%
-    pivot_wider(names_from=outcome
-                ,values_from=c("Elimination","Quickfire")) %>%
-    select(!Quickfire_OUT)
+## Calculate scores (TOW, NPT, ETC)
+scores <- challwins %>%
+  mutate(outcome2 = case_when(outcome %in% c("HIGH","WIN","WINNER") ~ "Top"
+          ,outcome %in% c("DISQUALIFIED","LOW","OUT","RUNNER-UP","WITHDREW") ~ "Bottom"
+          ,TRUE ~ "in")
+    ,In = ifelse(outcome2 %in% c("in","Top"),1,0)
+    ,Top = ifelse(outcome2 %in% c("Top"),1,0)
+     ## E = eliminations in
+     ,E = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
+                                      ,"Sudden Death Quickfire"),1,0)
+     ## Q = quickfires in
+     ,Q = ifelse(challengeType %in% c("Quickfire"),1,0)
+     ## ET = eliminations top or win
+     ,ET = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
+                                       ,"Sudden Death Quickfire") &
+                    Top == 1,1,0)
+     ## QT = quickfires top or win
+     ,QT = ifelse(challengeType %in% c("Quickfire") & Top == 1,1,0)
+     ## EW = elimination win
+     ,EW = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
+                                       ,"Sudden Death Quickfire") &
+                    outcome %in% c("WIN","WINNER"),1,0)
+     ## QW = quickfire win
+     ,QW = ifelse(challengeType %in% c("Quickfire") &
+                    outcome %in% c("WIN","WINNER"),1,0)
+     ## Win percent
+     ,W = ifelse(outcome %in% c("WIN","WINNER"),1,0) ) %>%
+  group_by(season,seasonNumber,chef,placement) %>%
+  summarise(## C = challenges in
+    C=n()
+    ,In=sum(In),Top = sum(Top)
+    ,E = sum(E), Q = sum(Q), ET = sum(ET), QT = sum(QT)
+    ,EW = sum(EW),QW = sum(QW),W=sum(W) ) %>%
+  mutate(NBP = round(In/C,3)
+         ,TOW = round(Top/C,3)
+         ,NPT = NBP + TOW
+         #win percent
+         ,W = W/C) %>%
+
+  ungroup() %>%
+  # get NPT+
+  mutate(Average = mean(NPT)
+         ,NPTcomparedToAverage = NPT/Average*100
+         ,AvgNBP = mean(NBP)
+         ,AvgTOW = mean(TOW)
+         ,NPTplus = round(100*((NBP/AvgNBP) + (TOW/AvgTOW) - 1),0) #100 x (OBP/lgOBP + SLG/lgSLG - 1)
+  )
 
 
-  challstats %>%
-    gt() %>%
-    tab_source_note(source_note = "Created by Carly Levitz for Pack Your Knives") %>%
-    tab_options(data_row.padding = px(1),
-                column_labels.padding = px(1),
-                row_group.padding = px(1)) %>%
-    tab_spanner(label = "Elimination",
-      columns = c(Elimination_WIN,Elimination_HIGH,Elimination_IN
-                  ,Elimination_LOW,Elimination_OUT ) ) %>%
-    tab_spanner(label = "Quickfire",
-                columns = c(Quickfire_WIN,Quickfire_HIGH,Quickfire_IN
-                            ,Quickfire_LOW ) )
+
+write.csv(scores %>%
+            select(!c(seasonNumber,Average,NPTcomparedToAverage,AvgNBP
+                      ,AvgTOW)) %>%
+            relocate(chef,.before=season)
+          ,paste0(directory,"topChef/JustDesserts_NPTplus.csv"),row.names=FALSE)
 
 
-
+## are there folks who were on TCJD but were then guest judges?
+chefdetails %>%
+  select(chef) %>%
+  left_join(as_tibble(read.xlsx(paste(directory
+                                      ,"TopChefData.xlsx",sep=""),sheet=5)) %>%
+              select(!c(gender,personOfColor,competedOnTC,otherShows)) %>%
+              rename(chef=guestJudge)) %>%
+  filter(!(is.na(season)))
 
 
