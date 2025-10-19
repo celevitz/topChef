@@ -1,6 +1,6 @@
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+1 error ✖ | 1 warning ✖ | 1 note ✖
 
 * Note from submitter: I could not install miktext since it isn't available 
 for the version of R that I have. Same with pdflatex. 
