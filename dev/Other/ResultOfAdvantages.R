@@ -8,10 +8,38 @@ library(tidyverse)
 library(openxlsx)
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
-## To see who has advantages, need to see who won the challenge in which
-## an advantage was offered.
-## Then, will need to apply that advantage to the challenge it is for.
-## Seasons 20 and prior - it'll be for the next challenge
+challdata <- read.csv(paste0(directory
+                                    ,"Top Chef - Challenge wins.csv")
+                             ,header = TRUE) %>%
+  filter(series == "US") %>%
+  ## Who ever had an advantage? Who ever had immunity?
+    mutate(everimm = ifelse(immune == TRUE,1,0)
+           ,everadv = ifelse(!(is.na(advantage)),1,0)) %>%
+    group_by(series,season,chef) %>%
+    mutate(everimm = max(everimm,na.rm=T)
+           ,everadv = max(everadv,na.rm=T)
+  ## did they win?
+        ,win = ifelse(outcome %in% c("WIN","WINNER"),1,0)
+  ## reclassify challenge types
+        , challengeType = ifelse(challengeType %in% c("Elimination"
+                            ,"Quickfire Elimination","Sudden Death Quickfire")
+          ,"Elimination",challengeType
+        )   )
+
+## How did people who had immunity at some point in the season do
+## when they had immunity versus when they didn't?
+elim <- challdata %>%
+  filter(challengeType %in% "Elimination" &
+           everimm %in% 1)
+
+  elim %>%
+    ungroup() %>%
+    group_by()
+
+  table(elim$immune,elim$win)
+
+
+
 
 
 
