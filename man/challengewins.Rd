@@ -18,6 +18,8 @@ This data frame contains the following columns:
                                challenge}
   \item{\code{immune}}{True / false for whether that Chef was immune from
                            being eliminated for challenge}
+ \item{\code{advantage}}{describes what advantage that chef had in that
+                         challenge}
   \item{\code{chef}}{Name of chef}
   \item{\code{challengeType}}{Challenge type: qualifying challenge,
                              elimination, quickfire, sudden death quickfire,

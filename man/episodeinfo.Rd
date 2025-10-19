@@ -11,7 +11,7 @@ This data frame contains the following columns:
   \item{\code{seasonNumber}}{Season number}
   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
                        (listed as US Masters); Top Chef Canada (listed as
-                       Canada)}
+                       Canada); US LCK (Last Chance Kitchen); Just Desserts}
   \item{\code{overallEpisodeNumber}}{Running number of episode within
                                        the series}
   \item{\code{episode}}{Episode number}

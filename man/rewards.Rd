@@ -10,7 +10,8 @@ This data frame contains the following columns:
   \item{\code{season}}{Name of season}
   \item{\code{seasonNumber}}{Season number}
   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
-  (listed as US Masters); Top Chef Canada (listed as Canada)}
+  (listed as US Masters); Top Chef Canada (listed as Canada);
+  US LCK (Last Chance Kitchen); Just Desserts}
   \item{\code{episode}}{Episode number}
   \item{\code{challengeType}}{Challenge type: qualifying challenge,
   elimination, quickfire, sudden death quickfire, quickfire elimination,
