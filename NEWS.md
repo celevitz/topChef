@@ -1,3 +1,7 @@
+# topChef 0.2.1
+* Added Season 22, Top Chef Just Desserts, and US Last Chance Kitchen
+* Edits to 'challengedescriptions' to include what advantages chefs received
+
 # topChef 0.2.0
 
 * Edits to 'chefdetails': added occupation category and added data for 
