@@ -139,6 +139,8 @@
 #'                                challenge}
 #'   \item{\code{immune}}{True / false for whether that Chef was immune from
 #'                            being eliminated for challenge}
+#'  \item{\code{advantage}}{describes what advantage that chef had in that
+#'                          challenge}
 #'   \item{\code{chef}}{Name of chef}
 #'   \item{\code{challengeType}}{Challenge type: qualifying challenge,
 #'                              elimination, quickfire, sudden death quickfire,
@@ -184,7 +186,7 @@
 #'   \item{\code{seasonNumber}}{Season number}
 #'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
 #'                        (listed as US Masters); Top Chef Canada (listed as
-#'                        Canada)}
+#'                        Canada); US LCK (Last Chance Kitchen); Just Desserts}
 #'   \item{\code{overallEpisodeNumber}}{Running number of episode within
 #'                                        the series}
 #'   \item{\code{episode}}{Episode number}
@@ -223,7 +225,8 @@
 #'   \item{\code{season}}{Name of season}
 #'   \item{\code{seasonNumber}}{Season number}
 #'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
-#'            (listed as US Masters); Top Chef Canada (listed as Canada)}
+#'            (listed as US Masters); Top Chef Canada (listed as Canada);
+#'            US LCK (Last Chance Kitchen); Just Desserts}
 #'   \item{\code{episode}}{Episode number}
 #'   \item{\code{challengeType}}{Challenge type: qualifying challenge,
 #'              elimination, quickfire, sudden death quickfire, quickfire
@@ -273,7 +276,8 @@
 #'   \item{\code{season}}{Name of season}
 #'   \item{\code{seasonNumber}}{Season number}
 #'   \item{\code{series}}{Top Chef US (listed as US); Top Chef US Masters
-#'   (listed as US Masters); Top Chef Canada (listed as Canada)}
+#'   (listed as US Masters); Top Chef Canada (listed as Canada);
+#'   US LCK (Last Chance Kitchen); Just Desserts}
 #'   \item{\code{episode}}{Episode number}
 #'   \item{\code{challengeType}}{Challenge type: qualifying challenge,
 #'   elimination, quickfire, sudden death quickfire, quickfire elimination,
