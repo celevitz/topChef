@@ -43,53 +43,53 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
 
 
     # 1a. Outcomes of the challenges
-    challengewinsnoLCK <-
-      topChef::challengewinsnoLCK[,names(topChef::challengewinsnoLCK)[!(names(topChef::
-                                              challengewinsnoLCK) %in% "rating")] ]
-    challengewinsnoLCK <- challengewinsnoLCK[challengewinsnoLCK$series == seriesname &
-                           challengewinsnoLCK$seasonNumber == seasonnumberofchoice,]
+    challengewins <-
+      topChef::challengewins[,names(topChef::challengewins)[!(names(topChef::
+                                              challengewins) %in% "rating")] ]
+    challengewins <- challengewins[challengewins$series == seriesname &
+                           challengewins$seasonNumber == seasonnumberofchoice,]
 
     # 1ai. combine types of challenges
     # because there could be both a SDQ & an elimination in an episode, and I
     # use episode as a row ID, I need to make sure that we keep those challenge
     # results separate from the other elimination challenges in that episode
-    challengewinsnoLCK$episodeascharacter <- as.character(challengewinsnoLCK$episode)
-    challengewinsnoLCK$episodeascharacter[nchar(challengewinsnoLCK$episodeascharacter)==1] <-
-      paste0("0",challengewinsnoLCK$episodeascharacter[nchar(challengewinsnoLCK$episodeascharacter)==1])
+    challengewins$episodeascharacter <- as.character(challengewins$episode)
+    challengewins$episodeascharacter[nchar(challengewins$episodeascharacter)==1] <-
+      paste0("0",challengewins$episodeascharacter[nchar(challengewins$episodeascharacter)==1])
 
-    challengewinsnoLCK$challID <- paste0(challengewinsnoLCK$episodeascharacter,"a_",challengewinsnoLCK$challengeType)
-    challengewinsnoLCK$challID[challengewinsnoLCK$challengeType == "Quickfire Elimination"] <-
-      paste0(challengewinsnoLCK$episodeascharacter[challengewinsnoLCK$challengeType == "Quickfire Elimination"] ,"b_qe")
-    challengewinsnoLCK$challID[challengewinsnoLCK$challengeType == "Sudden Death Quickfire"] <-
-      paste0(challengewinsnoLCK$episodeascharacter[challengewinsnoLCK$challengeType == "Sudden Death Quickfire"] ,"b_sdq")
-    challengewinsnoLCK$challID[challengewinsnoLCK$challengeType == "Quickfire"] <-
-      paste0(challengewinsnoLCK$episodeascharacter[challengewinsnoLCK$challengeType == "Quickfire"] ,"a_qf")
-    challengewinsnoLCK$challID[challengewinsnoLCK$challengeType == "Elimination"] <-
-      paste0(challengewinsnoLCK$episodeascharacter[challengewinsnoLCK$challengeType == "Elimination"] ,"c_elim")
+    challengewins$challID <- paste0(challengewins$episodeascharacter,"a_",challengewins$challengeType)
+    challengewins$challID[challengewins$challengeType == "Quickfire Elimination"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Quickfire Elimination"] ,"b_qe")
+    challengewins$challID[challengewins$challengeType == "Sudden Death Quickfire"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Sudden Death Quickfire"] ,"b_sdq")
+    challengewins$challID[challengewins$challengeType == "Quickfire"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Quickfire"] ,"a_qf")
+    challengewins$challID[challengewins$challengeType == "Elimination"] <-
+      paste0(challengewins$episodeascharacter[challengewins$challengeType == "Elimination"] ,"c_elim")
 
-    challengewinsnoLCK$challengeType[challengewinsnoLCK$challengeType %in%
+    challengewins$challengeType[challengewins$challengeType %in%
                                  c("Quickfire Elimination"
                                    ,"Sudden Death Quickfire")] <- "Elimination"
 
     # 1aii. Exclude the uncommon challenge types
-    challengewinsnoLCK <- challengewinsnoLCK[!(challengewinsnoLCK$challengeType %in%
+    challengewins <- challengewins[!(challengewins$challengeType %in%
                                        c("Battle of the Sous Chefs"
                                          ,"Qualifying Challenge")),]
 
     # 1aiii. clean up outcomes: consolidate
-    challengewinsnoLCK$outcome[challengewinsnoLCK$outcome %in% c("High","HiGH")] <-
+    challengewins$outcome[challengewins$outcome %in% c("High","HiGH")] <-
       "HIGH"
-    challengewinsnoLCK$outcome[grepl("LOW",challengewinsnoLCK$outcome)] <- "LOW"
-    challengewinsnoLCK$outcome[challengewinsnoLCK$outcome %in%
+    challengewins$outcome[grepl("LOW",challengewins$outcome)] <- "LOW"
+    challengewins$outcome[challengewins$outcome %in%
                             c("DISQUALIFIED","RUNNER-UP","WITHDREW") |
-                            grepl("OUT",challengewinsnoLCK$outcome) ] <- "OUT"
-    challengewinsnoLCK$outcome[challengewinsnoLCK$outcome %in% c("DIDN'T COMPETE") |
-                            grepl("N/A",challengewinsnoLCK$outcome) |
-                            grepl("QUALIFIED",challengewinsnoLCK$outcome) ] <- "IN"
-    challengewinsnoLCK$outcome[challengewinsnoLCK$outcome %in% c("WINNER")] <- "WIN"
+                            grepl("OUT",challengewins$outcome) ] <- "OUT"
+    challengewins$outcome[challengewins$outcome %in% c("DIDN'T COMPETE") |
+                            grepl("N/A",challengewins$outcome) |
+                            grepl("QUALIFIED",challengewins$outcome) ] <- "IN"
+    challengewins$outcome[challengewins$outcome %in% c("WINNER")] <- "WIN"
 
     # 1b. need to consecutively number each challenge of each challenge type
-    challnum_temp <- unique(challengewinsnoLCK[, c("season","seasonNumber"
+    challnum_temp <- unique(challengewins[, c("season","seasonNumber"
                                               ,"challengeType","episode"
                                               ,"episodeascharacter","challID")])
     challnum_temp <- challnum_temp[order(challnum_temp$seasonNumber
@@ -150,7 +150,7 @@ weightedindex <- function(seriesname,seasonnumberofchoice,numberofelimchalls
                                !(is.na(challnum$count))) ,] )
 
     ## 2. get the number of wins, losses, highs, etc. by chef
-     statsbynumberofchalls <- merge(challengewinsnoLCK,placementdata,by=c("series"
+     statsbynumberofchalls <- merge(challengewins,placementdata,by=c("series"
                                                ,"season","seasonNumber","chef"))
      statsbynumberofchalls <- merge(statsbynumberofchalls,challkeep,by=
                                       c("seasonNumber","challengeType"

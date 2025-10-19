@@ -18,12 +18,14 @@ chefdetails <- as_tibble(read.xlsx(paste(directory
     chefdetails$birth.year <- chefdetails$premiere <- chefdetails$Sign <-
       chefdetails$Polarity <- chefdetails$Modality <- chefdetails$Triplicity <-
       chefdetails$Northern.Hemisphere.Season <- chefdetails$Animal <-
-      chefdetails$Yin.Yang <- chefdetails$Element <- NULL
+      chefdetails$Yin.Yang <- chefdetails$Element <-
+      chefdetails$culinary.education <- NULL
 
 challengewins <- as_tibble(read.xlsx(paste(directory
                                            ,"TopChefData.xlsx",sep=""),sheet=2))
   challengewins$dish <- NULL
   challengewins$notes <- NULL
+
 challengedescriptions <- as_tibble(read.xlsx(paste(directory
                                          ,"TopChefData.xlsx",sep=""),sheet=3))
 rewards <- as_tibble(read.xlsx(paste(directory
@@ -164,21 +166,17 @@ rewards$reward <- gsub("à","a",gsub("é","e",gsub("ñ","n",gsub("ö","o"
 
 
 ## save things as RDA
-    challengewinsnoLCK <- challengewins %>% filter(series != "US LCK")
-    challengedescriptionsnoLCK <- challengedescriptions %>%
-                                    filter(series != "US LCK")
-    episodeinfonoLCK <- episodeinfo %>% filter(series != "US LCK")
+    # challengewinsnoLCK <- challengewins %>% filter(series != "US LCK")
+    # challengedescriptionsnoLCK <- challengedescriptions %>%
+    #                                 filter(series != "US LCK")
+    # episodeinfonoLCK <- episodeinfo %>% filter(series != "US LCK")
 
 save(chefdetails, file = "data/chefdetails.rda")
-save(challengewinsnoLCK, file = "data/challengewins.rda")
-save(challengedescriptionsnoLCK, file = "data/challengedescriptions.rda")
+save(challengewins, file = "data/challengewins.rda")
+save(challengedescriptions, file = "data/challengedescriptions.rda")
 save(rewards, file = "data/rewards.rda")
 save(judges, file = "data/judges.rda")
-save(episodeinfonoLCK, file = "data/episodeinfo.rda")
-
-rm(challengewinsnoLCK)
-rm(challengedescriptionsnoLCK)
-rm(episodeinfonoLCK)
+save(episodeinfo, file = "data/episodeinfo.rda")
 
 ## save as CSV for my own use later
 write.csv(chefdetails

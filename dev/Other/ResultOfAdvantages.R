@@ -8,6 +8,32 @@ library(tidyverse)
 library(openxlsx)
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
+## To see who has advantages, need to see who won the challenge in which
+## an advantage was offered.
+## Then, will need to apply that advantage to the challenge it is for.
+## Seasons 20 and prior - it'll be for the next challenge
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Prep data
   ## Bring in the data
   challengedescr <- read.csv(paste0(directory
