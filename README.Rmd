@@ -23,7 +23,7 @@ topChef is a collection of data sets detailing events across all seasons of Top 
 * Adding in dish for every chef in every challenge
 * Confessional counts
 
-### Difference between 0.2.0 and upcoming 0.3.0:
+### Difference between 0.2.0 and upcoming 0.2.1:
 * Added Season 22, Top Chef Just Desserts, and US Last Chance Kitchen
 * Edits to 'challengedescriptions' to include what advantages chefs received
 
