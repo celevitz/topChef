@@ -20,7 +20,9 @@ challdata <- read.csv(paste0(directory
     mutate(everimm = max(everimm,na.rm=T)
            ,everadv = max(everadv,na.rm=T)
   ## did they win?
+  ## reclassify "DIDN"T COMPETE" as an "IN"
         ,win = ifelse(outcome %in% c("WIN","WINNER"),1,0)
+        ,outcome = ifelse(outcome %in% "DIDN'T COMPETE","IN",outcome)
   ## reclassify challenge types
         , challengeType = ifelse(challengeType %in% c("Elimination"
                             ,"Quickfire Elimination","Sudden Death Quickfire")
@@ -88,6 +90,35 @@ challdata <- read.csv(paste0(directory
     mutate(N=sum(n,na.rm=T)
            ,percent=n/N) %>%
     arrange(desc(percent))
+
+## How does this compare to the distribution when there isn't immunity?
+  challdata %>%
+    mutate(outcome = case_when(outcome %in% c("DISQUALIFIED","RUNNER-UP"
+                                              ,"WITHDREW") ~ "OUT"
+                               ,outcome %in% c("WINNER") ~ "WIN"
+                               ,TRUE ~ outcome)) %>%
+    filter(immune == FALSE & is.na(advantage) &
+             challengeType == "Elimination") %>%
+    group_by(outcome) %>%
+    summarise(n=n()) %>%
+    ungroup() %>%
+    mutate(N=sum(n,na.rm=T)
+           ,percent=n/N) %>%
+    arrange(desc(percent))
+
+
+## How do the different advantages differ?
+  temp <- data.frame(challdata)
+  for (varname in c("choseinspiration","chooseorassignsous","chooseteam"
+                    ,"extratime","ingredients","extramoney")) {
+
+    temp1 <- temp[temp[,varname] %in% 1,]
+    print(varname)
+    print(table(temp1[,varname],temp1$outcome))
+
+  }
+
+
 #
 #
 #
