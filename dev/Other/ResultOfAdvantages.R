@@ -41,13 +41,13 @@ challdata <- read.csv(paste0(directory
              ,"Choose inspiration (which person to cater to)"
              ,"Choose protein; Choose course"
              ,"Choose which dish to make"
-             ,"Choose your sous chefs"
              ,"Switch knife block selection"
              ,"Switch which dish to make"),1,0)
     ,chooseorassignsous = ifelse(advantage %in% c("Assign others' sous chefs"
               ,"Choose order of picking protein; Choose order of picking sous chefs"
               ,"Choose sous chef; Assign others' sous chefs"
               ,"Choose sous chefs; Assign others' sous chefs"
+              ,"Choose your sous chefs"
               ,"Choose your sous chef; Assign others' sous chefs"),1,0)
     ,chooseteam = ifelse(advantage %in% c("Be team leader"
               ,"Choose partner; Extra 30 minutes"
@@ -114,7 +114,9 @@ challdata <- read.csv(paste0(directory
 
     temp1 <- temp[temp[,varname] %in% 1,]
     print(varname)
+    print(dim(temp1)[1])
     print(table(temp1[,varname],temp1$outcome))
+    print("*******************************")
 
   }
 
