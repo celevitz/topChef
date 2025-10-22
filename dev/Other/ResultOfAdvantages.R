@@ -11,10 +11,11 @@ directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 challdata <- read.csv(paste0(directory
                                     ,"Top Chef - Challenge wins.csv")
                              ,header = TRUE) %>%
-  filter(series == "US") %>%
+  filter(series == "US" & inCompetition == TRUE) %>%
   ## Who ever had an advantage? Who ever had immunity?
     mutate(everimm = ifelse(immune == TRUE,1,0)
-           ,everadv = ifelse(!(is.na(advantage)),1,0)) %>%
+           ,everadv = ifelse(!(is.na(advantage)),1,0)
+            ,advTF = ifelse(!(is.na(advantage)),TRUE,FALSE)) %>%
     group_by(series,season,chef) %>%
     mutate(everimm = max(everimm,na.rm=T)
            ,everadv = max(everadv,na.rm=T)
@@ -24,7 +25,29 @@ challdata <- read.csv(paste0(directory
         , challengeType = ifelse(challengeType %in% c("Elimination"
                             ,"Quickfire Elimination","Sudden Death Quickfire")
           ,"Elimination",challengeType
-        )   )
+        )   ) %>%
+  ## Did anyone have immunity in that episode?
+  ungroup() %>% group_by(series,season,seasonNumber,episode,challengeType) %>%
+  mutate(immunityoffered = max(ifelse(immune == TRUE,1,0),na.rm=T))
+
+## When immunity was offered, how did it affect odds of winning?
+immoffereddata <- challdata %>% filter(immunityoffered == 1)
+
+summary(glm(immoffereddata$win ~ immoffereddata$immune+immoffereddata$advTF))
+
+immoffereddata %>%
+  group_by(immune,win) %>%
+  summarise(n=n()) %>%
+  ungroup() %>% group_by(immune) %>%
+  mutate(N=sum(n)
+         ,percent=n/N)
+
+immoffereddata %>%
+  group_by(advTF,win) %>%
+  summarise(n=n()) %>%
+  ungroup() %>% group_by(advTF) %>%
+  mutate(N=sum(n)
+         ,percent=n/N)
 
 ## How did people who had immunity at some point in the season do
 ## when they had immunity versus when they didn't?
@@ -34,9 +57,25 @@ elim <- challdata %>%
 
   elim %>%
     ungroup() %>%
-    group_by()
+    group_by(win,immune) %>%
+    summarise(n=n())
 
   table(elim$immune,elim$win)
+  chisq.test(elim$immune,elim$win)
+
+## Advantages?
+  adv <- challdata %>%
+    filter(challengeType %in% "Elimination" &
+             everadv %in% 1)
+
+  adv %>%
+    ungroup() %>%
+    group_by(win,advTF) %>%
+    summarise(n=n())
+
+  table(adv$advTF,adv$win)
+  chisq.test(adv$advTF,adv$win)
+
 
 
 
