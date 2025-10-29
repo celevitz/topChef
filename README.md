@@ -10,12 +10,15 @@ winners, episode information, guest judge names, and reward/prize
 information.
 
 ### In the works:
+* Adding or updating description data for challenges
+* Adding in dish for every chef in every challenge
+* Confessional counts
 
-- Adding or updating description data for challenges
-- Adding in dish for every chef in every challenge
-- Confessional counts
+### Difference between 0.2.0 and upcoming 0.2.1:
+* Added Season 22, Top Chef Just Desserts, and US Last Chance Kitchen
+* Edits to 'challengedescriptions' to include what advantages chefs received
 
-### Difference between version 0.1.0 and upcoming 0.2.0:
+### Difference between version 0.1.0 and 0.2.0:
 
 - Edits to ‘chefdetails’: added occupation category and added data for
   season 21
