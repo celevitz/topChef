@@ -16,7 +16,7 @@ placement$chef[placement$chef == "Cesar Murillo"] <- "César Murillo"
 
 temp <- confs %>%
   select(!c(series,totalconfs,totalchefsepisodes,phonecallsorphotos) )%>%
-  filter(seasonNumber %in% c(1,2,16,21,22)) %>%
+  filter(seasonNumber %in% c(1,2,8,16,21,22)) %>%
   left_join(placement %>%
               select(season,seasonNumber,chef,placement,name)) %>%
   mutate(placement=as.numeric(placement)
