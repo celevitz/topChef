@@ -19,6 +19,8 @@ challenges %>%
   mutate(episodeflag = min(episode,na.rm=T)) %>%
   # keep just the winners from that episode
   filter(outcome == "WIN" & episodeflag == episode) %>%
+  # season 5 had two elim challenges in first episode; drop the 2nd one
+  filter(!(seasonNumber == 5 & episode == 1 & challengeType == "Elimination")) %>%
   group_by(season) %>%
   summarise(numberofwinners=n()) %>%
   filter(numberofwinners>1)
@@ -46,6 +48,8 @@ placement <- challenges %>%
   mutate(episodeflag = min(episode,na.rm=T)) %>%
   # keep just the winners from that episode
   filter(outcome %in% "WIN" & episodeflag == episode) %>%
+  # season 5 had two elim challenges in first episode; drop the 2nd one
+  filter(!(seasonNumber == 5 & episode == 1 & challengeType == "Elimination")) %>%
   left_join(chefs %>% select(season,seasonNumber,series,chef,placement)) %>%
   select(season,seasonNumber,chef,placement) %>%
   distinct() %>%
@@ -64,6 +68,8 @@ challenges %>%
   mutate(episodeflag = min(episode,na.rm=T)) %>%
   # keep just the winners from that episode
   filter(outcome %in% "WIN" & episodeflag == episode) %>%
+  # season 5 had two elim challenges in first episode; drop the 2nd one
+  filter(!(seasonNumber == 5 & episode == 1 & challengeType == "Elimination")) %>%
   left_join(chefs %>% select(season,seasonNumber,series,chef,placement)) %>%
   select(season,seasonNumber,chef,placement) %>%
   distinct() %>% filter(placement<4) %>% arrange(seasonNumber)
@@ -77,6 +83,8 @@ challenges %>%
   mutate(episodeflag = min(episode,na.rm=T)) %>%
   # keep just that one
   filter(episodeflag == episode) %>%
+  # season 5 had two elim challenges in first episode; drop the 2nd one
+  filter(!(seasonNumber == 5 & episode == 1 & challengeType == "Elimination")) %>%
   select(season,seasonNumber,series,episode) %>%
   distinct() %>%
   left_join(challengedescriptions %>% select(season,seasonNumber,series,episode
@@ -96,6 +104,8 @@ challenges %>%
   mutate(episodeflag = min(episode,na.rm=T)) %>%
   # keep just the winners from that episode
   filter(outcome %in% "WIN" & episodeflag == episode) %>%
+  # season 5 had two elim challenges in first episode; drop the 2nd one
+  filter(!(seasonNumber == 5 & episode == 1 & challengeType == "Elimination")) %>%
   left_join(chefs %>% select(season,seasonNumber,series,chef,placement)) %>%
   select(season,seasonNumber,chef,placement,outcomeType) %>%
   distinct() %>%
@@ -128,6 +138,8 @@ firstelimwinners <- challenges %>%
   mutate(episodeflag = min(episode,na.rm=T)) %>%
   # keep just the winners from that episode
   filter(outcome %in% "WIN" & episodeflag == episode) %>%
+  # season 5 had two elim challenges in first episode; drop the 2nd one
+  filter(!(seasonNumber == 5 & episode == 1 & challengeType == "Elimination")) %>%
   select(season,seasonNumber,series,chef,episodeflag) %>%
   distinct()
 
@@ -173,6 +185,24 @@ trajectory %>%
         rename(finalepisode=episode)
     ) %>%
     print(n=30)
+
+
+## Which people who won the first elimination challenge won the second?
+  firstwinner <- challenges %>%
+    filter(series == "US" ) %>%
+    left_join(challengedescriptions %>% select(season,seasonNumber,series,episode
+                                               ,challengeType,outcomeType)) %>%
+    # First Elimination challenge
+    filter(challengeType %in% c("Elimination","Quickfire Elimination","Sudden Death Quickfire")) %>%
+    group_by(season) %>%
+    mutate(episodeflag = min(episode,na.rm=T)) %>%
+    # keep just the winners from that episode
+    filter(outcome %in% "WIN" & episodeflag == episode)
+
+  # remove the 1st elimination challenge, and then get the 2nd
+    firstwinner %>% select(season,seasonNumber,series,episode,challengeType) %>%
+      distinct()
+
 
 
 
