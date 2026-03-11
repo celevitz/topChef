@@ -55,7 +55,7 @@ placement <- challenges %>%
   distinct() %>%
   ungroup() %>% group_by(placement) %>%
   summarise(n=n()) %>%
-  mutate(foraveragesnumerator=placement*n) %>%
+  mutate(foraveragesnumerator=as.numeric(placement)*n) %>%
   ungroup() %>%
   mutate(averageplacement=sum(foraveragesnumerator)/sum(n))
 
@@ -188,20 +188,15 @@ trajectory %>%
 
 
 ## Which people who won the first elimination challenge won the second?
-  firstwinner <- challenges %>%
-    filter(series == "US" ) %>%
-    left_join(challengedescriptions %>% select(season,seasonNumber,series,episode
-                                               ,challengeType,outcomeType)) %>%
-    # First Elimination challenge
-    filter(challengeType %in% c("Elimination","Quickfire Elimination","Sudden Death Quickfire")) %>%
-    group_by(season) %>%
-    mutate(episodeflag = min(episode,na.rm=T)) %>%
-    # keep just the winners from that episode
-    filter(outcome %in% "WIN" & episodeflag == episode)
-
-  # remove the 1st elimination challenge, and then get the 2nd
-    firstwinner %>% select(season,seasonNumber,series,episode,challengeType) %>%
-      distinct()
+  wonfirstandsecond <- trajectory %>%
+    # just look at the elim challs - and the wins
+    filter(challengeType == "Elimination" & grepl("WIN",outcome)) %>%
+    select(season,seasonNumber,series,chef,episodeflag,episode) %>%
+    # the episode flag var is the one that is the first episode w/ elim
+    # by ticking that up one, we'll see if they won the next elim
+    mutate(nexteliminationchall = episodeflag+1
+           ,nextelimflag = ifelse(episode == nexteliminationchall,1,0)) %>%
+    arrange(seasonNumber,chef,episode)
 
 
 
