@@ -9,7 +9,8 @@ library(RColorBrewer)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
-currentep <- 13
+currentep <- 15
+seasonnumber <- 8
 
 accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
 
@@ -31,19 +32,19 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
 ## Season specific confessionals
   s22epi <- confsByEpi %>%
     ungroup() %>%
-    filter(seasonNumber == 22 & series == "US") %>%
+    filter(seasonNumber == seasonnumber & series == "US") %>%
     select(episode,chef,count,first,percentofEpsConfs,equalInEpPercent
-           ,edit,winner) %>%
+           ,edit,ElimWinner) %>%
     mutate(labelpercent = ifelse(!(is.na(first))
                                  # first confessional of episode
                             ,paste0("*",round(percentofEpsConfs*100,1),"%")
                             ,paste0(round(percentofEpsConfs*100,1),"%"))
            # won elim challenge
-           ,labelpercent = ifelse(!(is.na(winner))
+           ,labelpercent = ifelse(!(is.na(ElimWinner)) & ElimWinner == 1
                                   ,paste0(labelpercent,"#"),labelpercent)
            ) %>%
     left_join(placement %>%
-                filter(series == "US" & seasonNumber == 22) %>%
+                filter(series == "US" & seasonNumber == seasonnumber) %>%
                 mutate(placement = as.numeric(placement))) %>%
     group_by(chef) %>%
     mutate(chefstotal = sum(count,na.rm=T)) %>%
@@ -103,14 +104,14 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
           ,legend.text = element_text(size=16)
           )
 
-  dev.print(png, file = paste0(directory,"topChef/S22ConfessionalsByEpisode.png")
+  dev.print(png, file = paste0(directory,"topChef/S",seasonnumber,"ConfessionalsByEpisode.png")
             , width = 1600, height = 900)
   dev.off()
 
 ## Average edit
 ## Number of first confessionals
   s22chefs <- confs %>%
-    filter(seasonNumber == 22) %>%
+    filter(seasonNumber == seasonnumber) %>%
     ungroup() %>%
     select(chef,firstconfs,chefconfs,expectedpercentofconfs,observedpercent) %>%
     # remove the chefs that didn't make it out of LCK
@@ -192,7 +193,7 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
 
 
   gtsave(confessionalstattable
-         ,filename = paste(directory,"topChef/S22E",currentep
+         ,filename = paste(directory,"topChef/S",seasonnumber,"E",currentep
                            ,"ConfessionalStats.png",sep=""))
 
 
