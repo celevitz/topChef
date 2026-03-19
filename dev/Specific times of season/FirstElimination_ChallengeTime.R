@@ -23,7 +23,14 @@ challengedescriptions <- read.csv(paste0(directory
     filter(!(is.na(cookTime))) %>%
     mutate(cookTime = as.numeric(ifelse(is.na(cookTime),"0",cookTime))
            ,prepTime = ifelse(is.na(prepTime),0,prepTime)
-           ,totalTime = cookTime+prepTime)
+           ,totalTime = cookTime+prepTime
+           ,totalTimeGroup = case_when(
+             totalTime < 120 ~ "A. Under 2 hours"
+             ,totalTime >= 120 & totalTime < 180 ~ "B. 2 hours to under 3 hours"
+             ,totalTime >=180 & totalTime < 240 ~"C. 3 hours to under 4 hours"
+             ,totalTime >=240 & totalTime < 300 ~ "D. 4 hours to under 5 hours"
+             ,TRUE ~ "E. 5 or more hours"
+           ))
 
 ## Notes
   challs %>%
@@ -50,4 +57,10 @@ challengedescriptions <- read.csv(paste0(directory
     arrange(cookTime,prepTime) %>%
     print(n=23)
 
+  ## total time
+  challs %>% ungroup() %>% group_by(totalTime) %>% summarise(n=n()) %>%
+    mutate(totalHrs = totalTime/60)
+  challs %>% ungroup() %>%
+    group_by(totalTimeGroup) %>%
+    summarise(n=n())
 
