@@ -18,7 +18,12 @@ challengedescriptions <- read.csv(paste0(directory
     filter(episode == keepepisode & series == "US") %>%
     select(season,seasonNumber,series,episode,outcomeType,shopTime,prepTime
            ,cookTime) %>%
-    mutate(cookTime = as.numeric(cookTime))
+    ## remove the two that are missing time (NY season 5; Colorado season 15)
+    ## otherwise, it will affect the avgs if I make everything that is NA, 0
+    filter(!(is.na(cookTime))) %>%
+    mutate(cookTime = as.numeric(ifelse(is.na(cookTime),"0",cookTime))
+           ,prepTime = ifelse(is.na(prepTime),0,prepTime)
+           ,totalTime = cookTime+prepTime)
 
 ## Notes
   challs %>%
@@ -32,6 +37,17 @@ challengedescriptions <- read.csv(paste0(directory
   ## 7 seasons 120
   ## 4 seasons 150
   ## 5 seasons 180
+  ## cook time: Average 137 (2 hrs, 17 min); median 120 (2 hrs)
+  ## total time: avg 169 (2 hrs, 49 min). Median 150 (3 hrs)
   challs %>% ungroup() %>% summarise(avg=mean(cookTime,na.rm=T)
-                                     ,mdn = median(cookTime,na.rm=T))
-  ## Average 137; median 120
+                                     ,mdn = median(cookTime,na.rm=T)
+                                     ,avgtotal=mean(totalTime,na.rm=T)
+                                     ,mdntotal=median(totalTime,na.rm=T))
+
+  ## prep time and cook time
+  challs %>%
+    filter(!(is.na(cookTime))) %>%
+    arrange(cookTime,prepTime) %>%
+    print(n=23)
+
+
