@@ -25,6 +25,7 @@ challengewins <- as_tibble(read.xlsx(paste(directory
                                            ,"TopChefData.xlsx",sep=""),sheet=2))
   challengewins$dish <- NULL
   challengewins$notes <- NULL
+  challengewins$CL.score <- NULL
 
 challengedescriptions <- as_tibble(read.xlsx(paste(directory
                                          ,"TopChefData.xlsx",sep=""),sheet=3))
