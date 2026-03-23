@@ -196,9 +196,17 @@ trajectory %>%
     # by ticking that up one, we'll see if they won the next elim
     mutate(nexteliminationchall = episodeflag+1
            ,nextelimflag = ifelse(episode == nexteliminationchall,1,0)) %>%
-    arrange(seasonNumber,chef,episode)
+    arrange(seasonNumber,chef,episode) %>%
+    filter(nextelimflag == 1)
 
 
+
+
+  trajectory %>%
+    filter(id %in% unique(wonfirstandsecond$id)) %>%
+    ggplot(aes(x=episode,y=id,shape=challengeType,color=outcome)) +
+    geom_point(alpha=.5,size=2) +
+    theme_minimal()
 
 
 
