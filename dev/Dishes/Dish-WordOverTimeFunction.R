@@ -65,6 +65,7 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
       ## outcomes of dishes with the word/s of interest
       print("Outcomes of dishes with the word/s of interest")
       print(table(basicdata$outcome))
+      print(table(basicdata$outcome,basicdata$challengeType))
 
       ## % of times that it won or was eliminated
       print("What's the % of times this dish won?")
@@ -90,6 +91,8 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
 
 
 seriesname <- "US"
+
+wordtrend("US",c("trio"))
 
 wordtrend("US",c("risotto"))
 
