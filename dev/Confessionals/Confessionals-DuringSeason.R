@@ -9,8 +9,8 @@ library(RColorBrewer)
 
 directory <- "/Users/carlylevitz/Documents/Data/"
 
-currentep <- 15
-seasonnumber <- 8
+currentep <- 3
+seasonnumber <- 23
 
 accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
 
@@ -173,7 +173,7 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
                ,`# of times with first confessional of episode` ~ px(160)
                , everything() ~ px(130) )  %>%
     tab_header(
-      title = paste0("Top Chef Destination Canada confessional data through episode ",currentep)
+      title = paste0("Top Chef S",seasonnumber," confessional data through episode ",currentep)
       ,subtitle = "Expected % of confessionals takes into account how many episodes they were in and how many chefs were in that episode.\nObserved % of confessionals is the percent of all confessionals in the season so far."
     ) %>%
     data_color(method="numeric",

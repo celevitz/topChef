@@ -6,6 +6,9 @@ library(ggplot2)
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
+seasonofinterest <- 23
+episodeofinterest <- 3
+
 confs <- read.csv(paste0(directory,"Top Chef - Confessionals in a season.csv")
                   ,header=TRUE)
 
@@ -16,7 +19,7 @@ placement$chef[placement$chef == "Cesar Murillo"] <- "César Murillo"
 
 temp <- confs %>%
   select(!c(series,totalconfs,totalchefsepisodes,phonecallsorphotos) )%>%
-  filter(seasonNumber %in% c(1,2,8,16,21,22)) %>%
+  filter(seasonNumber %in% c(1,2,8,16,21,22,23)) %>%
   left_join(placement %>%
               select(season,seasonNumber,chef,placement,name)) %>%
   mutate(placement=as.numeric(placement)
@@ -105,6 +108,8 @@ temparranged <- temp %>%
                            ,placement >= 10 ~ "10th place or lower")
          ,`season #` = case_when(`season #` == "Season 1" ~ "Season 01"
                                  ,`season #` == "Season 2" ~ "Season 02"
+                                 ,`season #` == "Season 3" ~ "Season 03"
+                                 ,`season #` == "Season 8" ~ "Season 08"
                                  ,TRUE ~ `season #`)
          ,color = case_when(`difference from expected` < 0 ~ "Less than expected"
                             ,`difference from expected` == 0 ~ "As expected"
@@ -123,7 +128,7 @@ temparranged %>%
   geom_rect(xmin=-.01,xmax=0.01,ymin=1,ymax=16.1,color="gray90") +
   geom_point(aes(color=`season #`,shape=`season #`) ,size = 7) +
   scale_color_manual(values = c("#D81B60","#1E88E5","#55B9A7","#FFC107"
-                                ,"#004D40")) +
+                                ,"#004D40","purple","orange")) +
   ylab("placement (lower is better)") +
   xlab("difference from expected % of confessionals") +
   labs(title = "Top Chef Confessionals: Difference from Expected % of Confessionals"
@@ -176,7 +181,3 @@ temparranged %>%
 dev.print(png, file = paste0(directory,"ConfessionalsByPlacementAndSeason.png")
           , width = 1600, height = 900)
 dev.off()
-
-
-
-
