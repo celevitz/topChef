@@ -92,7 +92,7 @@ wordtrend <- function(seriesname,wordorwordsofinterest) {
 
 seriesname <- "US"
 
-wordtrend("US",c("trio"))
+wordtrend("US",c("trio","3-ways","3 ways","three ways"))
 
 wordtrend("US",c("risotto"))
 
