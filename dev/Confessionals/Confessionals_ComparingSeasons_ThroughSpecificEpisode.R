@@ -12,6 +12,8 @@ seasonofinterest <- 23
 episodeofinterest <- 3
 # What placement do we want to look at (or better)
 placementofinterest <- 6
+# Exclude those eliminated
+eliminated <- c("Jaspratap Bindra","Day Anaїs Joseph","Nana Araba Wilmot")
 
 # Placement data
   placement <- read.csv(paste0(directory,"Top Chef - Chef details.csv")
@@ -62,9 +64,19 @@ placementofinterest <- 6
     full_join(season) %>%
     right_join(placement) %>%
     # how far off of equal are they?
-    mutate(difffromexpected = (chefconfs-equalInEpinSeason)/equalInEpinSeason)
+    mutate(difffromexpected = (chefconfs-equalInEpinSeason)/
+             equalInEpinSeason) %>%
+    # drop unneeded vars
+    ungroup() %>%
+    select(!c(chefepisodes,totalconfs,series,episodesIn))
 
-
+# Let's compare the current season to the winners
+  confs %>%
+    filter((seasonNumber == seasonofinterest | placement == 1) &
+             !(chef %in% eliminated) )%>%
+    arrange(desc(difffromexpected),chef) %>%
+    select(chef,difffromexpected) %>%
+    print(n=30)
 
 
 
