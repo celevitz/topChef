@@ -41,8 +41,6 @@ eliminated <- c("Jaspratap Bindra","Day Anaїs Joseph","Nana Araba Wilmot")
              seasonNumber %in% c(1,2,3,8,16,17,20,21,22,23)
            )
 
-
-
 # Each season through episode of interest: # of confs and chef-episodes
   confs <- confsraw %>%
     group_by(season,seasonNumber,series,chef) %>%
@@ -61,7 +59,7 @@ eliminated <- c("Jaspratap Bindra","Day Anaїs Joseph","Nana Araba Wilmot")
     print(n=30)
 
 # Let's see what sort of visual I can do
-  visualdata <- confs %>%
+  visualdata <- confs %>% ungroup() %>%
     mutate(chef = str_split_i(chef," ",1)
            ,chef = fct_reorder(paste0(chef," S",seasonNumber), difffromexpected)
            ,difffromexpected=100*difffromexpected
