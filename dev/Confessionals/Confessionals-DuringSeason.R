@@ -278,6 +278,16 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
   gtsave(confsatJTtable
          ,filename = paste(directory,"topChef/S22_ConfsAtJT.png",sep=""))
 
+########################################################################
+## Simplified table: chef, counts, average per episode, overall edit
+
+  s22epi %>%
+    ungroup() %>% group_by(chef) %>%
+    mutate(numeps = n()
+           ,total = sum(count)
+           ,average = total/numeps) %>%
+    select(episode,chef,count,first,ElimWinner,total,average)
+
 
 ########################################################################
 ## What's related to winning the season?
