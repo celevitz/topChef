@@ -44,31 +44,13 @@ eliminated <- c("Jaspratap Bindra","Day Anaїs Joseph","Nana Araba Wilmot")
 
 
 # Each season through episode of interest: # of confs and chef-episodes
-  season <- confsraw %>%
-    select(season,seasonNumber,series,chefsinepisode,totalconfsinep
-           ,equalInEp) %>%
-    distinct() %>%
-    group_by(season,seasonNumber,series) %>%
-    summarise(chefepisodes=sum(chefsinepisode)
-              ,totalconfs = sum(totalconfsinep)
-              ,equalInEpinSeason = sum(equalInEp))
-
-# Each chef: total confs thru episode of interest
-  chefs <- confsraw %>%
+  confs <- confsraw %>%
     group_by(season,seasonNumber,series,chef) %>%
     summarise(episodesIn = sum(ifelse(inCompetition == "TRUE",1,0))
-              ,chefconfs = sum(count,na.rm=T) )
-
-# Combine chef-specific information with season-specific
-  confs <- chefs %>%
-    full_join(season) %>%
-    right_join(placement) %>%
-    # how far off of equal are they?
-    mutate(difffromexpected = (chefconfs-equalInEpinSeason)/
-             equalInEpinSeason) %>%
-    # drop unneeded vars
-    ungroup() %>%
-    select(!c(chefepisodes,totalconfs,series,episodesIn))
+           ,chefconfs = sum(count,na.rm=T)
+           ,chefexpected = sum(equalInEp)
+           ,difffromexpected = (chefconfs-chefexpected)/chefexpected) %>%
+    right_join(placement)
 
 # Let's compare the current season to the winners
   confs %>%
