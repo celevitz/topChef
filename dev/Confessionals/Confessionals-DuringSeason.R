@@ -26,7 +26,8 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
   placement <- read.csv(paste0(directory,"topChef/Top Chef - Chef details.csv")
                         ,header=TRUE)
   placement <- placement %>%
-    select(series,season,seasonNumber,chef,placement)
+    select(series,season,seasonNumber,chef,placement,gender,personOfColor) %>%
+    mutate(personOfColor=ifelse(is.na(personOfColor),"White",personOfColor))
 
 
 ## Season specific confessionals
@@ -287,6 +288,42 @@ accent <- brewer.pal(n = 9, name = "PuBuGn")[9]
            ,total = sum(count)
            ,average = total/numeps) %>%
     select(episode,chef,count,first,ElimWinner,total,average)
+
+########################################################################
+## Gender bias?
+  # total # of chef-episodes for women, and for men
+  s22epi %>% group_by(gender) %>%
+    summarise(numchefepisodes=n()) %>%
+    full_join(
+    # total # of confs by men and women
+    s22epi %>%
+      group_by(gender) %>%
+      summarise(totalconfsbygender = sum(count))
+    ) %>%
+    # total confs regardless of gender
+    ungroup() %>%
+    mutate(total=sum(totalconfsbygender)
+           # expected ratio of confessionals
+           ,expectedratio = numchefepisodes/(sum(numchefepisodes))
+           ,observedratio = totalconfsbygender/total)
+
+## Race bias?
+  # total # of chef-episodes for people of color and white people
+  s22epi %>% group_by(personOfColor) %>%
+    summarise(numchefepisodes=n()) %>%
+    full_join(
+      # total # of confs for each race category
+      s22epi %>%
+        group_by(personOfColor) %>%
+        summarise(totalconfsbyrace = sum(count))
+    ) %>%
+    # total confs regardless of race
+    ungroup() %>%
+    mutate(total=sum(totalconfsbyrace)
+           # expected ratio of confessionals
+           ,expectedratio = numchefepisodes/(sum(numchefepisodes))
+           ,observedratio = totalconfsbyrace/total)
+
 
 
 ########################################################################
