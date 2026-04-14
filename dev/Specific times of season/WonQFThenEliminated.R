@@ -2,9 +2,15 @@ rm(list=ls())
 library(tidyverse)
 library(ggplot2)
 library(devtools)
-devtools::install_github("celevitz/topChef")
+#devtools::install_github("celevitz/topChef")
 
-challengewins <- topChef::challengewins %>%
+directory <- "/Users/carlylevitz/Documents/Data/"
+
+challengewinsraw <- read.csv(paste0(directory
+                             ,"/topChef/Top Chef - Challenge wins.csv")
+                      ,header = TRUE)
+
+challengewins <- challengewinsraw %>%
   filter(series == "US") %>%
   mutate(qfwin = ifelse(challengeType == "Quickfire" & outcome=="WIN",1,0)
          ,elimOUT = ifelse(challengeType == "Elimination" & outcome == "OUT",1,0)) %>%
@@ -13,7 +19,7 @@ challengewins <- topChef::challengewins %>%
             ,elimOUT=max(elimOUT)) %>%
   left_join(
     # number of chefs in the episode at the time
-    topChef::challengewins %>%
+    challengewinsraw %>%
       filter(series == "US" & inCompetition == "TRUE") %>%
       group_by(season,seasonNumber,episode) %>%
       select(season,seasonNumber,episode,chef) %>%
