@@ -13,9 +13,11 @@ challengewinsraw <- read.csv(paste0(directory
 challengewins <- challengewinsraw %>%
   filter(series == "US") %>%
   mutate(qfwin = ifelse(challengeType == "Quickfire" & outcome=="WIN",1,0)
+         ,qflow = ifelse(challengeType == "Quickfire" & outcome=="LOW",1,0)
          ,elimOUT = ifelse(challengeType == "Elimination" & outcome == "OUT",1,0)) %>%
   group_by(season,seasonNumber,chef,episode) %>%
   summarise(qfwin=max(qfwin)
+            ,qflow = max(qflow)
             ,elimOUT=max(elimOUT)) %>%
   left_join(
     # number of chefs in the episode at the time
@@ -26,6 +28,11 @@ challengewins <- challengewinsraw %>%
       distinct() %>%
       summarise(numberofchefs=n())
   )
+
+# Who was low in the QF and then eliminated?
+lowqfthenout <- challengewins %>%
+  filter(qflow == 1 & elimOUT == 1) %>%
+  arrange(seasonNumber,episode)
 
 # look at just those who won the QF and were eliminated
 wonqfthenout <- challengewins %>%
