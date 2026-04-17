@@ -20,7 +20,7 @@ temp <- challengewins %>%
          ) %>%
   mutate(outcome2 = case_when(
     outcome %in% c("HIGH","WIN","WINNER") ~ "Top"
-    ,outcome %in% c("DISQUALIFIED","LOW","OUT","RUNNER-UP","WITHDREW") ~ "Bottom"
+    ,outcome %in% c("DISQUALIFIED","LOW","OUT","RUNNER-UP","WITHDREW")~"Bottom"
     ,TRUE ~ "in")
     ,In = ifelse(outcome2 %in% c("in","Top"),1,0)
     ,Top = ifelse(outcome2 %in% c("Top"),1,0)
@@ -28,19 +28,20 @@ temp <- challengewins %>%
     ,E = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
                                      ,"Sudden Death Quickfire"),1,0)
     ## Q = quickfires in
-    ,Q = ifelse(challengeType %in% c("Quickfire"),1,0)
+    ,Q = ifelse(challengeType %in% c("Quickfire","Optional Quickfire"),1,0)
     ## ET = eliminations top or win
     ,ET = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
                                       ,"Sudden Death Quickfire") &
                    Top == 1,1,0)
     ## QT = quickfires top or win
-    ,QT = ifelse(challengeType %in% c("Quickfire") & Top == 1,1,0)
+    ,QT = ifelse(challengeType %in% c("Quickfire","Optional Quickfire") &
+                   Top == 1,1,0)
     ## EW = elimination win
     ,EW = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
                                       ,"Sudden Death Quickfire") &
                    outcome %in% c("WIN","WINNER"),1,0)
     ## QW = quickfire win
-    ,QW = ifelse(challengeType %in% c("Quickfire") &
+    ,QW = ifelse(challengeType %in% c("Quickfire","Optional Quickfire") &
                    outcome %in% c("WIN","WINNER"),1,0)
     ## Win percent
     ,W = ifelse(outcome %in% c("WIN","WINNER"),1,0)
