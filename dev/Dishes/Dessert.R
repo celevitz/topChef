@@ -48,6 +48,15 @@ nonreqd <- desserts %>%
   filter(required == 0)
 
 
-table(nonreqd$outcomesimplified,nonreqd$placementcategory)
+table(nonreqd$outcomesimplified)
 
 # placement of people who do desserts in elim challs??
+# people who were high/win
+temp <- nonreqd %>%
+  ungroup() %>%
+  select(series,season,seasonNumber,chef,placement)
+
+
+
+
+
