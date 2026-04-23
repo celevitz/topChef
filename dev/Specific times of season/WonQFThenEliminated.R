@@ -29,32 +29,42 @@ challengewins <- challengewinsraw %>%
       summarise(numberofchefs=n())
   )
 
-# Who was low in the QF and then eliminated?
-lowqfthenout <- challengewins %>%
-  filter(qflow == 1 & elimOUT == 1) %>%
-  arrange(seasonNumber,episode)
-
 # look at just those who won the QF and were eliminated
 wonqfthenout <- challengewins %>%
   filter(qfwin == 1 & elimOUT == 1) %>%
   arrange(seasonNumber,episode)
 
-# how many chefs were eliminated this way in these seasons?
-wonqfthenout %>%
+  # how many chefs were eliminated this way in these seasons?
+  wonqfthenout %>%
+    ungroup() %>%
+    group_by(season) %>%
+    summarise(n=n())
+
+  # number of seasons in which this happened
+  nrow(wonqfthenout %>%
+    ungroup() %>%
+    select(season) %>%
+    distinct() )
+
+  # number of chefs in the competition
+  summary(wonqfthenout$numberofchefs)
+
+  table(wonqfthenout$numberofchefs)
+
+
+## Was at the bottom of QF and then was eliminated
+# Who was LOW in the QF and then eliminated?
+lowqfthenout <- challengewins %>%
+  filter(qflow == 1 & elimOUT == 1) %>%
+  arrange(seasonNumber,episode)
+lowqfthenout %>%
   ungroup() %>%
-  group_by(season) %>%
+  group_by(seasonNumber,season) %>%
   summarise(n=n())
 
-# number of seasons in which this happened
-nrow(wonqfthenout %>%
-  ungroup() %>%
-  select(season) %>%
-  distinct() )
-
-# number of chefs in the competition
-summary(wonqfthenout$numberofchefs)
-
-table(wonqfthenout$numberofchefs)
+summary(lowqfthenout$numberofchefs)
+table(lowqfthenout$numberofchefs)
+lowqfthenout %>% print(n=100)
 
 
 
