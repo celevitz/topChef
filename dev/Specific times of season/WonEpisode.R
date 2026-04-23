@@ -11,6 +11,7 @@ directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 # Bring in data
 chefs <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
 challenges <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
+challdetails <- read.csv(paste0(directory,"Top Chef - Challenge descriptions.csv"))
 episodeinfo <- read.csv(paste0(directory,"Top Chef - Episode information.csv"))
 episodeinfo <- episodeinfo %>%
   select(!c(overallEpisodeNumber,episodeName,airDate))
@@ -105,6 +106,37 @@ episodeinfo <- episodeinfo %>%
       filter(nCompetitors >= 14) %>%
       arrange(desc(nCompetitors),seasonNumber,chef)
 
-
-
+## Team vs indiv challenge wins
+    wonepisodebreakdown <- challenges %>%
+      select(series,season,seasonNumber,episode,chef,challengeType,outcome) %>%
+      full_join(challdetails %>%
+                  select(series,season,seasonNumber,episode,challengeType
+                         ,outcomeType)) %>%
+      filter(outcome %in% "WIN" & series == "US") %>%
+      group_by(series,season,seasonNumber,chef,episode) %>%
+      mutate(numberofchallswoninepisode = n()
+             # see if the special quickfires acted as quickfires or elims
+             ,flag = max(ifelse(challengeType %in% c("Quickfire Elimination"
+                                       ,"Sudden Death Quickfire"),1,0))) %>%
+      filter(numberofchallswoninepisode > 1) %>%
+      ungroup()  %>%
+      # simplify the challenge types
+      mutate(challengeType = ifelse(challengeType %in% c("Quickfire Elimination"
+                     ,"Sudden Death Quickfire"),"Quickfire",challengeType)) %>%
+      # create a field that combines chall & outcome types
+      # I want to count these...I'm going to try making them into columns and
+      # then dropping the original fields, remove duplicates, and count the
+      # number of chefs
+      mutate(wintype = paste(challengeType,outcomeType,sep="_")
+             ,temp=paste(challengeType,outcomeType,sep="_")) %>%
+      # remove unneeded fields
+      select(!c(outcome,numberofchallswoninepisode,challengeType
+                ,outcomeType,flag)) %>%
+      pivot_wider(names_from = wintype,values_from=temp) %>%
+      # need to combine the win types
+      mutate(finalwintype=gsub("NA","",paste0(Quickfire_Individual
+                ,Quickfire_Team,Elimination_Individual,Elimination_Team))) %>%
+      # remove unneeded fields
+      select(!c(Quickfire_Individual,Quickfire_Team,Elimination_Individual
+                ,Elimination_Team))
 
