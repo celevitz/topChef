@@ -10,7 +10,7 @@ library(stringi)
 library(tidyr)
 library(tidyverse)
 
-directory <- "/Users/carlylevitz/Documents/Data/"
+directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
 chefdetails <- as_tibble(read.xlsx(paste(directory
                                          ,"TopChefData.xlsx",sep=""),sheet=1))
