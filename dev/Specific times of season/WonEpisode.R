@@ -140,3 +140,27 @@ episodeinfo <- episodeinfo %>%
       select(!c(Quickfire_Individual,Quickfire_Team,Elimination_Individual
                 ,Elimination_Team))
 
+    # how frequent is the combination of the team/indiv QF and team/indiv elim
+    temp <- challdetails %>%
+      select(series,season,seasonNumber,episode,challengeType,outcomeType) %>%
+      filter(series=="US" & challengeType != "Qualifying Challenge") %>%
+      # combine the categories of challenge types for ease of counting
+      mutate(challengeType = ifelse(challengeType %in% c("Optional Quickfire"
+                            ,"Quickfire Elimination","Sudden Death Quickfire")
+                            ,"Quickfire",challengeType)
+             # for a given episode, what's the combo?
+             ,wintype = paste(challengeType,outcomeType,sep="_")
+             ,temp=paste(challengeType,outcomeType,sep="_") ) %>%
+      # remove unneeded fields
+      select(!c(challengeType,outcomeType)) %>%
+      pivot_wider(names_from = wintype,values_from=temp) %>%
+      # need to combine the win types
+      mutate(finalwintype=gsub("NA","",paste0(Quickfire_Individual
+                ,Quickfire_Team,Elimination_Individual,Elimination_Team))) %>%
+      # remove unneeded fields
+      select(!c(Quickfire_Individual,Quickfire_Team,Elimination_Individual
+                ,Elimination_Team))
+
+
+      table(temp$finalwintype)
+
