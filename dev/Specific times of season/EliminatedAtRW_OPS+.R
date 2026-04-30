@@ -102,7 +102,7 @@ eliminated <- rwchalls %>%
             ,rating)) %>%
   # merge on their stats
   left_join(stats %>%
-              select(season,seasonNumber,chef,NBP,TOW,NPTplus,rank)) %>%
+              select(season,seasonNumber,chef,C,EW,QW,NBP,TOW,NPTplus,rank)) %>%
   arrange(NPTplus,seasonNumber,rank)
 
 
