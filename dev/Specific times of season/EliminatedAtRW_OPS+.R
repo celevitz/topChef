@@ -7,6 +7,8 @@
 rm(list=ls())
 library(tidyverse)
 
+seasonofinterest <- 23
+
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 rwchalls <- read.csv(paste0(directory,"Top Chef - Challenge descriptions.csv"))
 challwins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
@@ -93,7 +95,7 @@ eliminated <- rwchalls %>%
   filter(series == "US" & !is.na(restaurantWarEliminated)) %>%
   select(season,seasonNumber,episode) %>%
   rename(rwep=episode) %>%
-  # See who was liminated in the RW episode
+  # See who was eliminated in the RW episode
   full_join(challwins %>%
               filter(series == "US" & outcome == "OUT")) %>%
   filter(episode == rwep) %>%
@@ -105,6 +107,10 @@ eliminated <- rwchalls %>%
               select(season,seasonNumber,chef,C,EW,QW,NBP,TOW,NPTplus,rank)) %>%
   arrange(NPTplus,seasonNumber,rank)
 
-
+## How did this season's eliminated player fit within their season?
+stats %>%
+  filter(seasonNumber == seasonofinterest) %>%
+  select(chef,NPTplus) %>%
+  arrange(desc(NPTplus))
 
 
