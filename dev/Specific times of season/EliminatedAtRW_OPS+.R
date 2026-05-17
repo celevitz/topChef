@@ -110,7 +110,7 @@ eliminated <- rwchalls %>%
 ## How did this season's eliminated player fit within their season?
 stats %>%
   filter(seasonNumber == seasonofinterest) %>%
-  select(chef,NPTplus) %>%
+  select(chef,C,NPTplus) %>%
   arrange(desc(NPTplus))
 
 
