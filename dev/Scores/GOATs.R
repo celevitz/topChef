@@ -3,24 +3,31 @@ library(tidyverse)
 library(openxlsx)
 library(topChef)
 
+directory <- "/Users/carlylevitz/Documents/Data/topChef/"
+resultsraw <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
+  filter(series == "US")
+details <- read.csv(paste0(directory,"Top Chef - Chef details.csv")) %>%
+    filter(series == "US") %>%
+    select(season,seasonNumber,chef,placement,gender,personOfColor)
 
+#resultsraw <- topcChef::challengewins %>%
+#  filter(series == "US" & seasonNumber != 21)
 
-resultsraw <- topcChef::challengewins %>%
-  filter(series == "US" & seasonNumber != 21)
-
-details <- topChef::chefdetails %>%
-  filter(series == "US" & seasonNumber != 21) %>%
-  select(season,seasonNumber,chef,placement,gender,personOfColor)
+#details <- topChef::chefdetails %>%
+#  filter(series == "US" & seasonNumber != 21) %>%
+#  select(season,seasonNumber,chef,placement,gender,personOfColor)
 
 ## simplify challenge & outcome categories
 ## NEED to document this when saying stats
 results <- resultsraw %>%
   mutate(outcomecategory = case_when(outcome %in% c("WIN","WINNER") ~ "WIN"
-                                     ,outcome %in% c("BUBBLE","DIDN'T COMPETE","QUALIFIED") ~ "IN"
+                                     ,outcome %in% c("BUBBLE","DIDN'T COMPETE","QUALIFIED","SAVED") ~ "IN"
                                      ,outcome %in% c("DISQUALIFIED","RUNNER-UP","WITHDREW") ~ "OUT"
                                      ,TRUE ~ outcome)
          ,challengecategory = case_when(challengeType %in% c("Quickfire Elimination","Sudden Death Quickfire") ~ "Elimination"
-                                        ,TRUE ~ challengeType))
+                                        ,TRUE ~ challengeType)) %>%
+  # drop the optional quickfire in season 23
+  filter(challengecategory != "Optional Quickfire")
 
 ## Number of episodes
 temp1 <- results %>%
@@ -34,7 +41,11 @@ temp1 <- results %>%
 ## Number of challenges by type & season
 temp2 <- results %>%
   filter(challengecategory %in% c("Elimination","Quickfire")) %>%
-  select(season,seasonNumber,episode,challengecategory) %>%
+  select(season,seasonNumber,episode,challengecategory,challengeType) %>%
+  # because of SDQ and QE, if I just look at challenge category, it will make
+  #   some episodes look like they have only 1 challenge when they had two.
+  #   so I need the challenge Type in here before I do distinct. Then I can
+  #   use group_by and summarise()
   distinct() %>%
   group_by(season,seasonNumber,challengecategory) %>%
   summarise(totalchalls = n()) %>%
