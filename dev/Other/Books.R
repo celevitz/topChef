@@ -11,7 +11,7 @@ directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 epi <- read.csv(paste0(directory,"Top Chef - Episode information.csv"))
 epi <- epi %>%
   group_by(series,season,seasonNumber) %>%
-  filter(episode == min(episode)) %>%
+  filter(episode == min(episode,na.rm=T)) %>%
   mutate(yearofairdate=as.numeric(substr(airDate,1,4))) %>%
   select(series,season,seasonNumber,yearofairdate)
 
@@ -19,7 +19,7 @@ chefs <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
   # First time they were on
     chefs <- chefs %>%
       group_by(name,series) %>%
-      summarise(seasonNumber=min(seasonNumber)) %>%
+      summarise(seasonNumber=min(seasonNumber,na.rm=T)) %>%
       # Drop Bryan V from US Masters; he was on US first
       filter(!(name == "Bryan Voltaggio" & series == "US Masters")) %>%
       # bring on year of their season
