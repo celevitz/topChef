@@ -96,7 +96,16 @@ temp <- challengewins %>%
   ungroup() %>%
   relocate(chef,.before=seasonNumber) %>%
   relocate(placement,.after=seasonNumber) %>%
-  mutate(rank = dense_rank(desc(NPTplus)))
+  mutate(rank = dense_rank(desc(NPTplus))) %>%
+  # how many episodes did they win?
+  left_join(challengewins %>%
+              filter(grepl("WIN",outcome) & inCompetition == TRUE) %>%
+              group_by(season,seasonNumber,series,episode,chef) %>%
+              summarise(wonepisode=n()) %>%
+              filter(wonepisode>=2) %>%
+              ungroup() %>% group_by(season,seasonNumber,series,chef) %>%
+              summarise(episodeswon=n())
+              )
 
 write.csv(temp %>% mutate(series = "US")
           ,paste0(directory,"NPTplus.csv"),row.names=FALSE)
