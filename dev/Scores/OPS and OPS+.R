@@ -11,6 +11,16 @@ placement <- placement %>%
   select(chef,name,seasonNumber,series,placement) %>%
   mutate(placement = as.numeric(placement))
 
+moneywon <-  read.csv(paste0(directory,"Top Chef - Rewards.csv")) %>%
+  # keep just money
+  filter(grepl("Money",rewardType)) %>%
+  group_by(series,season,seasonNumber,chef) %>%
+  mutate(reward = as.numeric(gsub(" and a 10 day cruise from Holland Cruise","",
+                             gsub(" and year of dinner from Blue Apron + your recipe featured in Blue Apron"
+                             ,"",gsub(" and Sous Vide machine","",gsub(".0",""
+                             ,gsub("$","",reward))))))) %>%
+  summarise(moneyearned = sum(reward))
+
 temp <- challengewins %>%
   filter(challengeType %in% c("Elimination","Quickfire","Quickfire Elimination"
                               ,"Sudden Death Quickfire") &
@@ -24,6 +34,7 @@ temp <- challengewins %>%
     ,TRUE ~ "in")
     ,In = ifelse(outcome2 %in% c("in","Top"),1,0)
     ,Top = ifelse(outcome2 %in% c("Top"),1,0)
+    ,Bottom =  ifelse(outcome2 %in% c("Bottom"),1,0)
     ## E = eliminations in
     ,E = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
                                      ,"Sudden Death Quickfire"),1,0)
@@ -45,12 +56,20 @@ temp <- challengewins %>%
                    outcome %in% c("WIN","WINNER"),1,0)
     ## Win percent
     ,W = ifelse(outcome %in% c("WIN","WINNER"),1,0)
+    ## Elim bottom
+    ,EB = ifelse(challengeType %in% c("Elimination","Quickfire Elimination"
+                                      ,"Sudden Death Quickfire") &
+                   Bottom == 1,1,0)
+    ## QF bottom
+    ,QB = ifelse(challengeType %in% c("Quickfire","Optional Quickfire") &
+                   Bottom == 1,1,0)
     ) %>%
   group_by(series,season,seasonNumber,chef) %>%
   summarise(## C = challenges in
           C=n()
         ,In=sum(In),Top = sum(Top)
         ,E = sum(E), Q = sum(Q), ET = sum(ET), QT = sum(QT)
+        ,EB = sum(EB), QB = sum(QB)
         ,EW = sum(EW),QW = sum(QW),W=sum(W) )%>%
   mutate(NBP = round(In/C,3)
          ,TOW = round(Top/C,3)
@@ -71,14 +90,13 @@ temp <- challengewins %>%
          ,AvgTOW = mean(TOW)
          ,NPTplus2 = round (100*((NBP/AvgNBP) + (TOW/AvgTOW) - 1) ,0)#100 x (OBP/lgOBP + SLG/lgSLG - 1)
   ) %>%
-  select(series,season,seasonNumber,chef,C,E,Q,ET,QT,EW,QW,W
+  select(series,season,seasonNumber,chef,C,E,Q,ET,QT,EW,QW,EB,QB,W
          ,NBP,TOW,NPT#,NPTcomparedToAverage
          ,NPTplus,NPTplus2) %>%
   filter(series == "US") %>%
   left_join(placement) %>%
   mutate(chef = name) %>%
   ungroup() %>%
-  select(!c(series,season,name) )%>%
   relocate(chef,.before=seasonNumber) %>%
   relocate(placement,.after=seasonNumber) %>%
   mutate(rank = dense_rank(desc(NPTplus)))
