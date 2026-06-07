@@ -83,7 +83,7 @@ temp <- challengewins %>%
   relocate(placement,.after=seasonNumber) %>%
   mutate(rank = dense_rank(desc(NPTplus)))
 
-write.csv(temp
+write.csv(temp %>% mutate(series = "US")
           ,paste0(directory,"NPTplus.csv"),row.names=FALSE)
 
 
@@ -94,3 +94,11 @@ fordatawrapper <- temp %>%
 write.csv(fordatawrapper
           ,paste0(directory,"NPTplusForDataWrapperPlacement6orBetter.csv"),row.names=FALSE)
 
+## Top 4
+temp %>% filter((seasonNumber == 23 & chef %in% c("Laurence Louie","Rhoda Magbitang","Sherry Cardoso","Jonathan Dearden") ) |
+                  placement <= 4) %>%
+  group_by(seasonNumber) %>%
+  summarise(meanNPTplus = mean(NPTplus)
+            ,meanRank = mean(rank)) %>%
+  arrange(desc(meanRank)) %>%
+  print(n=23)
