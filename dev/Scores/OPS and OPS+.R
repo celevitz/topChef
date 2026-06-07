@@ -13,12 +13,9 @@ placement <- placement %>%
 
 moneywon <-  read.csv(paste0(directory,"Top Chef - Rewards.csv")) %>%
   # keep just money
-  filter(grepl("Money",rewardType)) %>%
+  filter(grepl("Money",rewardType) & series == "US") %>%
   group_by(series,season,seasonNumber,chef) %>%
-  mutate(reward = as.numeric(gsub(" and a 10 day cruise from Holland Cruise","",
-                             gsub(" and year of dinner from Blue Apron + your recipe featured in Blue Apron"
-                             ,"",gsub(" and Sous Vide machine","",gsub(".0",""
-                             ,gsub("$","",reward))))))) %>%
+  mutate(reward = as.numeric(reward)) %>%
   summarise(moneyearned = sum(reward))
 
 temp <- challengewins %>%
@@ -95,7 +92,7 @@ temp <- challengewins %>%
          ,NPTplus,NPTplus2) %>%
   filter(series == "US") %>%
   left_join(placement) %>%
-  mutate(chef = name) %>%
+  left_join(moneywon) %>%
   ungroup() %>%
   relocate(chef,.before=seasonNumber) %>%
   relocate(placement,.after=seasonNumber) %>%
