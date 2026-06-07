@@ -20,7 +20,7 @@ confsRaw <- as_tibble(read.xlsx(paste(directory
 placement <- read.csv(paste0(directory,"topChef/Top Chef - Chef details.csv")
                       ,header=TRUE)
 placement <- placement %>%
-  select(series,season,seasonNumber,chef,placement)
+  select(series,season,seasonNumber,chef,placement,name)
 challengewins <- read.csv(paste0(directory,"topChef/Top Chef - Challenge wins.csv")
                           ,header=TRUE)
 
@@ -66,7 +66,8 @@ wonElimChall <- challengewins %>%
                    ,TRUE ~ "Not in episode")
            ) %>%
     ## Who won the elim chall in that ep?
-    left_join(wonElimChall)
+    left_join(wonElimChall) %>%
+    left_join(placement)
 
 
   write.csv(confsByEpi
@@ -100,7 +101,8 @@ wonElimChall <- challengewins %>%
            ,firstconfs,phonecallsorphotos,chefconfs
            ,expectedpercentofconfs,observedpercent
            ,difffromexpected) %>%
-    distinct()
+    distinct() %>%
+    left_join(placement)
 
   write.csv(confs
           ,paste0(directory,"/topChef/Top Chef - Confessionals in a season.csv")
