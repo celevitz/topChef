@@ -106,7 +106,7 @@ temp <- challengewins %>%
               ungroup() %>% group_by(season,seasonNumber,series,chef) %>%
               summarise(episodeswon=n())
               ) %>%
-  mutate(episodeswon = ifelse(is.na(episodeswon),0,episodeswon))
+  mutate(episodeswon = ifelse(is.na(episodeswon),0,episodeswon)) %>%
   ## what about LCK data?
   left_join(challengewins %>% filter(challengeType == "Last Chance Kitchen") %>%
               mutate(lckcomp = 1,lckwin = ifelse(grepl("WIN",outcome),1,0)
