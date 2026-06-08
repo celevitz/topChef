@@ -41,6 +41,8 @@ episodeinfo <- as_tibble(read.xlsx(paste(directory
   # fix the date
   episodeinfo$airDate <- as.Date(as.numeric(episodeinfo$airDate)
                                   , origin = "1899-12-30")
+  episodeinfo$Cast.announcement <- as.Date(as.numeric(episodeinfo$Cast.announcement)
+                                 , origin = "1899-12-30")
 
 ## Check for UTF-8 strings
 #
