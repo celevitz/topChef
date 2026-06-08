@@ -108,12 +108,11 @@ temp <- challengewins %>%
               ) %>%
   ## what about LCK data?
   left_join(challengewins %>% filter(challengeType == "Last Chance Kitchen") %>%
-              mutate(lckcomp = 1
-                     ,lckwin = ifelse(grepl("WIN",outcome),1,0)) %>%
+              mutate(lckcomp = 1,lckwin = ifelse(grepl("WIN",outcome),1,0)
+                     ,lckwinner = ifelse(outcome %in% "WINNER",1,0)) %>%
               group_by(season,seasonNumber,chef) %>%
-              summarise(lckcomp=sum(lckcomp)
-                        ,lckwin = sum(lckwin))
-              )
+              summarise(lckcomp=sum(lckcomp),lckwin = sum(lckwin)
+                        ,lckwinner = sum(lckwinner)))
 
 write.csv(temp %>% mutate(series = "US")
           ,paste0(directory,"NPTplus.csv"),row.names=FALSE)
