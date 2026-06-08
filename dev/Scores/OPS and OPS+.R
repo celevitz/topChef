@@ -105,6 +105,14 @@ temp <- challengewins %>%
               filter(wonepisode>=2) %>%
               ungroup() %>% group_by(season,seasonNumber,series,chef) %>%
               summarise(episodeswon=n())
+              ) %>%
+  ## what about LCK data?
+  left_join(challengewins %>% filter(challengeType == "Last Chance Kitchen") %>%
+              mutate(lckcomp = 1
+                     ,lckwin = ifelse(grepl("WIN",outcome),1,0)) %>%
+              group_by(season,seasonNumber,chef) %>%
+              summarise(lckcomp=sum(lckcomp)
+                        ,lckwin = sum(lckwin))
               )
 
 write.csv(temp %>% mutate(series = "US")
