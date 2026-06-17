@@ -159,9 +159,8 @@ f4byseason <- f4data %>%
               ,meanqTOW = mean(qTOW)
               )
 
-f4byseason %>%
-  arrange(desc(meanW)) %>%
-  print(n=50)
+    ## What are the quartiles for each key measure?
+    sapply(f4byseason, function(x) quantile(x, probs = seq(0, 1, 1/4)))
 
 
 } else { print("not going to do final four analysis")}
