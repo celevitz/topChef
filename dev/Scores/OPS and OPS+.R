@@ -162,5 +162,15 @@ f4byseason <- f4data %>%
     ## What are the quartiles for each key measure?
     sapply(f4byseason, function(x) quantile(x, probs = seq(0, 1, 1/4)))
 
+    ## how many of the F4 have NPT+ below 100?
+    f4data %>%
+      mutate(below100 = ifelse(NPTplus < 100, 1, 0)
+             ,above200 = ifelse(NPTplus >= 200, 1, 0)) %>%
+      group_by(seasonNumber) %>%
+      summarise(below100 = sum(below100)
+                ,above200 = sum(above200)) %>%
+      print(n=50)
+
+
 
 } else { print("not going to do final four analysis")}
