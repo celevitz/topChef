@@ -138,13 +138,15 @@ write.csv(fordatawrapper
 ## Top 4
 
 if (finalfouranalysis == "yes") {
-  temp <- read.csv(paste0(directory,"NPTplus.csv"))
+f4data <- read.csv(paste0(directory,"NPTplus.csv"))
 
-temp %>% filter((seasonNumber == 23 & chef %in% c("Laurence Louie","Rhoda Magbitang","Sherry Cardoso","Jonathan Dearden") ) |
-                  placement <= 4) %>%
-  group_by(seasonNumber) %>%
-  summarise(meanNPTplus = mean(NPTplus)
-            ,meanRank = mean(rank)) %>%
-  arrange(desc(meanRank)) %>%
-  print(n=23)
+## Average NPT+ and rank of NPT+ of the final four
+f4data %>% filter((seasonNumber == 23 & chef %in% c("Laurence Louie","Rhoda Magbitang","Sherry Cardoso","Jonathan Dearden") ) |
+                    placement <= 4) %>%
+    group_by(seasonNumber) %>%
+    summarise(meanNPTplus = mean(NPTplus)
+              ,meanRank = mean(rank)) %>%
+    arrange(desc(meanRank)) %>%
+    print(n=50)
+
 } else { print("not going to do final four analysis")}
