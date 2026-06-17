@@ -27,7 +27,8 @@ finalfours <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
 
 numberofchallseachseasonbeforeF4 <- read.csv(paste0(directory
                                           ,"Top Chef - Challenge wins.csv")) %>%
-  right_join(topChef::episodeinfo %>%
+  right_join(read.csv(paste0(directory
+                             ,"Top Chef - Episode information.csv"))  %>%
                filter(series == "US" & nCompetitors >= 5 &
                         !(is.na(nCompetitors)))) %>%
   select(series,season,seasonNumber,challengeType,episode) %>%
