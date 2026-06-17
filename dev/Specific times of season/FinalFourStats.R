@@ -1,6 +1,6 @@
 ## Carly Levitz
 ## June 9, 2024
-## Updated June 4th, 2025
+## Updated June 16, 2026
 ## Purpose: stats about the F4 in each season
 ## stats PRIOR to the F4 challenge
 ## remove qualifying challenges
@@ -17,9 +17,12 @@ library(tidyverse)
 library(topChef)
 library(ggplot2)
 
+directory <- "/Users/carlylevitz/Documents/Data/topChef/"
+
 finalfours <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))  %>%
+  mutate(placement = as.numeric(placement)) %>%
   filter(series=="US" &
-           (placement <=4 ) | (seasonNumber == 22 & is.na(placement))) %>%
+           (placement <=4 ) ) %>%
   select(series,season,seasonNumber,chef,placement)
 
 numberofchallseachseasonbeforeF4 <- read.csv(paste0(directory
