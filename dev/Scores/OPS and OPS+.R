@@ -4,6 +4,11 @@ library(tidyverse)
 
 directory <- "/Users/carlylevitz/Documents/Data/topChef/"
 
+# What do you want to do?
+updatedata <-  "no"
+finalfouranalysis <- "yes"
+
+if (updatedata == "yes") {
 # Bring in data
 challengewins <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv"))
 placement <- read.csv(paste0(directory,"Top Chef - Chef details.csv"))
@@ -128,8 +133,13 @@ fordatawrapper <- temp %>%
   arrange(desc(NPTplus),desc(C),desc(W))
 write.csv(fordatawrapper
           ,paste0(directory,"NPTplusForDataWrapperPlacement6orBetter.csv"),row.names=FALSE)
+} else { print("not going to update the data") }
 
 ## Top 4
+
+if (finalfouranalysis == "yes") {
+  temp <- read.csv(paste0(directory,"NPTplus.csv"))
+
 temp %>% filter((seasonNumber == 23 & chef %in% c("Laurence Louie","Rhoda Magbitang","Sherry Cardoso","Jonathan Dearden") ) |
                   placement <= 4) %>%
   group_by(seasonNumber) %>%
@@ -137,3 +147,4 @@ temp %>% filter((seasonNumber == 23 & chef %in% c("Laurence Louie","Rhoda Magbit
             ,meanRank = mean(rank)) %>%
   arrange(desc(meanRank)) %>%
   print(n=23)
+} else { print("not going to do final four analysis")}
