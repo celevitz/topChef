@@ -135,18 +135,33 @@ write.csv(fordatawrapper
           ,paste0(directory,"NPTplusForDataWrapperPlacement6orBetter.csv"),row.names=FALSE)
 } else { print("not going to update the data") }
 
+###########################################################################
 ## Top 4
-
+###########################################################################
 if (finalfouranalysis == "yes") {
-f4data <- read.csv(paste0(directory,"NPTplus.csv"))
+f4data <- read.csv(paste0(directory,"NPTplus.csv")) %>%
+  filter(placement <= 4)
 
-## Average NPT+ and rank of NPT+ of the final four
-f4data %>% filter((seasonNumber == 23 & chef %in% c("Laurence Louie","Rhoda Magbitang","Sherry Cardoso","Jonathan Dearden") ) |
-                    placement <= 4) %>%
+## Average NPT+ and rank of NPT+ of the final four by season
+f4byseason <- f4data %>%
+    ## By Chef: Elimination TOW and QF TOW
+    mutate(eTOW = (ET/E)
+           ,qTOW = (QT/Q)) %>%
     group_by(seasonNumber) %>%
     summarise(meanNPTplus = mean(NPTplus)
-              ,meanRank = mean(rank)) %>%
-    arrange(desc(meanRank)) %>%
-    print(n=50)
+              ,meanRank = mean(rank)
+              ## By season: average TOW, NBP, W of the F4
+              ,meanTOW = mean(TOW)
+              ,meanNBP = mean(NBP)
+              ,meanW = mean(W)
+              ## By Season: Elimination TOW and QF TOW
+              ,meaneTOW = mean(eTOW)
+              ,meanqTOW = mean(qTOW)
+              )
+
+f4byseason %>%
+  arrange(desc(meanW)) %>%
+  print(n=50)
+
 
 } else { print("not going to do final four analysis")}
