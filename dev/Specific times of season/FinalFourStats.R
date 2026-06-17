@@ -92,10 +92,11 @@ challoutcomes <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
 ## summary by season
   summarybyseason <- data.frame(f4stats %>%
     group_by(series,season,seasonNumber) %>%
-    summarise(HIGH =mean(HIGH)
-              ,LOW=mean(LOW)
-              ,WIN=mean(WIN)
-              ,top=mean(top)) %>%
+    summarise(HIGH =mean(HIGH,na.rm=T)
+              ,LOW=mean(LOW,na.rm=T)
+              ,IN=mean(IN,na.rm=T)
+              ,WIN=mean(WIN,na.rm=T)
+              ,top=mean(top,na.rm=T)) %>%
     arrange(desc(top),desc(WIN),desc(HIGH),LOW) %>%
     relocate(top,.before=HIGH) %>%
       relocate(WIN,.after=top))
@@ -109,8 +110,10 @@ challoutcomes <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
   # Instead of using the index, do it manually
   # This is because it won't be the same # of challenges for each season
 
-  variances <- topChef::challengewins %>%
-    right_join(topChef::episodeinfo %>%
+  variances <- read.csv(paste0(directory
+                               ,"Top Chef - Challenge wins.csv")) %>%
+    right_join(read.csv(paste0(directory
+                               ,"Top Chef - Episode information.csv")) %>%
                  filter(series == "US" & nCompetitors >= 5 &
                           !(is.na(nCompetitors)))) %>%
     select(series,season,seasonNumber,challengeType,episode,challengeType
@@ -128,7 +131,8 @@ challoutcomes <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
   # B. Exclude the uncommon challenge types
   variances <- variances[!(variances$challengeType %in%
                                      c("Battle of the Sous Chefs"
-                                       ,"Qualifying Challenge")),]
+                                       ,"Qualifying Challenge"
+                                       ,"Optional Quickfire")),]
 
   # C.  clean up outcomes: consolidate
   variances$outcome[variances$outcome %in% c("High","HiGH")] <-
