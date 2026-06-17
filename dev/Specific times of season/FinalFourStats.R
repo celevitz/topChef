@@ -52,7 +52,7 @@ challoutcomes <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
                              ,outcome == "OUT" ~ "LOW"
                              ,TRUE ~ outcome)) %>%
   # keep just the ones we want stats on: high, low, win
-  filter(inCompetition == TRUE & outcome %in% c("HIGH","LOW","WIN")) %>%
+  filter(inCompetition == TRUE & outcome %in% c("HIGH","LOW","IN","WIN")) %>%
   ## going to consolidate all challenge types to get overall rates
   group_by(series,season,seasonNumber,chef,outcome) %>%
   summarise(n=n())
@@ -67,7 +67,7 @@ challoutcomes <- read.csv(paste0(directory,"Top Chef - Challenge wins.csv")) %>%
     select(!n) %>%
     pivot_wider(names_from=outcome,values_from=percent)
 
-  for (var in c("HIGH","LOW","WIN")) {
+  for (var in c("HIGH","LOW","IN","WIN")) {
     f4stats[is.na(f4stats[,var]),var] <- 0
   }
 
